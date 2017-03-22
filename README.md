@@ -1,0 +1,1 @@
+# IoTBGW-external-interface
