@@ -1,0 +1,23 @@
+{
+  "name": "iotbgw-external-interface",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hareeqi/IoTBGW-external-interface.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/hareeqi/IoTBGW-external-interface/issues"
+  },
+  "homepage": "https://github.com/hareeqi/IoTBGW-external-interface#readme",
+  "dependencies": {
+    "insubnet": "0.0.8",
+    "tcp-proxy": "0.0.1"
+  }
+}

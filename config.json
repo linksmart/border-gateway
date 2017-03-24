@@ -1,0 +1,25 @@
+{
+  "private_BGW": false,
+  "bind_address": "0.0.0.0",
+  "servers":
+  [
+    {
+      "name":"http-proxy",
+      "port": 8888,
+      "dest_port":5050,
+      "dest_address":"localhost"
+    },
+    {
+      "name":"mqtt-proxy",
+      "port": 8883,
+      "dest_port":5050,
+      "dest_address":"localhost"
+    }
+  ],
+  "allowed_addresses":
+  [
+    "129.26.162.40/32",
+    "129.26.163.64/32",
+    "127.0.0.1/32"
+  ]
+}
