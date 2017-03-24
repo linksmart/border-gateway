@@ -10,13 +10,13 @@ const configs = require('./config.json')
 configs.servers.forEach((server) => {
   const external_interface = net.createServer(function(client) {
 
-    const proxy = new Proxy();
-    const options = { target: { host:server.dest_address, port:server.dest_port }};
-
     if(configs.private_BGW && !insubnet.Validate(client.remoteAddress,configs.allowed_addresses)){
       console.log('This is a private BGW: illegal connection made by %s',client.remoteAddress);
       client.destroy()
+
     } else {
+      const proxy = new Proxy();
+      const options = { target: { host:server.dest_address, port:server.dest_port }};
       proxy.proxy(client,options)
     }
 
