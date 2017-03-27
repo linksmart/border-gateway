@@ -1,11 +1,13 @@
 {
-  "private_BGW": false,
+  "private_bgw": false,
   "bind_address": "0.0.0.0",
+  "tls_key":"../cert/3/key.pem",
+  "tls_cert":"../cert/3/srv.pem",
   "servers":
   [
     {
       "name":"http-proxy",
-      "port": 8888,
+      "port": 443,
       "dest_port":5050,
       "dest_address":"localhost"
     },

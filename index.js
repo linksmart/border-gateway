@@ -1,16 +1,20 @@
 
 
-
-const net = require('net');
+const fs = require('fs');
+const tls = require('tls');
 const Proxy =  require('tcp-proxy')
 const insubnet = require('insubnet')
 const configs = require('./config.json')
 
 
-configs.servers.forEach((server) => {
-  const external_interface = net.createServer(function(client) {
+var options = {
+  key: fs.readFileSync(configs.tls_key),
+  cert: fs.readFileSync(configs.tls_cert)
+}
 
-    if(configs.private_BGW && !insubnet.Validate(client.remoteAddress,configs.allowed_addresses)){
+configs.servers.forEach((server) => {
+  const external_interface = tls.createServer(options,function(client) {
+    if(configs.private_bgw && !insubnet.Validate(client.remoteAddress,configs.allowed_addresses)){
       console.log('This is a private BGW: illegal connection made by %s',client.remoteAddress);
       client.destroy()
 
