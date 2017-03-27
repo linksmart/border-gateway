@@ -1,0 +1,17 @@
+{
+  "bind_address": "127.0.0.1",
+  "bind_port": 5050,
+  "external_domain": "bgw.hareeqi.com",
+  "external_port":"443",
+  "translate_by_sub_domain":false,
+  "services" : {
+    "rc":{
+      "local_address": "http://localhost:8081",
+      "translate_local_addresses":true
+    },
+    "sc":{
+      "local_address": "http://localhost:8082",
+      "translate_local_addresses":true
+    }
+  }
+}
