@@ -3,14 +3,14 @@
   "bind_port": 5050,
   "external_domain": "bgw.hareeqi.com",
   "external_port":"443",
-  "translate_by_sub_domain":false,
+  "sub_domain_mode":false,
   "services" : {
     "rc":{
-      "local_address": "http://localhost:8081",
+      "local_address": "http://127.0.0.1:8081",
       "translate_local_addresses":true
     },
     "sc":{
-      "local_address": "http://localhost:8082",
+      "local_address": "http://127.0.0.1:8082",
       "translate_local_addresses":true
     }
   }

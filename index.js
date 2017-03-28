@@ -4,13 +4,10 @@ var proxy = require('http-proxy').createProxyServer({});
 
 var { config, transformURI, getRequestType, REQ_TYPES } = require('./utils')
 
-
-
 app.use(function (req, res) {
   const dest = getRequestType(req)
-
   if (dest.type == REQ_TYPES.UNKNOWN_REQUEST) {
-    res.status(404).json({error:'unknow request type please make sure to use the full address *.'+config.external_domain+":"+config.external_port})
+    res.status(404).json({error:'unknow request type please make sure to use the full address '+config.external_domain+":"+config.external_port})
   }
   else if (dest.type == REQ_TYPES.FORWARD_W_T) {
       tranform(transformURI)(req,res,()=>    proxy.web(req, res, { target: dest.forward_address }))

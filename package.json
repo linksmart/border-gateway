@@ -4,6 +4,7 @@
   "description": "This is part of https://github.com/hareeqi/iot-bgw-external-interface",
   "main": "index.js",
   "scripts": {
+    "dev":"nodemon --harmony-async-await --inspect=9221 index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -17,11 +18,8 @@
   },
   "homepage": "https://github.com/hareeqi/iot-bgw-http-proxy#readme",
   "dependencies": {
-    "bases": "^0.2.1",
     "express": "^4.15.2",
     "http-proxy": "^1.16.2",
-    "ip": "^1.1.5",
-    "ip-to-int": "^0.3.1",
     "transformer-proxy": "^0.3.3"
   }
 }
