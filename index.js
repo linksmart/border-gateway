@@ -12,7 +12,7 @@ var options = {
   cert: fs.readFileSync(configs.tls_cert)
 }
 
-configs.servers.forEach((server) => {
+configs.servers.forEach(({name, bind_address, bind_port, dest_address, dest_port}) => {
   const external_interface = tls.createServer(options,function(client) {
     if(configs.private_bgw && !insubnet.Validate(client.remoteAddress,configs.allowed_addresses)){
       console.log('This is a private BGW: illegal connection made by %s',client.remoteAddress);
@@ -20,11 +20,11 @@ configs.servers.forEach((server) => {
 
     } else {
       const proxy = new Proxy();
-      const options = { target: { host:server.dest_address, port:server.dest_port }};
+      const options = { target: { host:dest_address, port:dest_port }};
       proxy.proxy(client,options)
     }
 
   })
-  external_interface.listen(server.port,configs.bind_address);
-  console.log("Forwarding %s port: %d to %s:%d",server.name,server.port,server.dest_address,server.dest_port);
+  external_interface.listen(bind_port,bind_address);
+  console.log("Forwarding %s %s:%d ===> %s:%d",name, bind_address, bind_port, dest_address, dest_port);
 })

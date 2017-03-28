@@ -4,6 +4,7 @@
   "description": "IoT Border Gateway for securing remote access when connecting multiple IoT Autonomous Wystems",
   "main": "index.js",
   "scripts": {
+    "dev":"nodemon --harmony-async-await --inspect=9220 index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

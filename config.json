@@ -1,21 +1,22 @@
 {
   "private_bgw": false,
-  "bind_address": "0.0.0.0",
   "tls_key":"../cert/3/key.pem",
   "tls_cert":"../cert/3/srv.pem",
   "servers":
   [
     {
       "name":"http-proxy",
-      "port": 443,
+      "bind_address": "0.0.0.0",
+      "bind_port": 443,
       "dest_port":5050,
-      "dest_address":"localhost"
+      "dest_address":"127.0.0.1"
     },
     {
       "name":"mqtt-proxy",
-      "port": 8883,
+      "bind_address": "0.0.0.0",
+      "bind_port": 8883,
       "dest_port":5050,
-      "dest_address":"localhost"
+      "dest_address":"127.0.0.1"
     }
   ],
   "allowed_addresses":
