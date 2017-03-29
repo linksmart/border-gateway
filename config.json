@@ -15,7 +15,7 @@
       "name":"mqtt-proxy",
       "bind_address": "0.0.0.0",
       "bind_port": 8883,
-      "dest_port":5050,
+      "dest_port":5051,
       "dest_address":"127.0.0.1"
     }
   ],
