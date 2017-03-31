@@ -22,5 +22,5 @@ proxy.on('error', function (err, req, res) {
   res.status(500).json({error:`There is a problem with the internal forward address, make suer the internal address exist and working: `,})
 });
 
-console.log("iot-bgw-http-proxy listening on %s %d ",config.bind_address,  config.bind_port)
-app.listen(config.bind_port, config.bind_address);
+app.listen(config.bind_port, config.bind_address,()=>
+console.log("iot-bgw-http-proxy listening on %s:%d ",config.bind_address,  config.bind_port));
