@@ -25,6 +25,6 @@ configs.servers.forEach(({name, bind_address, bind_port, dest_address, dest_port
     }
 
   })
-  external_interface.listen(bind_port,bind_address);
-  console.log("Forwarding %s %s:%d ===> %s:%d",name, bind_address, bind_port, dest_address, dest_port);
+  external_interface.listen(bind_port,bind_address,()=>
+  console.log("Forwarding %s %s:%d ===> %s:%d",name, bind_address, bind_port, dest_address, dest_port));
 })
