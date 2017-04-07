@@ -2,24 +2,30 @@
   "private_bgw": false,
   "tls_key":"../cert/3/key.pem",
   "tls_cert":"../cert/3/srv.pem",
+  "request_client_cert":false,
+  "client_ca_path":false,
+  "enable_ALPN_mode":false,
+  "enable_SNI_mode":false,
+  "external_domain": "bgw.hareeqi.com",
   "servers":
   [
     {
-      "name":"http-proxy",
+      "name":"http_proxy",
       "bind_address": "0.0.0.0",
       "bind_port": 443,
       "dest_port":5050,
       "dest_address":"127.0.0.1"
     },
     {
-      "name":"mqtt-proxy",
+      "name":"mqtt_proxy",
       "bind_address": "0.0.0.0",
       "bind_port": 8883,
       "dest_port":5051,
-      "dest_address":"127.0.0.1"
+      "dest_address":"127.0.0.1",
+      "allowed_addresses":["0.0.0.0/0"]
     }
   ],
-  "allowed_addresses":
+  "global_allowed_addresses":
   [
     "129.26.162.40/32",
     "129.26.163.64/32",
