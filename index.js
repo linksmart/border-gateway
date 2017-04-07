@@ -1,5 +1,3 @@
-
-
 const net = require('net');
 const mqtt = require('mqtt-packet')
 const config = require('./config.json')
@@ -9,7 +7,6 @@ const auth = require('./auth_client')
 const server = net.createServer((srcClient)=> {
 
   const dstClient = net.connect(config.broker.port, config.broker.address);
-
 
   const srcParser = mqtt.parser()
   const dstParser = mqtt.parser()
@@ -28,22 +25,19 @@ const server = net.createServer((srcClient)=> {
       config.broker.username && (packet.username = config.broker.username)
       config.broker.password && (packet.password = config.broker.password)
     }
-    console.log("%c client",'color:blue');
-    console.log(packet);
 
     // validate the packet
     let valid = await validate(packet,client_key)
     valid.packet = valid.packet &&  mqtt.generate(valid.packet)
+
     if (valid.status){
-
       dstClient.write(valid.packet)
-
     } else {
       // if the packet is invlaid in the case of publish or sub and
-      // congis for diconnectin on unauthorized is set to tru, then disocnnect
+      // configs for diconnectin on unauthorized is set to tru, then disocnnect
       if((packet.cmd == 'subscribe' && config.disconnect_on_unauthorized_subscribe) ||
          (packet.cmd == 'publish' && config.disconnect_on_unauthorized_publish)){
-        console.log('disconnecting client for unauthorized operation', client_key);
+        console.log('disconnecting client for unauthorized %s, client key: %s',packet.cmd, client_key);
         srcClient.destroy();
         dstClient.destroy();
       } else {
@@ -55,11 +49,11 @@ const server = net.createServer((srcClient)=> {
 
   })
   dstParser.on('packet', async (packet)=>{
-    console.log("%c server",'color:green');
-    console.log(packet);
+
     // only when autherize responce config is set true, i validate each responce to subscriptions
     if (packet.cmd=='publish' && !(await auth(client_key,'subscribe',packet.topic))){
       if(config.disconnect_on_unauthorized_response ){
+        console.log('disconnecting client for unauthorize subscription due to change, client key: %s', client_key);
         srcClient.destroy();
         dstClient.destroy();
       }
