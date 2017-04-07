@@ -1,11 +1,13 @@
 {
-  "bgw_admin_key": "random_admin_key",
   "bind_address": "127.0.0.1",
   "bind_port": 5050,
+  "bgw_admin_key": "random_admin_key",
+  "override_authorization_header":"",
+  "auth_server": "localhost:5055",
   "external_domain": "bgw.hareeqi.com",
   "external_port":"443",
   "sub_domain_mode":false,
-  "services" : {
+  "aliases" : {
     "rc":{
       "local_address": "http://127.0.0.1:8081",
       "translate_local_addresses":true

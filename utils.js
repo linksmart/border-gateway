@@ -19,9 +19,9 @@ const getRequestType = (req) => {
   local_dest = local_dest && local_dest.replace(".","");
   req.url =  config.sub_domain_mode ? req.url : req.url.replace(`/${local_dest}`,"")
 
-  if(public_domain && config.services[local_dest]) {
-    var result = {forward_address: config.services[local_dest].local_address}
-    result.type = config.services[local_dest].translate_local_addresses? TYPES.FORWARD_W_T:TYPES.FORWARD
+  if(public_domain && config.aliases[local_dest]) {
+    var result = {forward_address: config.aliases[local_dest].local_address}
+    result.type = config.aliases[local_dest].translate_local_addresses? TYPES.FORWARD_W_T:TYPES.FORWARD
     return result;
   }
 
