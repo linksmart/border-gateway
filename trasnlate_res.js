@@ -26,10 +26,14 @@ Object.keys(config.aliases).forEach((key)=> aliases[config.aliases[key].local_ad
 const transformURI = (data, req, res)=>
   (data+"").replace(check_domain,(e,i,j)=> {
 
-    //check eclude from transaltion list
-    if(config.exclude_domains_from_translation.find(d=>domainMatch(d,e))){
+    //check whitlist from transaltion
+    req.url = req.originalUrl;
+    const dest = req && getRequestType(req)
+    const whitelist = config.aliases[dest.alias].translate_local_addresses.whitelist
+    if( whitelist && whitelist.find(d=>domainMatch(d,e))){
       return e
     }
+    // end checking whitlist
     const protocol = i.includes('http')?  "https://":i+"://";
     const local_address = aliases[e]?aliases[e]:encode(e);
     const external_address = config.external_domain

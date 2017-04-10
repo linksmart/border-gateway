@@ -7,7 +7,7 @@ const TYPES = {
   FORWARD: 'FORWARD',
   FORWARD_W_T: 'FORWARD_W_T',
   UNKNOWN_REQUEST: 'UNKNOWN_REQUEST',
-  BASIC_AUTH: 'BASIC_AUTH'
+  PROMPT_BASIC_AUTH: 'PROMPT_BASIC_AUTH'
 }
 
 const getRequestType = (req) => {
@@ -21,12 +21,16 @@ const getRequestType = (req) => {
   req.url =  config.sub_domain_mode ? req.url : req.url.replace(`/${local_dest}`,"")
 
   if(public_domain && config.aliases[local_dest]) {
-    var result = {forward_address: config.aliases[local_dest].local_address}
+    let result = {
+      forward_address: config.aliases[local_dest].local_address,
+      alias:local_dest
+    }
     if(config.aliases[local_dest].use_basic_auth && !req.headers.authorization){
-      result.type = TYPES.BASIC_AUTH
+      result.type = TYPES.PROMPT_BASIC_AUTH
       return result
     }
-    result.type = config.aliases[local_dest].translate_local_addresses? TYPES.FORWARD_W_T:TYPES.FORWARD
+    const translate = config.aliases[local_dest].translate_local_addresses
+    result.type = (translate && translate.enabled) ? TYPES.FORWARD_W_T:TYPES.FORWARD
     return result;
   }
   const decoded_local_dest = local_dest && decode(local_dest)

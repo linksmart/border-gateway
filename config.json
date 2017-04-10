@@ -7,18 +7,24 @@
   "external_domain": "bgw.hareeqi.com",
   "external_port":"443",
   "sub_domain_mode":false,
-  "change_orgin_on_proxy_request":false,
-  "exclude_domains_from_translation":["*.ietf.org"],
+  "change_origin_on":{
+    "all_requests": false,
+    "https_requests":true,
+    "http_requests":false
+  },
   "auto_redirect_to_orginal_address_on_proxy_error":true,
   "aliases" : {
     "rc":{
-      "local_address": "http://almanac-scral1:8081",
-      "translate_local_addresses":true,
-      "use_basic_auth":true
+      "local_address": "http://localhost:3001",
+      "translate_local_addresses":{
+        "enabled":true,
+        "whitlist":["*.ietf.org"]
+      }
     },
     "sc":{
-      "local_address": "http://almanac-scral1:8082",
-      "translate_local_addresses":true
+      "local_address": "http://localhost:3001",
+      "use_basic_auth":true
+
     }
   }
 }
