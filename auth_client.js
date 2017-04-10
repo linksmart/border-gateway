@@ -6,6 +6,10 @@ module.exports  = async(req,forward_address)=>{
     if (req.headers && req.headers.authorization) {
       var parts = req.headers.authorization.split(' ');
       parts.length === 2 && parts[0] === 'Bearer' && (client_key = parts[1])
+      parts.length === 2 && parts[0] === 'Basic'  && (client_key =  new Buffer(parts[1], 'base64').toString('ascii').split(':'))
+      console.log('key',client_key);
+    } else if (req.query.bgw_token) {
+      client_key = req.query.bgw_token;
     }
     if(!client_key) {
       return false
@@ -33,7 +37,8 @@ module.exports  = async(req,forward_address)=>{
     }
     try {
       let result = await fetch(url,options)
-      return (await result.json()).status
+      const result_json = await result.json();
+      return result_json.status
     } catch (e) {
       console.log('error occoured in getting and parsing from auth server',e);
       return false
