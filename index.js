@@ -17,7 +17,7 @@ const sign = (user_id,password=genId(12))=>{
     const message  = `${user_id}.${password}`
     return {
       password:password,
-      token:`${message}.${hash(message)}`
+      key:`${message}.${hash(message)}`
     }
 };
 
