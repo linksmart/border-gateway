@@ -1,4 +1,6 @@
 const crypto = require('crypto');
+const bcrypt = require('bcrypt');
+
 const uuid = require('uuid');
 const bs62 = require('base-x')('0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ')
 
@@ -13,10 +15,10 @@ const genId = (x=5)=>{
   return hash(bs62.encode(buffer)).slice(0,x);
 }
 
-const sign = (user_id,password=genId(12))=>{
+const sign = async (user_id,password=genId(12))=>{
     const message  = `${user_id}.${password}`
     return {
-      password:password,
+      password_hash: await bcrypt.hash(password),
       key:`${message}.${hash(message)}`
     }
 };
