@@ -1,5 +1,6 @@
 const {connack,suback,puback,pubrec} = require('./packet_template')
-const auth = require('./auth_client')
+const config = require('./config.json')
+const auth = require('iot-bgw-auth-client')(config).mqtt
 module.exports = async (packet, key)=> {
   let result = true
   switch(  packet.cmd ){
