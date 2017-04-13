@@ -1,28 +1,25 @@
-validate_func(user_data,req)  {
+const bcrypt = require('bcrypt');
+const mqtt_match = require('mqtt-match')
+module.exports = async(req,profile,key) =>  {
 
-  if (!(user_data && user_data.rules) || !req) {
-    return false
+
+  if(profile.suspended){
+    return {status:false,error:'Supplied api key has been suspended, Please ask the BGW Admin to activiate your key'}
   }
 
-  //mqtt match taken https://github.com/ralphtheninja/mqtt-match
-  const mqtt_match = (filter,topic)=> {
-    const filterArray = filter.split('/')
-    const length = filterArray.length
-    const topicArray = topic.split('/')
-
-    for (var i = 0; i < length; ++i) {
-      var left = filterArray[i]
-      var right = topicArray[i]
-      if (left === '#') return true
-      if (left !== '+' && left !== right) return false
-    }
-
-    return length === topicArray.length
+  const correctPassord = await bcrypt.compare(key.password, profile.password)
+  if(!correctPassord){
+    return {status:false,error:'Supplied api key has been re-issued and is no longer valid'}
   }
 
 
 
   req = `${req.protocol}/${req.method}/${req.host}/${req.port}/${req.path}`
-  return !!user_data.rules.find((rule)=>mqtt_match(rule,req))
+  const result = !!profile.rules.find((rule)=>mqtt_match(rule,req))
+  if (result) {
+    return {status:true}
+  } else {
+    return {status:false,error:'Supplied api key has no autherization to access the requested resource'}
+  }
 
 }

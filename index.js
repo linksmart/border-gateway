@@ -1,43 +1,34 @@
+const fs = require('fs')
 const crypto = require('crypto');
-const bcrypt = require('bcrypt');
+const { setConfig } = require('./config_mgr')
 
-const uuid = require('uuid');
-const bs62 = require('base-x')('0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ')
+const hash = (file)=> crypto.createHash('sha256').update(file).digest('base64');
 
-let secert =null
-let auth_host="127.0.0.1"
+let  index =  module.exports
 
-const hash = (message)=> bs62.encode(crypto.createHmac('sha256', secert).update(message).digest())
+index.init = (config)=>{
+  try{
+    const key_file = ""+fs.readFileSync(config.bgw_admin_key)
+    config.bgw_admin_key_string = hash(key_file)
+    setConfig(config);
 
-const genId = (x=5)=>{
-  const buffer = new Array(16);
-  uuid.v4(null, buffer)
-  return hash(bs62.encode(buffer)).slice(0,x);
-}
+    const mqtt = require('./mqtt_auth')
+    const http = require('./http_auth')
+    const {hmac, genId, sign,verify } = require('./key')
 
-const sign = async (user_id,password=genId(12))=>{
-    const message  = `${user_id}.${password}`
-    return {
-      password_hash: await bcrypt.hash(password),
-      key:`${message}.${hash(message)}`
-    }
-};
+    index.hmac   =  hmac;
+    index.genId  =  genId;
+    index.sign   =  sign;
+    index.verify =  verify;
+    index.mqtt   =  mqtt;
+    index.http   =  http;
 
-const verify = (tok='')=> {
-  const token = tok.split('.');
-  if(token.length<3)
-  return {valid:false, error:'invalid token format'}
-  const user_id = token.slice(0,token.length-2).join('.');
-  const password= token[token.length-2];
-  const signatur = token[token.length-1];
-  const valid = hash(`${user_id}.${password}`) === signatur;
-  return { user_id, password, signatur,valid }
-};
+    return index;
 
-
-module.exports = (_auth_host,_secert)=>{
-  secert = _secert;
-  auth_host = _auth_host
-  return {genId,sign,verify}
+  } catch (e) {
+    console.log(e);
+    console.log('BGW: Fatael Error Border Gateway Admin key file could not be located: BGW auth client, index.js');
+    process.exit(1);
+  }
 
 }
