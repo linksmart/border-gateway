@@ -10,37 +10,42 @@ const TYPES = {
   PROMPT_BASIC_AUTH: 'PROMPT_BASIC_AUTH'
 }
 
-const getRequestType = (req) => {
-
+const bgwIfy = (req) => {
+  req.bgw = {}
   const host =  req.headers.host.split(":")[0]
   const public_domain = config.sub_domain_mode ?  host.includes(config.external_domain) : host == config.external_domain;
 
+  if(!public_domain){
+    req.bgw = {type:TYPES.UNKNOWN_REQUEST}
+    return
+  }
   // check if subdomain mode e.g. https://rc.gateway.com or https://gateway.com/rc
   let local_dest =  config.sub_domain_mode ? host.split(config.external_domain).filter((e)=>e!="")[0]:req.url.split('/')[1]
   local_dest = local_dest && local_dest.replace(".","");
   req.url =  config.sub_domain_mode ? req.url : req.url.replace(`/${local_dest}`,"")
 
-  if(public_domain && config.aliases[local_dest]) {
-    let result = {
+  if(config.aliases[local_dest]) {
+    req.bgw = {
       forward_address: config.aliases[local_dest].local_address,
       alias:local_dest
     }
     if(config.aliases[local_dest].use_basic_auth && !req.headers.authorization){
-      result.type = TYPES.PROMPT_BASIC_AUTH
-      return result
+      req.bgw.type = TYPES.PROMPT_BASIC_AUTH
+      return
     }
     const translate = config.aliases[local_dest].translate_local_addresses
-    result.type = (translate && translate.enabled) ? TYPES.FORWARD_W_T:TYPES.FORWARD
-    return result;
+    req.bgw.type = (translate && translate.enabled) ? TYPES.FORWARD_W_T:TYPES.FORWARD
+    return
   }
   const decoded_local_dest = local_dest && decode(local_dest)
-  if(public_domain && local_dest && decoded_local_dest ){
-    return {type:TYPES.FORWARD, forward_address:decoded_local_dest}
+  if(!config.only_forward_aliases &&local_dest && decoded_local_dest ){
+    req.bgw = {type:TYPES.FORWARD, forward_address:decoded_local_dest}
+    return
   }
-  return {type:TYPES.UNKNOWN_REQUEST}
+  req.bgw = {type:TYPES.UNKNOWN_REQUEST}
 }
 
 module.exports.config = config;
-module.exports.getRequestType = getRequestType;
+module.exports.bgwIfy = bgwIfy;
 module.exports.REQ_TYPES = TYPES;
 module.exports.transformURI = transformURI

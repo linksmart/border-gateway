@@ -4,7 +4,7 @@
   "description": "This is part of https://github.com/hareeqi/iot-bgw-external-interface",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon --inspect=9221 index.js",
+    "dev": "nodemon -w ./ -w ../iot-bgw-auth-client --inspect=9221 index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -22,7 +22,6 @@
     "domain-match": "^1.0.0",
     "express": "^4.15.2",
     "http-proxy": "^1.16.2",
-    "node-fetch": "^1.6.3",
     "transformer-proxy": "^0.3.3"
   }
 }

@@ -1,12 +1,13 @@
 {
   "bind_address": "127.0.0.1",
   "bind_port": 5050,
-  "bgw_admin_key": "random_admin_key",
-  "override_authorization_header":"",
+  "bgw_admin_key":"../cert/3/key.pem",
   "auth_server": "localhost:5055",
+  "override_authorization_header":"",
   "external_domain": "bgw.hareeqi.com",
   "external_port":"443",
   "sub_domain_mode":false,
+  "only_forward_aliases":false,
   "change_origin_on":{
     "all_requests": false,
     "https_requests":true,
@@ -15,14 +16,15 @@
   "auto_redirect_to_orginal_address_on_proxy_error":true,
   "aliases" : {
     "rc":{
-      "local_address": "http://localhost:3001",
+      "local_address": "http://almanac-scral1:8081",
       "translate_local_addresses":{
         "enabled":true,
-        "whitlist":["*.ietf.org"]
+        "whitelist":["*.ietf.org"]
       }
     },
     "sc":{
-      "local_address": "http://localhost:3001",
+      "local_address": "http://almanac-scral1:8082",
+      "override_authorization_header":"",
       "use_basic_auth":true
 
     }

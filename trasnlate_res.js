@@ -26,10 +26,8 @@ Object.keys(config.aliases).forEach((key)=> aliases[config.aliases[key].local_ad
 const transformURI = (data, req, res)=>
   (data+"").replace(check_domain,(e,i,j)=> {
 
-    //check whitlist from transaltion
-    req.url = req.originalUrl;
-    const dest = req && getRequestType(req)
-    const whitelist = config.aliases[dest.alias].translate_local_addresses.whitelist
+    // you can make whitelist faster by cashing it in an object
+    const whitelist = config.aliases[req.bgw.alias].translate_local_addresses.whitelist
     if( whitelist && whitelist.find(d=>domainMatch(d,e))){
       return e
     }
