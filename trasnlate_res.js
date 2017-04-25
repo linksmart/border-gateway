@@ -27,7 +27,7 @@ const transformURI = (data, req, res)=>
   (data+"").replace(check_domain,(e,i,j)=> {
 
     // you can make whitelist faster by cashing it in an object
-    const whitelist = config.aliases[req.bgw.alias].translate_local_addresses.whitelist
+    const whitelist = req.bgw.alias.translate_local_addresses.whitelist
     if( whitelist && whitelist.find(d=>domainMatch(d,e))){
       return e
     }
