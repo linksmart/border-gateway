@@ -16,11 +16,12 @@ var options = {
   ALPNProtocols: config.enable_ALPN_mode &&  ['bgw_info'].concat(config.servers.map(e=>e.name))
 }
 
+
 config.servers.forEach((srv) => {
   const external_interface = tls.createServer(options,function(client) {
 
     client.on('error',()=>client.destroy())
-    const subdomain = client.servername.includes(config.external_domain) && client.servername.replace(new RegExp('.?'+config.external_domain),'')
+    const subdomain = client.servername && client.servername.includes(config.external_domain) && client.servername.replace(new RegExp('.?'+config.external_domain),'')
     const SNI_srv = config.enable_SNI_mode && subdomain && config.servers.find((e)=>e.name==subdomain)
     const ALPN_srv = config.enable_ALPN_mode && client.alpnProtocol && config.servers.find((e)=>e.name==client.alpnProtocol)
 
