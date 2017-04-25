@@ -4,7 +4,7 @@ const request = require('./request')
 
 
 
-module.exports = (client_key,method,path)=>{
+module.exports = async (client_key,method,path='')=>{
     const payload = {
       protocol:"MQTT",
       host:config.broker.address,
@@ -13,5 +13,5 @@ module.exports = (client_key,method,path)=>{
       path:path
     }
 
-    return request(config,payload,client_key)
+    return (await request(payload,client_key)).status
 }
