@@ -1,8 +1,8 @@
 const net = require('net');
 const mqtt = require('mqtt-packet')
 const config = require('./config.json')
+const {mqttAuth, log} = require('../iot-bgw-auth-client').init(config)
 const validate = require('./validate')
-const auth = require('./auth_client')
 
 const server = net.createServer((srcClient)=> {
 
@@ -11,7 +11,7 @@ const server = net.createServer((srcClient)=> {
   const srcParser = mqtt.parser()
   const dstParser = mqtt.parser()
   srcClient.on('data',(data)=>srcParser.parse(data))
-  dstClient.on('data',(data)=>config.broker.authorize_response?dstParser.parse(data):srcClient.write(data))
+  dstClient.on('data',(data)=>config.authorize_response?dstParser.parse(data):srcClient.write(data))
   dstClient.on('error',()=>{srcClient.destroy();dstClient.destroy()})
   srcClient.on('error',()=>{srcClient.destroy();dstClient.destroy()})
 
@@ -37,7 +37,7 @@ const server = net.createServer((srcClient)=> {
       // configs for diconnectin on unauthorized is set to tru, then disocnnect
       if((packet.cmd == 'subscribe' && config.disconnect_on_unauthorized_subscribe) ||
          (packet.cmd == 'publish' && config.disconnect_on_unauthorized_publish)){
-        console.log('disconnecting client for unauthorized %s, client key: %s',packet.cmd, client_key);
+        console.log('disconnecting client for unauthorized %s, ',packet.cmd);
         srcClient.destroy();
         dstClient.destroy();
       } else {
@@ -49,11 +49,10 @@ const server = net.createServer((srcClient)=> {
 
   })
   dstParser.on('packet', async (packet)=>{
-
     // only when autherize responce config is set true, i validate each responce to subscriptions
-    if (packet.cmd=='publish' && !(await auth(client_key,'subscribe',packet.topic))){
+    if (packet.cmd=='publish' && !(await mqttAuth(client_key,'subscribe',packet.topic))){
       if(config.disconnect_on_unauthorized_response ){
-        console.log('disconnecting client for unauthorize subscription due to change, client key: %s', client_key);
+        console.log('disconnecting client for unauthorize subscription due to change user auth profile');
         srcClient.destroy();
         dstClient.destroy();
       }
