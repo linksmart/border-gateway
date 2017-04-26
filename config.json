@@ -5,7 +5,7 @@
   "auth_server": "http://localhost:5055",
   "external_domain": "bgw.hareeqi.com",
   "external_port":"443",
-  "sub_domain_mode":true,
+  "sub_domain_mode":false,
   "only_forward_aliases":false,
   "override_authorization_header":"",
   "disable_bgw_key_as_url_query":false,
@@ -16,7 +16,7 @@
   "redirect_to_orginal_address_on_proxy_error":true,
   "redirect_on_invalid_external_domain":true,
   "aliases" : {
-    "rc":{
+    "shit":{
       "local_address": "http://almanac-scral1:8081",
       "change_origin_on":{
         "https_req":false,

@@ -2,7 +2,8 @@ const app = require('express')();
 const tranform = require('transformer-proxy');
 const proxy = require('http-proxy').createProxyServer({});
 const { config, transformURI, bgwIfy, REQ_TYPES } = require('./utils')
-const {httpAuth, log} = require('../iot-bgw-auth-client').init(config)
+const {httpAuth, AAA, CAT} = require('../iot-bgw-auth-client').init(config)
+
 
 app.use(async(req, res)=> {
   if (req.query.bgw_key && config.disable_bgw_key_as_url_query) {
