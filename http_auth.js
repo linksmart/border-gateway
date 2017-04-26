@@ -2,7 +2,6 @@
 const url = require('url');
 const config = require('./config_mgr')();
 const request = require('./request')
-const {log, CAT} = require('./log')
 
 module.exports = (req)=>{
     let client_key = false;

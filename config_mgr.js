@@ -21,6 +21,9 @@ const setConfig = (c)=> {
 
 
 const setupAdminKey = (c)=> {
+  if(!c.bgw_admin_key){
+    return
+  }
   let key
   if(fs.existsSync(c.bgw_admin_key)){
     key = ""+fs.readFileSync(c.bgw_admin_key)

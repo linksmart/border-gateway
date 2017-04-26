@@ -1,22 +1,31 @@
 
 
-const info = (...arg)=> console.info("AAA", ...arg);
+const log = (...arg)=> console.log("AAA", ...arg);
 
-const warn = (...arg)=> console.warn("AAA", ...arg);
-
-const error = (...arg)=> console.error("AAA", ...arg);
 
 
 const CAT = {
   PROCESS: "PROCESS",
-  RULE:'RULE',
-  PASSWORD: 'PASSWORD',
-  SUSPENDED:'SUSPENDED',
-  INVALID_KEY:"INVALID_KEY",
-  MISSING_KEY:"MISSING_KEY",
-  WRONG_AUTH_SERVER_RES:"WRONG_AUTH_SERVER_RES"
+  BUG: "F BUG",
+  RULE_ALLOW:'I RULE_ALLOW',
+  RULE_DENY:'W RULE_DENY',
+  PROFILE: 'W PROFILE',
+  PASSWORD: 'W PASSWORD',
+  SUSPENDED:'W SUSPENDED',
+  EXPIRED:'W EXPIRED',
+  INVALID_KEY:"W INVALID_KEY",
+  MISSING_KEY:"W MISSING_KEY",
+  WRONG_AUTH_SERVER_RES:"E WRONG_AUTH_SERVER_RES"
 }
 
-module.exports = {info,warn,error,CAT}
-module.exports.log = module.exports
+process.on('unhandledRejection', (err) => {
+  log(CAT.BUG,err.stack);
+  process.exit(1);
+});
+process.on('uncaughtException', (err) => {
+  log(CAT.BUG,err.stack);
+  process.exit(1);
+});
+module.exports = {log,CAT}
+module.exports.AAA = module.exports
 module.exports.CAT = CAT
