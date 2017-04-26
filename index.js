@@ -1,7 +1,7 @@
 const net = require('net');
 const mqtt = require('mqtt-packet')
 const config = require('./config.json')
-const {mqttAuth, log} = require('../iot-bgw-auth-client').init(config)
+const {mqttAuth, AAA, CAT} = require('../iot-bgw-auth-client').init(config)
 const validate = require('./validate')
 
 const server = net.createServer((srcClient)=> {

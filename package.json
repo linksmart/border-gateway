@@ -18,7 +18,6 @@
   },
   "homepage": "https://github.com/hareeqi/iot-bgw-mqtt-proxy#readme",
   "dependencies": {
-    "mqtt-packet": "^5.2.2",
-    "iot-bgw-auth-client": "file:../iot-bgw-auth-client"
+    "mqtt-packet": "^5.2.2"
   }
 }
