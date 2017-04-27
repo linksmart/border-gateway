@@ -1,8 +1,6 @@
 {
   "bind_address": "127.0.0.1",
   "bind_port": 5050,
-  "bgw_admin_key":"../cert/3/key.pem",
-  "auth_server": "http://localhost:5055",
   "external_domain": "bgw.hareeqi.com",
   "external_port":"443",
   "sub_domain_mode":false,
@@ -36,5 +34,10 @@
         "whitelist":["*.ietf.org"]
       }
     }
+  },
+  "aaa_client":{
+    "log_level":5,
+    "secret":"../cert/3/key.pem",
+    "host": "http://localhost:5055"
   }
 }
