@@ -50,7 +50,7 @@ const server = net.createServer((srcClient)=> {
   })
   dstParser.on('packet', async (packet)=>{
     // only when autherize responce config is set true, i validate each responce to subscriptions
-    if (packet.cmd=='publish' && !(await mqttAuth(client_key,'subscribe',packet.topic))){
+    if (packet.cmd=='publish' && !(await mqttAuth(client_key,'SUB',packet.topic))){
       if(config.disconnect_on_unauthorized_response ){
         console.log('disconnecting client for unauthorize subscription due to change user auth profile');
         srcClient.destroy();
