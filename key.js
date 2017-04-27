@@ -5,7 +5,7 @@ const bs62 = require('base-x')('0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKL
 const config = require('./config_mgr')()
 
 
-const hmac = (message, sec = config.bgw_admin_key)=>
+const hmac = (message, sec = config.aaa_client.secret)=>
   bs62.encode(crypto.createHmac('sha256',sec).update(message).digest())
 
 const genId = (x=5)=>{

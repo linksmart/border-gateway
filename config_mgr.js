@@ -21,24 +21,24 @@ const setConfig = (c)=> {
 
 
 const setupAdminKey = (c)=> {
-  if(!c.bgw_admin_key){
+  if(!(c.aaa_client && c.aaa_client.secret)){
     return
   }
   let key
-  if(fs.existsSync(c.bgw_admin_key)){
-    key = ""+fs.readFileSync(c.bgw_admin_key)
+  if(fs.existsSync(c.aaa_client.secret)){
+    key = ""+fs.readFileSync(c.aaa_client.secret)
   } else {
-    console.warn(" bgw_admin_key is not a valid file path, we will use the provided string to generate the bgw admin key")
-    key = c.bgw_admin_key
+    console.warn("bgw_admin_key is not a valid file path, we will use the provided string to generate the bgw admin key")
+    key = c.aaa_client.secret
   }
-  c.bgw_admin_key = hash(key);
+  c.aaa_client.secret = hash(key);
 }
 
 const setupBgwAuthAlias = (c)=>{
     // if this config belongs to http proxy set alias for bgw-auth
-    c.aliases && (c.aliases['bgw-auth']={
-        local_address:c.auth_server,
-        override_authorization_header: c.bgw_admin_key
+    c.aaa_client && c.aaa_client.secret && c.aaa_client.host && c.aliases && (c.aliases['bgw-auth']={
+        local_address:c.aaa_client.host,
+        override_authorization_header: c.aaa_client.secret
     })
 }
 

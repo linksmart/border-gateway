@@ -1,9 +1,14 @@
 
 const url = require('url');
 const config = require('./config_mgr')();
-const request = require('./request')
+const validate = require('./validate')
 
-module.exports = (req)=>{
+const mqttAuth = async (client_key,method,path='')=>{
+    const payload = `MQTT/${method}/${config.broker.address}/${config.broker.port}/${path}`
+    return (await validate(payload,client_key)).status
+}
+
+const httpAuth = (req)=>{
     let client_key = false;
     if (req.headers && req.headers.authorization) {
       var parts = req.headers.authorization.split(' ');
@@ -24,15 +29,11 @@ module.exports = (req)=>{
     let host = req.bgw.forward_address.replace(/https?:\/\//,'').split(':')
     let port = host[1] || (req.bgw.forward_address.startsWith('https')?443:80)
     host = host[0]
-    const payload = {
-      protocol:"HTTP",
-      host:host,
-      port:port,
-      method:req.method,
-      path:url.parse(req.url).pathname.slice(1)
-    }
+    const payload = `HTTP/${req.method}/${host}/${port}/${url.parse(req.url).pathname.slice(1)}`
 
-
-   return request(payload,client_key)
+   return validate(payload,client_key)
 
 }
+
+
+module.exports = { mqttAuth, httpAuth}
