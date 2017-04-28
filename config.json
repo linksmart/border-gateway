@@ -3,7 +3,7 @@
   "bind_port": 5050,
   "external_domain": "bgw.hareeqi.com",
   "external_port":"443",
-  "sub_domain_mode":false,
+  "sub_domain_mode":true,
   "only_forward_aliases":false,
   "override_authorization_header":"",
   "disable_bgw_key_as_url_query":false,
@@ -39,7 +39,7 @@
     "name":"http-proxy",
     "no_color":false,
     "log_level":5,
-    "secret":"../cert/3/key.pem",
+    "secret":"./config/key.pem",
     "host": "http://localhost:5055"
   }
 }
