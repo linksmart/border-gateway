@@ -2,6 +2,7 @@
 
 const fs = require('fs');
 const tls = require('tls');
+const net = require('net');
 const Proxy =  require('tcp-proxy')
 const insubnet = require('insubnet')
 const config = require('./config.json')
@@ -27,20 +28,22 @@ config.servers.forEach((srv) => {
     const SNI_srv = config.enable_SNI_mode && subdomain && config.servers.find((e)=>e.name==subdomain)
     const ALPN_srv = config.enable_ALPN_mode && client.alpnProtocol && config.servers.find((e)=>e.name==client.alpnProtocol)
 
-    const { dest_address, dest_port, allowed_addresses} = ALPN_srv || SNI_srv || srv
+    const { dest_address, dest_port, name, allowed_addresses} = ALPN_srv || SNI_srv || srv
 
     if(config.private_bgw &&
       (!insubnet.Validate(client.remoteAddress,config.global_allowed_addresses) ||
        !insubnet.Validate(client.remoteAddress,allowed_addresses||[]))){
-      AAA.log(CAT.DISCONNECT_CON,'This is a private BGW: illegal connection made by %s',client.remoteAddress);
+      AAA.log(CAT.CON_TERMINATE,`This is a private BGW: illegal connection made by ${client.remoteAddress}`);
       client.destroy()
 
     } else if (config.enable_ALPN_mode && client.alpnProtocol=='bgw_info'){
         client.end(config.servers.reduce((a,c)=>a+','+c.name,''));
     } else {
-      const proxy = new Proxy();
-      const options = { target: { host:dest_address, port:dest_port }};
-      proxy.proxy(client,options)
+
+      const dest = net.connect({ host:dest_address, port:dest_port },()=>{
+        AAA.log(CAT.CON_START,`${client.remoteAddress}:${client.remotePort} > ${client.localPort} > ${dest.localPort}:${name}`);
+        client.pipe(dest).pipe(client);
+      })
     }
 
   })

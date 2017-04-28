@@ -1,7 +1,7 @@
 {
   "private_bgw": false,
-  "tls_key":"../cert/3/key.pem",
-  "tls_cert":"../cert/3/srv.pem",
+  "tls_key":"./config/key.pem",
+  "tls_cert":"./config/srv.pem",
   "request_client_cert":false,
   "client_ca_path":false,
   "enable_ALPN_mode":false,
