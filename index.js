@@ -37,7 +37,7 @@ const server = net.createServer((srcClient)=> {
       // configs for diconnectin on unauthorized is set to tru, then disocnnect
       if((packet.cmd == 'subscribe' && config.disconnect_on_unauthorized_subscribe) ||
          (packet.cmd == 'publish' && config.disconnect_on_unauthorized_publish)){
-        AAA.log(CAT.DISCONNECT_CON,'disconnecting client for unauthorized %s, ',packet.cmd);
+        AAA.log(CAT.CON_TERMINATE,'disconnecting client for unauthorized %s, ',packet.cmd);
         srcClient.destroy();
         dstClient.destroy();
       } else {
@@ -52,7 +52,7 @@ const server = net.createServer((srcClient)=> {
     // only when autherize responce config is set true, i validate each responce to subscriptions
     if (packet.cmd=='publish' && !(await mqttAuth(client_key,'SUB',packet.topic))){
       if(config.disconnect_on_unauthorized_response ){
-        AAA.log(CAT.DISCONNECT_CON,'disconnecting client for unauthorize subscription due to change user auth profile');
+        AAA.log(CAT.CON_TERMINATE,'disconnecting client for unauthorize subscription due to change user auth profile');
         srcClient.destroy();
         dstClient.destroy();
       }
