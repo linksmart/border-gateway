@@ -1,0 +1,18 @@
+[
+  {
+    "uid": "external-interface",
+    "script": "./node_modules/iot-bgw-external-interface/index.js"
+  },
+  {
+    "uid": "auth-server",
+    "script": "./node_modules/iot-bgw-auth-server/index.js"
+  },
+  {
+    "uid": "http-proxy",
+    "script": "./node_modules/iot-bgw-http-proxy/index.js"
+  },
+  {
+    "uid": "mqtt-proxy",
+    "script": "./node_modules/iot-bgw-mqtt-proxy/index.js"
+  }
+]

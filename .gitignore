@@ -3,6 +3,10 @@ logs
 *.log
 npm-debug.log*
 
+
+# bgw dev env don't commit
+dev
+
 # Runtime data
 pids
 *.pid
