@@ -6,7 +6,7 @@ iot-bgw Container, contains BGW external interface, http-proxy, mqtt-proxy and a
 git clone https://github.com/hareeqi/iot-bgw.git
 cd iot-bgw
 npm install
-sudo npm run
+sudo npm start
 ```
 
 ## Test
