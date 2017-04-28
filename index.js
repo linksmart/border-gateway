@@ -32,7 +32,7 @@ config.servers.forEach((srv) => {
     if(config.private_bgw &&
       (!insubnet.Validate(client.remoteAddress,config.global_allowed_addresses) ||
        !insubnet.Validate(client.remoteAddress,allowed_addresses||[]))){
-      console.log('This is a private BGW: illegal connection made by %s',client.remoteAddress);
+      AAA.log(CAT.DISCONNECT_CON,'This is a private BGW: illegal connection made by %s',client.remoteAddress);
       client.destroy()
 
     } else if (config.enable_ALPN_mode && client.alpnProtocol=='bgw_info'){
@@ -45,5 +45,5 @@ config.servers.forEach((srv) => {
 
   })
   external_interface.listen(srv.bind_port,srv.bind_address,()=>
-  console.log("Forwarding %s %s:%d ===> %s:%d",srv.name, srv.bind_address, srv.bind_port, srv.dest_address, srv.dest_port));
+  AAA.log(CAT.PROCESS_START,`Forwarding ${srv.name} ${srv.bind_address}:${srv.bind_port} ===> ${srv.dest_address}:${srv.dest_port}`));
 })

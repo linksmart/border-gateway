@@ -32,6 +32,7 @@
     "127.0.0.1/32"
   ],
   "aaa_client":{
-    "log_level":5
+    "name":"external-interface",
+    "log_level":1
   }
 }
