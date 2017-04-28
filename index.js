@@ -64,4 +64,4 @@ proxy.on('error', function (err, req, res) {
 });
 
 app.listen(config.bind_port, config.bind_address,()=>
-console.log("iot-bgw-http-proxy listening on %s:%d ",config.bind_address,  config.bind_port));
+AAA.log(CAT.PROCESS_START,`listening on ${config.bind_address}:${config.bind_port}`));

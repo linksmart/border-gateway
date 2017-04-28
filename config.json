@@ -36,6 +36,8 @@
     }
   },
   "aaa_client":{
+    "name":"http-proxy",
+    "no_color":false,
     "log_level":5,
     "secret":"../cert/3/key.pem",
     "host": "http://localhost:5055"
