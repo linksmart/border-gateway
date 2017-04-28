@@ -37,7 +37,7 @@ const server = net.createServer((srcClient)=> {
       // configs for diconnectin on unauthorized is set to tru, then disocnnect
       if((packet.cmd == 'subscribe' && config.disconnect_on_unauthorized_subscribe) ||
          (packet.cmd == 'publish' && config.disconnect_on_unauthorized_publish)){
-        AAA.log(CAT.CON_TERMINATE,'disconnecting client for unauthorized %s, ',packet.cmd);
+        AAA.log(CAT.CON_TERMINATE,'disconnecting client for unauthorized ',packet.cmd);
         srcClient.destroy();
         dstClient.destroy();
       } else {
