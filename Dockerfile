@@ -1,18 +1,13 @@
-FROM node:7.9-alpine
+FROM node:7.9
 
-ENV REFRESHED_AT 2017-04-26
+#RUN apk add --no-cache git python make
+RUN apt install git
 
-RUN apk add --no-cache git
-
-# copy default config file and code
-COPY *.js /home/
-COPY *.json /home/
-WORKDIR /home
-
+RUN git clone https://github.com/hareeqi/iot-bgw.git
+WORKDIR iot-bgw
 RUN npm install
 
-VOLUME /home
-EXPOSE 5050
+VOLUME /config
+EXPOSE 443
 
-ENTRYPOINT ["npm", "run"]
-CMD ["start"]
+CMD npm start
