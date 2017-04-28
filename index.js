@@ -5,7 +5,7 @@ const tls = require('tls');
 const Proxy =  require('tcp-proxy')
 const insubnet = require('insubnet')
 const config = require('./config.json')
-const {AAA, CAT} = require('../iot-bgw-auth-client').init(config)
+const {AAA, CAT} = require('../iot-bgw-aaa-client').init(config)
 
 
 
