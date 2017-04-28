@@ -6,7 +6,7 @@ let config = false ;
 
 const getConfig = ()=> {
   if(!config){
-    console.error(`BGW: Fatal Error you must init the auth client in your entry index.js file e.g. require('iot-bgw-auth-client').init(config)`);
+    console.error(`BGW: Fatal Error you must init the auth client in your entry index.js file e.g. require('../iot-bgw-aaa-client').init(config)`);
     process.exit(1);
   }
 
@@ -28,7 +28,7 @@ const setupAdminKey = (c)=> {
   if(fs.existsSync(c.aaa_client.secret)){
     key = ""+fs.readFileSync(c.aaa_client.secret)
   } else {
-    console.warn("bgw_admin_key is not a valid file path, we will use the provided string to generate the bgw admin key")
+    console.warn("aaa_client.secret is not a valid file path, we will use the provided string to generate the bgw admin key")
     key = c.aaa_client.secret
   }
   c.aaa_client.secret = hash(key);
