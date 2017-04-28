@@ -37,7 +37,7 @@ const server = net.createServer((srcClient)=> {
       // configs for diconnectin on unauthorized is set to tru, then disocnnect
       if((packet.cmd == 'subscribe' && config.disconnect_on_unauthorized_subscribe) ||
          (packet.cmd == 'publish' && config.disconnect_on_unauthorized_publish)){
-        console.log('disconnecting client for unauthorized %s, ',packet.cmd);
+        AAA.log(CAT.DISCONNECT_CON,'disconnecting client for unauthorized %s, ',packet.cmd);
         srcClient.destroy();
         dstClient.destroy();
       } else {
@@ -52,7 +52,7 @@ const server = net.createServer((srcClient)=> {
     // only when autherize responce config is set true, i validate each responce to subscriptions
     if (packet.cmd=='publish' && !(await mqttAuth(client_key,'SUB',packet.topic))){
       if(config.disconnect_on_unauthorized_response ){
-        console.log('disconnecting client for unauthorize subscription due to change user auth profile');
+        AAA.log(CAT.DISCONNECT_CON,'disconnecting client for unauthorize subscription due to change user auth profile');
         srcClient.destroy();
         dstClient.destroy();
       }
@@ -64,4 +64,4 @@ const server = net.createServer((srcClient)=> {
 
 
 server.listen(config.bind_port, config.bind_port,()=>
-console.log("iot-bgw-mqtt-proxy listening on %s:%d ",config.bind_address,  config.bind_port));
+AAA.log(CAT.PROCESS_START,`listening on ${config.bind_address}:${config.bind_port}`));

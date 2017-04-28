@@ -12,7 +12,8 @@
     "password":null
   },
   "aaa_client":{
-    "log_level":5,
+    "name":"mqtt-proxy",
+    "log_level":3,
     "secret":"../cert/3/key.pem",
     "host": "http://localhost:5055"
   }

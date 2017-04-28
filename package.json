@@ -4,7 +4,6 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "NODE_ENV=DEV nodemon -w ./ -w ../iot-bgw-auth-client --inspect=9222 index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
