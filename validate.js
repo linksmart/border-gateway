@@ -6,15 +6,15 @@ const { verify } = require('./key')
 const {AAA, CAT} = require('./log')
 
 
-module.exports = async(path, client_key)=> {
+module.exports = async(path, client_key,port)=> {
   if(!client_key) {
-    AAA.log(CAT.MISSING_KEY,"DENIED","API key was not supplied",path);
+    AAA.log(CAT.MISSING_KEY,"DENIED","API key was not supplied",path,`[PORT:${port}]`);
     return {status:false,error:'Border Gateway API key is not supplied '}
   }
 
   const key  = verify(client_key)
   if(!key.valid){
-    AAA.log(CAT.INVALID_KEY,"DENIED",key.error?key.error:key.user_id,"API key faild signature matching",path);
+    AAA.log(CAT.INVALID_KEY,"DENIED",key.error?key.error:key.user_id,"API key faild signature matching",path,`[PORT:${port}]`);
     return {status:false, error:`Supplied BGW API key was not issued by the autherized Border Gateway ${config.external_domain}` }
   }
 
@@ -28,26 +28,26 @@ module.exports = async(path, client_key)=> {
     profile = await result.json();
 
   } catch (e) {
-    AAA.log(CAT.WRONG_AUTH_SERVER_RES,"DENIED",key.user_id,"This could be due to auth server being offline or failing");
+    AAA.log(CAT.WRONG_AUTH_SERVER_RES,"DENIED",key.user_id,"This could be due to auth server being offline or failing",path,`[PORT:${port}]`);
     return {status:false, error:`Error in contacting the Border Gateway Auth server, ensure the auth server is running and your bgw configration is correct` }
   }
 
   if(!profile || !profile.password ||  isNaN(profile.valid_from || NaN) || isNaN(profile.valid_to || NaN)  || !Array.isArray(profile.rules)){
-    AAA.log(CAT.PROFILE,"DENIED",key.user_id,"User profile has been removed or corrupted",path);
+    AAA.log(CAT.PROFILE,"DENIED",key.user_id,"User profile has been removed or corrupted",path,`[PORT:${port}]`);
     return {status:false,error:'Supplied BGW API key associated with a user profile that has been removed or corrupted'}
   }
   if(profile.suspended){
-    AAA.log(CAT.SUSPENDED,"DENIED",key.user_id,"API key belongs to suspended account",path);
+    AAA.log(CAT.SUSPENDED,"DENIED",key.user_id,"API key belongs to suspended account",path,`[PORT:${port}]`);
     return {status:false,error:'Supplied BGW API key has been suspended, Please ask the BGW Admin to activiate your key'}
   }
   const now = Date.now()
   if(!(profile.valid_from < profile.valid_to &&  now > profile.valid_from && now < profile.valid_to)){
-    AAA.log(CAT.EXPIRED,"DENIED",key.user_id,"bgw api key is expired or not valid yet",path);
+    AAA.log(CAT.EXPIRED,"DENIED",key.user_id,"bgw api key is expired or not valid yet",path,`[PORT:${port}]`);
     return {status:false,error:"Supplied BGW API key is expired or not valid yet"}
   }
   const correctPassord = await bcrypt.compare(key.password, profile.password)
   if(!correctPassord){
-    AAA.log(CAT.PASSWORD,"DENIED",key.user_id,"Wong password, API key has been revoked/renewd",path);
+    AAA.log(CAT.PASSWORD,"DENIED",key.user_id,"Wong password, API key has been revoked/renewd",path,`[PORT:${port}]`);
     return {status:false,error:'Supplied BGW API key has been re-issued and is no longer valid'}
   }
 
@@ -57,10 +57,10 @@ module.exports = async(path, client_key)=> {
     result = !result
   }
   if (result) {
-    AAA.log(CAT.RULE_ALLOW,"ALLOWED",profile.user_id,path);
+    AAA.log(CAT.RULE_ALLOW,"ALLOWED",profile.user_id,path,`[PORT:${port}]`);
     return {status:true}
   } else {
-    AAA.log(CAT.RULE_DENY,"DENIED",profile.user_id,path);
+    AAA.log(CAT.RULE_DENY,"DENIED",profile.user_id,path,`[PORT:${port}]`);
     return {status:false,error:'Supplied api key has no rule matching the requested resource'}
   }
 

@@ -31,7 +31,7 @@ const httpAuth = (req)=>{
     host = host[0]
     const payload = `HTTP/${req.method}/${host}/${port}/${url.parse(req.url).pathname.slice(1)}`
 
-   return validate(payload,client_key)
+   return validate(payload,client_key,req.connection.remotePort)
 
 }
 

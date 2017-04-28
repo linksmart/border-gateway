@@ -28,7 +28,7 @@ const setupAdminKey = (c)=> {
   if(fs.existsSync(c.aaa_client.secret)){
     key = ""+fs.readFileSync(c.aaa_client.secret)
   } else {
-    console.warn("aaa_client.secret is not a valid file path, we will use the provided string to generate the bgw admin key")
+    console.warn(c.aaa_client.name,"aaa_client.secret is not a valid file path, we will use the provided string to generate the bgw admin key")
     key = c.aaa_client.secret
   }
   c.aaa_client.secret = hash(key);
