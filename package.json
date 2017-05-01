@@ -4,13 +4,14 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "forever stopall && NODE_ENV=DEV forever run.dev.json --colors",
-    "start": "forever stopall && NODE_ENV=DEV forever run.prod.json --colors",
+    "dev": "forever stopall && forever run.dev.json --colors",
+    "start": "forever stopall && forever run.prod.json --colors",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "dotenv": "^4.0.0",
     "forever": "^0.15.3",
     "iot-bgw-aaa-client": "github:hareeqi/iot-bgw-aaa-client",
     "iot-bgw-auth-server": "github:hareeqi/iot-bgw-auth-server",
