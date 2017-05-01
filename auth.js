@@ -3,9 +3,9 @@ const url = require('url');
 const config = require('./config_mgr')();
 const validate = require('./validate')
 
-const mqttAuth = async (client_key,method,path='')=>{
+const mqttAuth = async (port,client_key,method,path='')=>{
     const payload = `MQTT/${method}/${config.broker.address}/${config.broker.port}/${path}`
-    return (await validate(payload,client_key)).status
+    return (await validate(payload,client_key,`[PORT:${port}]`)).status
 }
 
 const httpAuth = (req)=>{
@@ -31,7 +31,7 @@ const httpAuth = (req)=>{
     host = host[0]
     const payload = `HTTP/${req.method}/${host}/${port}/${url.parse(req.url).pathname.slice(1)}`
 
-   return validate(payload,client_key,req.connection.remotePort)
+   return validate(payload,client_key,`[PORT:${req.connection.remotePort}]`)
 
 }
 

@@ -2,9 +2,9 @@ const { setConfig } = require('./config_mgr')
 
 let  index =  {}
 
-index.init = (config)=>{
+index.init = (prefix,config)=>{
 
-    setConfig(config);
+    setConfig(prefix,config);
 
     const {httpAuth, mqttAuth } = require('./auth')
     const {hmac, genId, sign,verify } = require('./key')
