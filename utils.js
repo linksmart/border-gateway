@@ -1,4 +1,4 @@
-const config = require('./config.json')
+const config = require('./config')
 const {transformURI ,decode } = require("./trasnlate_res");
 const url = require('url')
 
@@ -47,7 +47,6 @@ const bgwIfy = (req) => {
   req.bgw = {type:TYPES.UNKNOWN_REQUEST}
 }
 
-module.exports.config = config;
 module.exports.bgwIfy = bgwIfy;
 module.exports.REQ_TYPES = TYPES;
 module.exports.transformURI = transformURI

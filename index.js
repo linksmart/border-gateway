@@ -1,8 +1,9 @@
 const app = require('express')();
 const tranform = require('transformer-proxy');
 const proxy = require('http-proxy').createProxyServer({});
-const { config, transformURI, bgwIfy, REQ_TYPES } = require('./utils')
-const {httpAuth, AAA, CAT} = require('../iot-bgw-aaa-client').init(config)
+const config = require('./config')
+const { transformURI, bgwIfy, REQ_TYPES } = require('./utils')
+const {httpAuth, AAA, CAT} = require('../iot-bgw-aaa-client')
 
 
 app.use(async(req, res)=> {

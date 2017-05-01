@@ -1,4 +1,4 @@
-const  config = require('./config.json')
+const  config = require('./config')
 const url = require("url");
 const domainMatch = require('domain-match');
 
