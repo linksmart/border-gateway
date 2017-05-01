@@ -2,21 +2,21 @@
   {
     "uid": "external-interface",
     "command": "node -r dotenv/config",
-    "script": "./node_modules/iot-bgw-external-interface/index.js dotenv_config_path=./config"
+    "script": "./node_modules/iot-bgw-external-interface/index.js"
   },
   {
     "uid": "auth-server",
     "command": "node -r dotenv/config",
-    "script": "./node_modules/iot-bgw-auth-server/index.js dotenv_config_path=./config"
+    "script": "./node_modules/iot-bgw-auth-server/index.js"
   },
   {
     "uid": "http-proxy",
     "command": "node -r dotenv/config",
-    "script": "./node_modules/iot-bgw-http-proxy/index.js dotenv_config_path=./config"
+    "script": "./node_modules/iot-bgw-http-proxy/index.js"
   },
   {
     "uid": "mqtt-proxy",
     "command": "node -r dotenv/config",
-    "script": "./node_modules/iot-bgw-mqtt-proxy/index.js dotenv_config_path=./config"
+    "script": "./node_modules/iot-bgw-mqtt-proxy/index.js"
   }
 ]
