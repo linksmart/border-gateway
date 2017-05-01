@@ -1,7 +1,7 @@
 const net = require('net');
 const mqtt = require('mqtt-packet')
-const config = require('./config.json')
-const {mqttAuth, AAA, CAT} = require('../iot-bgw-aaa-client').init(config)
+const config = require('./config')
+const {mqttAuth, AAA, CAT} = require('../iot-bgw-aaa-client')
 const validate = require('./validate')
 
 const server = net.createServer((srcClient)=> {
@@ -27,7 +27,7 @@ const server = net.createServer((srcClient)=> {
     }
 
     // validate the packet
-    let valid = await validate(packet,client_key)
+    let valid = await validate(srcClient.remotePort,packet,client_key)
     valid.packet = valid.packet &&  mqtt.generate(valid.packet)
 
     if (valid.status){
@@ -50,7 +50,7 @@ const server = net.createServer((srcClient)=> {
   })
   dstParser.on('packet', async (packet)=>{
     // only when autherize responce config is set true, i validate each responce to subscriptions
-    if (packet.cmd=='publish' && !(await mqttAuth(client_key,'SUB',packet.topic))){
+    if (packet.cmd=='publish' && !(await mqttAuth(srcClient.remotePort,client_key,'SUB',packet.topic))){
       if(config.disconnect_on_unauthorized_response ){
         AAA.log(CAT.CON_TERMINATE,'disconnecting client for unauthorize subscription due to change user auth profile');
         srcClient.destroy();
