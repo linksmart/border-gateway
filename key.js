@@ -15,9 +15,9 @@ const genId = (x=5)=>{
 }
 
 const sign = async (user_id,password=genId(12))=>{
-    if(process.env.NODE_ENV == "DEV" && user_id == 'admin')
+    if(user_id == 'admin' && process.env.ADMIN_KEY_PASSWORD )
     {
-       password = "DEV"
+       password = process.env.ADMIN_KEY_PASSWORD
     }
     const message  = `${user_id}.${password}`;
     const password_hash =  await bcrypt.hash(password,10);
