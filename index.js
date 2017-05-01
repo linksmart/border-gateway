@@ -5,9 +5,8 @@ const tls = require('tls');
 const net = require('net');
 const Proxy =  require('tcp-proxy')
 const insubnet = require('insubnet')
-const config = require('./config.json')
-const {AAA, CAT} = require('../iot-bgw-aaa-client').init(config)
-
+const config = require('./config')
+const {AAA, CAT} = require('../iot-bgw-aaa-client')
 
 
 var options = {
@@ -22,7 +21,6 @@ var options = {
 
 config.servers.forEach((srv) => {
   const external_interface = tls.createServer(options,function(client) {
-
     client.on('error',()=>client.destroy())
     const subdomain = client.servername && client.servername.includes(config.external_domain) && client.servername.replace(new RegExp('.?'+config.external_domain),'')
     const SNI_srv = config.enable_SNI_mode && subdomain && config.servers.find((e)=>e.name==subdomain)
@@ -41,7 +39,7 @@ config.servers.forEach((srv) => {
     } else {
 
       const dest = net.connect({ host:dest_address, port:dest_port },()=>{
-        AAA.log(CAT.CON_START,`${client.remoteAddress}:${client.remotePort} > ${client.localPort} > ${dest.localPort}:${name}`);
+        AAA.log(CAT.CON_START,`${client.remoteAddress}:${client.remotePort} > ${client.localPort} > [PORT:${dest.localPort}] > ${name}`);
         client.pipe(dest).pipe(client);
       })
     }
