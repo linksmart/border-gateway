@@ -3,6 +3,8 @@ logs
 *.log
 npm-debug.log*
 
+# ignore db files
+config/bgw_db
 
 # bgw dev env don't commit
 dev
