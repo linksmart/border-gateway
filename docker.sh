@@ -1,7 +1,7 @@
 #!/bin/bash
 
 dontexit = true
-trap 'echo "existing docker..."; ./node_modules/.bin/forever stopall ; dontexit=false; echo "dont exist false"' INT
+trap 'echo "existing docker..."; ./node_modules/.bin/forever stopall ; $dontexit=false; echo "dont exist false"' INT
 
 
 #npm run $1 &
