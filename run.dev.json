@@ -6,6 +6,7 @@
   },
   {
     "uid": "http-proxy",
+    "killSignal":"SIGINT",
     "command":"nodemon -w ./dev/iot-bgw-aaa-client -w ./dev/iot-bgw-http-proxy --inspect=9221 -r dotenv/config",
     "script": "./dev/iot-bgw-http-proxy/index.js"
   },

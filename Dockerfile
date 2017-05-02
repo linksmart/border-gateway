@@ -9,5 +9,5 @@ RUN npm install
 VOLUME /bgw/config /bgw/dev
 EXPOSE 443
 
-ENTRYPOINT ["npm", "run"]
+ENTRYPOINT ["bash", "-c", "trap 'npm run stop' INT && npm run"]
 CMD ["start"]
