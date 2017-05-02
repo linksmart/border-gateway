@@ -1,6 +1,6 @@
 #!/bin/bash
 
-trap 'npm run stop && exit 0' INT
+trap 'echo "existing docker..."; npm run stop; sleep 3; exit 0' INT
 
 npm run $1 &
 
