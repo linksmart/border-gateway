@@ -1,6 +1,6 @@
 #!/bin/bash
 
-trap 'npm run stop; exit 0' INT
+trap 'npm run stop || exit 0' INT
 
 npm run $1 &
 
