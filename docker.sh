@@ -1,6 +1,7 @@
 #!/bin/bash
 
-trap 'echo "existing docker..."; npm run stop; sleep 3; exit 0' INT
+trap 'echo "existing docker..."; ./node_modules/.bin/forever stopall ; exit 0' INT
+
 
 npm run $1 &
 
