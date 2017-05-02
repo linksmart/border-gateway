@@ -32,7 +32,7 @@ docker stop bgw
 ```
 
 ## Test
-https://bgw-auth.bgw.hareeqi.com/user/admin?bgw_key=admin.DEV.sg5wUZZFWwMxkYcm5IADLroFsk2cg9BmbIsfCkAT0U3
+https://bgw.hareeqi.com/bgw-auth/user/admin?bgw_key=admin.test.hzytPLXkpcxWRLAx5z9wnzxf9r33YlcNGl8OVgC5GnH
 
 
 
