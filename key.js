@@ -20,7 +20,7 @@ const sign = async (user_id,password=genId(12))=>{
        password = process.env.ADMIN_KEY_PASSWORD
     }
     const message  = `${user_id}.${password}`;
-    const password_hash =  await bcrypt.hash(password,10);
+    const password_hash =  await bcrypt.hash(password,8);
     return {
       password_hash: password_hash,
       key:`${message}.${hmac(message)}`
