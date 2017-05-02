@@ -10,4 +10,4 @@ VOLUME /bgw/config /bgw/dev
 EXPOSE 443
 
 ENTRYPOINT ["sh", "docker.sh"]
-CMD ["start"]
+CMD [""]
