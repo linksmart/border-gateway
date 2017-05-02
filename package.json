@@ -13,7 +13,7 @@
   "license": "ISC",
   "dependencies": {
     "dotenv": "^4.0.0",
-    "forever": "^0.15.3",
+    "forever": "github:hareeqi/forever",
     "iot-bgw-aaa-client": "github:hareeqi/iot-bgw-aaa-client",
     "iot-bgw-auth-server": "github:hareeqi/iot-bgw-auth-server",
     "iot-bgw-external-interface": "github:hareeqi/iot-bgw-external-interface",
