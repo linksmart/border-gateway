@@ -9,5 +9,5 @@ RUN npm install
 VOLUME /bgw/config /bgw/dev
 EXPOSE 443
 
-ENTRYPOINT ["npm", "run"]
+ENTRYPOINT ["sh", "docker.sh"]
 CMD ["start"]
