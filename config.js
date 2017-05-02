@@ -17,7 +17,7 @@ aaa_client:{
     no_color:false,
     timestamp:false,
     disable_cat:[],
-    secret:"./config/key.pem",
+    secret:process.env.TLS_KEY || "./config/key.pem",
     host: "http://localhost:5055"
   }
 }
