@@ -1,9 +1,9 @@
 let config = {
   bind_address: "127.0.0.1",
   bind_port: 5050,
-  external_domain: "bgw.hareeqi.com",
+  external_domain: process.env.EXTERNAL_DOMAIN || "bgw.hareeqi.com",
   external_port:"443",
-  sub_domain_mode:true,
+  sub_domain_mode:false,
   only_forward_aliases:false,
   override_authorization_header:"",
   disable_bgw_key_as_url_query:false,
@@ -34,7 +34,7 @@ let config = {
     no_color:false,
     timestamp:false,
     disable_cat:[],
-    secret:"./config/key.pem",
+    secret: process.env.TLS_KEY || "./config/key.pem",
     host: "http://localhost:5055"
     }
 }
