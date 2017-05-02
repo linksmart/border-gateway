@@ -2,13 +2,13 @@
 
 let config = {
 private_bgw: false,
-tls_key: "./config/key.pem",
-tls_cert: "./config/srv.pem",
+tls_key: process.env.TLS_KEY || "./config/key.pem",
+tls_cert: process.env.TLS_CERT || "./config/srv.pem",
 request_client_cert: false,
 client_ca_path: false,
 enable_ALPN_mode:false,
 enable_SNI_mode:true,
-external_domain: "bgw.hareeqi.com",
+external_domain: process.env.EXTERNAL_DOMAIN || "bgw.hareeqi.com",
 servers:
   [
     {
