@@ -12,24 +12,13 @@ sudo npm start
 ## Docker
 ### Build
 ```
-docker build . -t bgw-alpine
+docker build . -t bgw --no-cache
 ```
-### Run (detached)
+### Run
 ```
-docker run -d --rm --name bgw -p 443:443 bgw-alpine
+docker run --rm -p 443:443 --name bgw-test -e "ADMIN_KEY_PASSWORD=test" bgw
 ```
-In dev mode:
-```
-docker run -d --rm --name bgw -p 443:443 bgw-alpine dev
-```
-### See the logs
-```
-docker logs bgw
-```
-### Stop
-```
-docker stop bgw
-```
+
 
 ## Test
 https://bgw.hareeqi.com/bgw-auth/user/admin?bgw_key=admin.test.hzytPLXkpcxWRLAx5z9wnzxf9r33YlcNGl8OVgC5GnH
