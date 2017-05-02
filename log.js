@@ -52,10 +52,14 @@ process.on('uncaughtException', (err) => {
   log(CAT.BUG,err.stack);
   process.exit(1);
 });
-process.on('SIGINT', () => {
-  log(CAT.PROCESS_END, `Shutting down the bgw`);
+
+const endProcess =(sig) => process.on(sig, () => {
+  log(CAT.PROCESS_END, `Shutting down the bgw with ${sig}`);
   process.exit();
-});
+})
+endProcess('SIGINT')
+endProcess('SIGTERM')
+
 module.exports = {log,CAT}
 module.exports.AAA = module.exports
 module.exports.CAT = CAT
