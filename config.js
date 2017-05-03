@@ -7,7 +7,7 @@ tls_cert: process.env.TLS_CERT || "./config/srv.pem",
 request_client_cert: false,
 client_ca_path: false,
 enable_ALPN_mode:false,
-enable_SNI_mode:true,
+enable_SNI_mode:false,
 external_domain: process.env.EXTERNAL_DOMAIN || "bgw.hareeqi.com",
 servers:
   [

@@ -36,12 +36,14 @@ config.servers.forEach((srv) => {
 
     } else if (config.enable_ALPN_mode && client.alpnProtocol=='bgw_info'){
         client.end(config.servers.reduce((a,c)=>a+','+c.name,''));
-    } else {
-
+    } else if (client.remoteAddress && client.remotePort){
       const dest = net.connect({ host:dest_address, port:dest_port },()=>{
         AAA.log(CAT.CON_START,`${client.remoteAddress}:${client.remotePort} > ${client.localPort} > [PORT:${dest.localPort}] > ${name}`);
         client.pipe(dest).pipe(client);
       })
+    } else {
+      //might wanna destroy client
+      //client.destroy()
     }
 
   })
