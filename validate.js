@@ -46,22 +46,26 @@ module.exports = async(path, client_key,port)=> {
   }
 
   if(!profile || !profile.password ||  isNaN(profile.valid_from || NaN) || isNaN(profile.valid_to || NaN)  || !Array.isArray(profile.rules)){
+    const res = {status:false,error:'Supplied BGW API key associated with a user profile that has been removed or corrupted'}
     cache.set(key,res,path,port,false,CAT.PROFILE,"DENIED",key.user_id,"User profile has been removed or corrupted");
-    return {status:false,error:'Supplied BGW API key associated with a user profile that has been removed or corrupted'}
+    return res
   }
   if(profile.suspended){
+    const res = {status:false,error:'Supplied BGW API key has been suspended, Please ask the BGW Admin to activiate your key'}
     cache.set(key,res,path,port,false,CAT.SUSPENDED,"DENIED",key.user_id,"API key belongs to suspended account");
-    return {status:false,error:'Supplied BGW API key has been suspended, Please ask the BGW Admin to activiate your key'}
+    return res
   }
   const now = Date.now()
   if(!(profile.valid_from < profile.valid_to &&  now > profile.valid_from && now < profile.valid_to)){
+    const res = {status:false,error:"Supplied BGW API key is expired or not valid yet"}
     cache.set(key,res,path,port,false,CAT.EXPIRED,"DENIED",key.user_id,"bgw api key is expired or not valid yet");
-    return {status:false,error:"Supplied BGW API key is expired or not valid yet"}
+    return res
   }
   const correctPassord = await bcrypt.compare(key.password, profile.password)
   if(!correctPassord){
+    const res = {status:false,error:'Supplied BGW API key has been re-issued and is no longer valid'}
     cache.set(key,res,path,port,false,CAT.PASSWORD,"DENIED",key.user_id,"Wong password, API key has been revoked/renewd");
-    return {status:false,error:'Supplied BGW API key has been re-issued and is no longer valid'}
+    return res
   }
   cache.set(key,false,path,port,profile);
 
