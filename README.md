@@ -1,29 +1,20 @@
 ## iot-bgw
 iot-bgw Container, contains BGW external interface, http-proxy, mqtt-proxy and auth server
 
+
+### Try it out
+```
+docker run --rm -p 443:443 -e "ADMIN_KEY_PASSWORD=test" hareeqi/bgw
+
+Test Link
+https://bgw.hareeqi.com/bgw-auth/user/admin?bgw_key=admin.test.hzytPLXkpcxWRLAx5z9wnzxf9r33YlcNGl8OVgC5GnH
+```
+
+
 ## Usage
 ```
-git clone https://github.com/hareeqi/iot-bgw.git
-cd iot-bgw
-npm install
-sudo npm start
+docker run -p 443:443 -p 8883:8883 -v /path/on/host/config:/bgw/config --name bgw-proj hareeqi/bgw
 ```
-
-## Docker
-### Build
-```
-docker build . -t bgw --no-cache
-```
-### Run
-```
-docker run --rm -p 443:443 --name bgw-test -e "ADMIN_KEY_PASSWORD=test" bgw
-```
-
-
-## Test
-https://bgw.hareeqi.com/bgw-auth/user/admin?bgw_key=admin.test.hzytPLXkpcxWRLAx5z9wnzxf9r33YlcNGl8OVgC5GnH
-
-
 
 ## Components
 https://github.com/hareeqi/iot-bgw-external-interface
