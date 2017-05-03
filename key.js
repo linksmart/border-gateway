@@ -35,7 +35,7 @@ const verify = (tok='')=> {
   const password= token[token.length-2];
   const signatur = token[token.length-1];
   const valid = hmac(`${user_id}.${password}`) === signatur;
-  return { user_id, password, signatur,valid }
+  return { user_id, password, signatur,valid,key:tok }
 };
 
 module.exports = {

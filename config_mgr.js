@@ -15,7 +15,7 @@ const getConfig = ()=> {
 const setConfig = (prefix,c)=> {
   parseConfig('AAA_CLIENT',c.aaa_client)
   parseConfig(`${prefix}_AAA_CLIENT`,c.aaa_client)
-  parseConfig(prefix,config)
+  parseConfig(prefix,c)
 
   setupAdminKey(c)
   setupBgwAuthAlias(c)
