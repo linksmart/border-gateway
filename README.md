@@ -17,12 +17,8 @@ docker run -p 443:443 -p 8883:8883 -v /path/on/host/config:/bgw/config --name bg
 ```
 
 ## Components
-https://github.com/hareeqi/iot-bgw-external-interface
-
-https://github.com/hareeqi/iot-bgw-auth-server
-
-https://github.com/hareeqi/iot-bgw-mqtt-proxy
-
-https://github.com/hareeqi/iot-bgw-http-proxy
-
-https://github.com/hareeqi/iot-bgw-aaa-client
+* https://github.com/hareeqi/iot-bgw-external-interface
+* https://github.com/hareeqi/iot-bgw-auth-server
+* https://github.com/hareeqi/iot-bgw-mqtt-proxy
+* https://github.com/hareeqi/iot-bgw-http-proxy
+* https://github.com/hareeqi/iot-bgw-aaa-client
