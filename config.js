@@ -21,5 +21,5 @@ aaa_client:{
     host: "http://localhost:5055"
   }
 }
-require('../iot-bgw-aaa-client').init("HTTP_PROXY",config)
+require('../iot-bgw-aaa-client').init("MQTT_PROXY",config)
 module.exports = config
