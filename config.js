@@ -11,8 +11,8 @@ let config = {
     https_req:false,
     http_req:false
     },
-  redirect_to_orginal_address_on_proxy_error:true,
-  redirect_on_invalid_external_domain:true,
+  redirect_to_orginal_address_on_proxy_error:false,
+  redirect_on_invalid_external_domain:false,
   aliases: {
     rc:{
       local_address: "http://almanac-scral1:8081",
@@ -34,6 +34,8 @@ let config = {
     no_color:false,
     timestamp:false,
     disable_cat:[],
+    cache_for: '10*60',
+    purge_exp_cache_timer:'24*60*60',
     secret: process.env.TLS_KEY || "./config/key.pem",
     host: "http://localhost:5055"
     }
