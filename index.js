@@ -20,32 +20,40 @@ var options = {
 
 
 config.servers.forEach((srv) => {
-  const external_interface = tls.createServer(options,function(client) {
-    client.on('error',()=>client.destroy())
-    const subdomain = client.servername && client.servername.includes(config.external_domain) && client.servername.replace(new RegExp('.?'+config.external_domain),'')
+  const external_interface = tls.createServer(options,function(srcClient) {
+
+    let dstClient = false;
+
+    srcClient.on('error',()=>{srcClient.destroy(); dstClient && dstClient.destroy()})
+
+    const subdomain = srcClient.servername && srcClient.servername.includes(config.external_domain) && srcClient.servername.replace(new RegExp('.?'+config.external_domain),'')
     const SNI_srv = config.enable_SNI_mode && subdomain && config.servers.find((e)=>e.name==subdomain)
-    const ALPN_srv = config.enable_ALPN_mode && client.alpnProtocol && config.servers.find((e)=>e.name==client.alpnProtocol)
+    const ALPN_srv = config.enable_ALPN_mode && srcClient.alpnProtocol && config.servers.find((e)=>e.name==srcClient.alpnProtocol)
 
     const { dest_address, dest_port, name, allowed_addresses} = ALPN_srv || SNI_srv || srv
 
     if(config.private_bgw &&
-      (!insubnet.Validate(client.remoteAddress,config.global_allowed_addresses) ||
-       !insubnet.Validate(client.remoteAddress,allowed_addresses||[]))){
-      AAA.log(CAT.CON_TERMINATE,`This is a private BGW: illegal connection made by ${client.remoteAddress}`);
-      client.destroy()
+      (!insubnet.Validate(srcClient.remoteAddress,config.global_allowed_addresses) ||
+       !insubnet.Validate(srcClient.remoteAddress,allowed_addresses||[]))){
+      AAA.log(CAT.CON_TERMINATE,`This is a private BGW: illegal connection made by ${srcClient.remoteAddress}`);
+      srcClient.destroy()
 
-    } else if (config.enable_ALPN_mode && client.alpnProtocol=='bgw_info'){
-        client.end(config.servers.reduce((a,c)=>a+','+c.name,''));
-    } else if (client.remoteAddress && client.remotePort){
-      const dest = net.connect({ host:dest_address, port:dest_port },()=>{
-        AAA.log(CAT.CON_START,`${client.remoteAddress}:${client.remotePort} > ${client.localPort} > [PORT:${dest.localPort}] > ${name}`);
-        client.pipe(dest).pipe(client);
+    } else if (config.enable_ALPN_mode && srcClient.alpnProtocol=='bgw_info'){
+        srcClient.end(config.servers.reduce((a,c)=>a+','+c.name,''));
+    } else if (srcClient.remoteAddress && srcClient.remotePort){
+        dstClient = net.connect({ host:dest_address, port:dest_port },()=>{
+        AAA.log(CAT.CON_START,`${srcClient.remoteAddress}:${srcClient.remotePort} > ${srcClient.localPort} > [PORT:${dstClient.localPort}] > ${name}`);
+        dstClient.on('error',()=>{dstClient.destroy(); srcClient && srcClient.destroy()})
+        srcClient.pipe(dstClient).pipe(srcClient);
       })
     } else {
       //might wanna destroy client
       //client.destroy()
     }
-
+    srcClient.on('end',()=>{
+      srcClient.remoteAddress && srcClient.remotePort &&
+      AAA.log(CAT.CON_END,`${srcClient.remoteAddress}:${srcClient.remotePort} > ${srv.bind_port}  > ${name}`);
+    })
   })
   external_interface.listen(srv.bind_port,srv.bind_address,()=>
   AAA.log(CAT.PROCESS_START,`Forwarding ${srv.name} ${srv.bind_address}:${srv.bind_port} ===> ${srv.dest_address}:${srv.dest_port}`));
