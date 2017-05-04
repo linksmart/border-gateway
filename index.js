@@ -1,12 +1,22 @@
 const net = require('net');
+const tls = require('tls')
 const mqtt = require('mqtt-packet')
 const config = require('./config')
 const {mqttAuth, AAA, CAT} = require('../iot-bgw-aaa-client')
 const validate = require('./validate')
 
+const broker = config.broker
+const options = {
+  host:broker.address,
+  port: broker.port,
+  ca: broker.tls && broker.tls_ca && [ fs.readFileSync(broker.tls_ca) ],
+  key: broker.tls && broker.tls_client_key && fs.readFileSync(broker.tls_client_key) ,
+  cert: broker.tls && broker.tls_client_cert && fs.readFileSync(broker.tls_client_cert)
+}
+
 const server = net.createServer((srcClient)=> {
 
-  const dstClient = net.connect(config.broker.port, config.broker.address);
+  const dstClient = broker.tls?tls.connect(options):net.connect(options)
 
   const srcParser = mqtt.parser()
   const dstParser = mqtt.parser()
@@ -22,8 +32,8 @@ const server = net.createServer((srcClient)=> {
     if(packet.cmd == 'connect'){
       client_key = packet.username
       delete packet.username
-      config.broker.username && (packet.username = config.broker.username)
-      config.broker.password && (packet.password = config.broker.password)
+      broker.username && (packet.username = broker.username)
+      broker.password && (packet.password = broker.password)
     }
 
     // validate the packet

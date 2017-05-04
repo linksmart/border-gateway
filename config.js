@@ -8,8 +8,12 @@ disconnect_on_unauthorized_response:false,
 broker: {
     address:"iot.eclipse.org",
     port:1883,
-    username:null,
-    password:null
+    username:false,
+    password:false,
+    tls:false,
+    tls_ca: false,
+    tls_client_key:false,
+    tls_client_cert:false,
   },
 aaa_client:{
     name:"mqtt-proxy",

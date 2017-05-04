@@ -5,7 +5,10 @@ module.exports = async (port, packet, key)=> {
   let result = true
   switch(  packet.cmd ){
       case 'connect':
-        result = await mqttAuth(port,key,'CON')
+        const canCON =  await mqttAuth(port,key,'CON')
+        const hasWill = packet.will && packet.will.topic
+        const canPUB = !hasWill || (hasWill &&  await mqttAuth(port,key,'PUB', packet.will.topic))
+        result = canCON && canPUB
         return {
           status : result,
           packet: result?packet:connack()
