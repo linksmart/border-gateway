@@ -4,9 +4,10 @@ iot-bgw Container, contains BGW external interface, http-proxy, mqtt-proxy and a
 
 ## Try it out
 ```
+docker pull hareeqi/bgw
 docker run --rm -p 443:443 -e "ADMIN_KEY_PASSWORD=test" hareeqi/bgw
 ```
-##### [Test Link](https://bgw.hareeqi.com/bgw-auth/user/admin?bgw_key=admin.test.hzytPLXkpcxWRLAx5z9wnzxf9r33YlcNGl8OVgC5GnH)
+### [Test Link](https://bgw.hareeqi.com/bgw-auth/user/admin?bgw_key=admin.test.hzytPLXkpcxWRLAx5z9wnzxf9r33YlcNGl8OVgC5GnH)
 
 ## Swagger 
 
