@@ -1,3 +1,4 @@
+const cors = require('cors');
 const app = require('express')();
 const tranform = require('transformer-proxy');
 const proxy = require('http-proxy').createProxyServer({});
@@ -5,7 +6,7 @@ const config = require('./config')
 const { transformURI, bgwIfy, REQ_TYPES } = require('./utils')
 const {httpAuth, AAA, CAT} = require('../iot-bgw-aaa-client')
 
-
+app.use(cors());
 app.use(async(req, res)=> {
   if (req.query.bgw_key && config.disable_bgw_key_as_url_query) {
     res.status(404).json({error:'this gateway does not allow you to pass the API key  as a query string in the url, you must use the authorization header'})
