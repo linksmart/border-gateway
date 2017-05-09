@@ -73,5 +73,7 @@ endProcess('SIGTERM')
 const debug = (...arg)=>log(CAT.DEBUG, ...arg)
 setTimeout(()=>debug('configs',JSON.stringify(config)),1000)
 
-module.exports = {log,CAT,debug}
+const isDebugOn = can_log("D")
+
+module.exports = {log,CAT,debug,isDebugOn}
 module.exports.AAA = module.exports

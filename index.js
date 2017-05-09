@@ -8,7 +8,7 @@ index.init = (prefix,config)=>{
 
     const {httpAuth, mqttAuth } = require('./auth')
     const {hmac, genId, sign,verify } = require('./key')
-    const {AAA, CAT} = require('./log')
+    const {AAA, CAT,debug,isDebugOn} = require('./log')
 
     index.hmac   =  hmac ;
     index.genId  =  genId ;
@@ -18,6 +18,9 @@ index.init = (prefix,config)=>{
     index.httpAuth  =  httpAuth;
     index.AAA    = AAA ;
     index.CAT    = CAT ;
+    index.debug  = debug ;
+    index.isDebugOn= isDebugOn ;
+
 
     return index;
 

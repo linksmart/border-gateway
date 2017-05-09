@@ -14,7 +14,7 @@ let cache = {}
 
 const set = (key,res,path,port, profile, ...message)=>{
   message && AAA.log(...message,path,port)
-  debug('cashing profile',key.user_id,'for',config.aaa_client.cache_for)
+  debug('caching profile',key.user_id,'for',config.aaa_client.cache_for)
   cache[key.key]= {
     aaa_message: message.join(' '),
     return_object: res,
