@@ -4,7 +4,7 @@ const tranform = require('transformer-proxy');
 const proxy = require('http-proxy').createProxyServer({});
 const config = require('./config')
 const { transformURI, bgwIfy, REQ_TYPES } = require('./utils')
-const {httpAuth, AAA, CAT} = require('../iot-bgw-aaa-client')
+const {httpAuth, AAA, CAT, debug, isDebugOn} = require('../iot-bgw-aaa-client')
 
 app.use(cors());
 app.use(async(req, res)=> {
@@ -34,9 +34,10 @@ app.use(async(req, res)=> {
 
     const is_https = req.bgw.forward_address.includes('https://')
     const { http_req, https_req} = (req.bgw.alias && req.bgw.alias.change_origin_on) || config.change_origin_on
-
+    const insecure = (req.bgw.alias && req.bgw.alias.insecure) || false
     const proxyied_options= {
       target: req.bgw.forward_address || 'error' ,
+      secure: !insecure,
       changeOrigin:  (http_req && https_req)||
                      (is_https && https_req) ||
                      (!is_https && http_req)
@@ -56,6 +57,7 @@ app.use(async(req, res)=> {
 
 });
 proxy.on('error', function (err, req, res) {
+  isDebugOn && err && debug(err.stack||err)
   if(req.bgw && req.bgw.forward_address){
     config.redirect_to_orginal_address_on_proxy_error ?  res.redirect( req.bgw.forward_address+req.originalUrl) :
       res && res.status(500).json({error:`iot border gateway could not forward your request to ${req.bgw.forward_address}`})

@@ -21,7 +21,7 @@ const bgwIfy = (req) => {
     return
   }
   // check if subdomain mode e.g. https://rc.gateway.com or https://gateway.com/rc
-  let local_dest =  config.sub_domain_mode ? host.split(config.external_domain).filter((e)=>e!="")[0]:req.url.split('/')[1]
+  let local_dest =  config.sub_domain_mode ? host.split(config.external_domain).filter((e)=>e!="")[0]:req.url.split(/\/|\?|\#/)[1]
   local_dest = local_dest && local_dest.replace(".","");
   req.url =  config.sub_domain_mode ? req.url : req.url.replace(`/${local_dest}`,"")
 
