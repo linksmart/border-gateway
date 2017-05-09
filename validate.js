@@ -6,6 +6,7 @@ const cache = require ('./cache')
 const { verify } = require('./key')
 const {AAA, CAT} = require('./log')
 
+const anonymousKey = {valid:true,user_id:"anonymous",key:"anonymous",password:"anonymous"}
 
 module.exports = async(path, client_key,port)=> {
   let isAnonymous = false
@@ -26,7 +27,7 @@ module.exports = async(path, client_key,port)=> {
   }
 
   let profile = false
-  const key  = isAnonymous?{valid:true,user_id:"anonymous"}:verify(client_key)
+  const key  = isAnonymous?anonymousKey:verify(client_key)
   if(!key.valid){
     const res = {status:false, error:`Supplied BGW API key was not issued by the autherized Border Gateway ${config.external_domain}` }
     cache.set(key,res,path,port,false,CAT.INVALID_KEY,"DENIED",key.error?key.error:key.user_id,"API key faild signature matching");
