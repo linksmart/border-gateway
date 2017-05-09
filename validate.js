@@ -8,9 +8,11 @@ const {AAA, CAT} = require('./log')
 
 
 module.exports = async(path, client_key,port)=> {
+  let isAnonymous = false
   if(!client_key) {
-    AAA.log(CAT.MISSING_KEY,"DENIED","API key was not supplied",path,port);
-    return {status:false,error:'Border Gateway API key is not supplied '}
+    AAA.log(CAT.MISSING_KEY,"API key was not supplied, setting user id to anonymous",path,port);
+    client_key = "anonymous"
+    isAnonymous = true
   }
 
   const cached = cache.get(client_key)
@@ -24,7 +26,7 @@ module.exports = async(path, client_key,port)=> {
   }
 
   let profile = false
-  const key  = verify(client_key)
+  const key  = isAnonymous?{valid:true,user_id:"anonymous"}:verify(client_key)
   if(!key.valid){
     const res = {status:false, error:`Supplied BGW API key was not issued by the autherized Border Gateway ${config.external_domain}` }
     cache.set(key,res,path,port,false,CAT.INVALID_KEY,"DENIED",key.error?key.error:key.user_id,"API key faild signature matching");
@@ -51,7 +53,7 @@ module.exports = async(path, client_key,port)=> {
     return res
   }
   if(profile.suspended){
-    const res = {status:false,error:'Supplied BGW API key has been suspended, Please ask the BGW Admin to activiate your key'}
+    const res = {status:false,error:"Supplied BGW API key for user id 'anonymous' has been suspended, Please ask the BGW Admin to activiate your key"}
     cache.set(key,res,path,port,false,CAT.SUSPENDED,"DENIED",key.user_id,"API key belongs to suspended account");
     return res
   }
@@ -61,7 +63,7 @@ module.exports = async(path, client_key,port)=> {
     cache.set(key,res,path,port,false,CAT.EXPIRED,"DENIED",key.user_id,"bgw api key is expired or not valid yet");
     return res
   }
-  const correctPassord = await bcrypt.compare(key.password, profile.password)
+  const correctPassord = isAnonymous?true:(await bcrypt.compare(key.password, profile.password))
   if(!correctPassord){
     const res = {status:false,error:'Supplied BGW API key has been re-issued and is no longer valid'}
     cache.set(key,res,path,port,false,CAT.PASSWORD,"DENIED",key.user_id,"Wong password, API key has been revoked/renewd");
