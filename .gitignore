@@ -3,11 +3,11 @@ logs
 *.log
 npm-debug.log*
 
-# ignore bgw db files
+# ignore bgw files and admin key
 config/bgw_db
-
-# ignore bgw admin key
 config/admin*
+config/config.env
+config/config.json
 
 # bgw dev env don't commit
 dev

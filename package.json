@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "forever stopall && forever run.dev.json --colors dotenv_config_path=./config/config.dev.env",
-    "start": "forever stopall && forever run.json --colors dotenv_config_path=./config/config.env",
+    "dev": "forever stopall && forever run.dev.json --colors dotenv_config_path=./node_modules/config.env",
+    "start": "forever stopall && forever run.json --colors dotenv_config_path=./node_modules/config.env",
     "stop": "forever stopall",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
