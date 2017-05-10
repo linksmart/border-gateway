@@ -52,7 +52,8 @@ const isTS = config.aaa_client.timestamp ? "TS":""
 const isColor = config.aaa_client.no_color ? "" : "Color"
 const log = logFunction[`log${isColor}${isTS}`]
 
-
+const debug = (...arg)=>log(CAT.DEBUG, ...arg)
+const isDebugOn = can_log("D")
 
 process.on('unhandledRejection', (err) => {
   log(CAT.BUG,err.stack);
@@ -70,10 +71,13 @@ const endProcess =(sig) => process.on(sig, () => {
 endProcess('SIGINT')
 endProcess('SIGTERM')
 
-const debug = (...arg)=>log(CAT.DEBUG, ...arg)
-setTimeout(()=>debug('configs',JSON.stringify(config)),1000)
 
-const isDebugOn = can_log("D")
+let configCopy = Object.assign({},config)
+configCopy.aaa_client = Object.assign({},config.aaa_client)
+configCopy.aaa_client.secret = "[redacted]"
+setTimeout(()=>debug('configs',JSON.stringify(configCopy,null,4)),1000)
+
+
 
 module.exports = {log,CAT,debug,isDebugOn}
 module.exports.AAA = module.exports
