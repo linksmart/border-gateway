@@ -13,8 +13,9 @@ docker run --rm -p 443:443 -e "ADMIN_KEY_PASSWORD=test" hareeqi/bgw
 
 ## Usage
 
-* Map a volume to /bgw/config 
-* Provide a certificate and a key file in the volume ("[cert name].pem" and "[key name].pem") - [example](https://github.com/hareeqi/iot-bgw/blob/master/config/)
+* Map a volume to /bgw/config that contains the three files below
+* Provide a certificate file ("[cert name].pem") - [example](https://github.com/hareeqi/iot-bgw/blob/master/config/)
+* Provide a key file ("[key name].pem") - [example](https://github.com/hareeqi/iot-bgw/blob/master/config/)
 * provide a config file in the volume (either [config.env](https://github.com/hareeqi/iot-bgw/blob/master/config/config.env.example) or [config.json](https://github.com/hareeqi/iot-bgw/blob/master/config/config.json.example) or both)
 * You final docker run command looks like this.
 ```
