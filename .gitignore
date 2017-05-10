@@ -7,7 +7,7 @@ npm-debug.log*
 config/bgw_db
 
 # ignore bgw admin key
-config/admin.*
+config/admin*
 
 # bgw dev env don't commit
 dev
