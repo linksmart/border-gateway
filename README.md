@@ -30,7 +30,8 @@ docker run -p 443:443 -p 8883:8883 -v /path/on/host/config:/bgw/config hareeqi/b
 ## Configs
 * You can edit config.env to your desired settings
 * All configs for the bgw are passed as envaiorment variables 
-* Each bgw component has a config prifix (**EI_, HTTP_PROXY_, MQTT_PROXY_, AUTH_SERVER, AAA_CLIENT**)
+* Each bgw component has a config prifix (**EI_, HTTP_PROXY_, MQTT_PROXY_, AUTH_SERVER_, AAA_CLIENT_**)
+* Shared config like the aaa client, can be used globally like AAA_CLIENT_ or selectivily like EI_AAA_CLEINT_
 * If configs gets complicated, you write in JSON and use this site to conver it [json2env](http://hareeqi.com/json2env/)
 
 ## Components
