@@ -13,9 +13,10 @@ docker run --rm -p 443:443 -e "ADMIN_KEY_PASSWORD=test" hareeqi/bgw
 
 ## Usage
 
-* Map a volume to /bgw/config that contains three files "config.env", "[cert name].pem" and "[cert name].pem" [example](https://github.com/hareeqi/iot-bgw/blob/master/config/)
-* Edit config.env to your desired sittings [example](https://github.com/hareeqi/iot-bgw/blob/master/config/config.env)
-* You final docker comman looks like this.
+* Map a volume to /bgw/config 
+* Provide the certificate files in the volume ("[cert name].pem" and "[cert name].pem") - [example](https://github.com/hareeqi/iot-bgw/blob/master/config/)
+* provide a config file  in the volume (either [config.env](https://github.com/hareeqi/iot-bgw/blob/master/config/config.env.example) or [config.json](https://github.com/hareeqi/iot-bgw/blob/master/config/config.json.example) or both)
+* You final docker run command looks like this.
 ```
 docker run -p 443:443 -p 8883:8883 -v /path/on/host/config:/bgw/config hareeqi/bgw
 ```
@@ -28,11 +29,11 @@ docker run -p 443:443 -p 8883:8883 -v /path/on/host/config:/bgw/config hareeqi/b
 * Click here to use swagger [Click here](http://hareeqi.com/swagger/?host=https://bgw.hareeqi.com/bgw-auth&url=https://raw.githubusercontent.com/hareeqi/iot-bgw/master/swagger.json)
 
 ## Configs
-* You can edit config.env to your desired settings
 * All configs for the bgw are passed as envaiorment variables 
+* You can suppliy envaiorment variables from a file by providing config.env or config.json or both
 * Each bgw component has a config prifix (**EI_, HTTP_PROXY_, MQTT_PROXY_, AUTH_SERVER_, AAA_CLIENT_**)
 * Shared config like the aaa client, can be used globally like AAA_CLIENT_ or selectivily like EI_AAA_CLEINT_
-* If configs gets complicated, you write in JSON and use this site to conver it [json2env](http://hareeqi.com/json2env/)
+* note: configs in config.json will be converted to envaiorment variables and passed to all components 
 
 ## Components
 * https://github.com/hareeqi/iot-bgw-external-interface
