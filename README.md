@@ -6,8 +6,8 @@ iot-bgw Container, contains BGW external interface, http-proxy, mqtt-proxy and a
 ```
 docker pull hareeqi/bgw
 docker run --rm -p 443:443 -e "ADMIN_KEY_PASSWORD=test" hareeqi/bgw
-# Click on the test link below
 ```
+* Admin key for "ADMIN_KEY_PASSWORD=test" is "admin.test.hzytPLXkpcxWRLAx5z9wnzxf9r33YlcNGl8OVgC5GnH"
 * [Test Link](https://bgw.hareeqi.com/bgw-auth/user?bgw_key=admin.test.hzytPLXkpcxWRLAx5z9wnzxf9r33YlcNGl8OVgC5GnH)
 
 
@@ -23,7 +23,7 @@ docker run -p 443:443 -p 8883:8883 -v /path/on/host/config:/bgw/config hareeqi/b
 
 ## Swagger 
 
-* Click autherize and set the api key to "Bearer admin.test.hzytPLXkpcxWRLAx5z9wnzxf9r33YlcNGl8OVgC5GnH"
+* Click autherize and set the api key to "Bearer [BGW ADMIN KEY]"
 * You can change the swagger target host host by chaning the url 
 * Click here to use swagger [Click here](http://hareeqi.com/swagger/?host=https://bgw.hareeqi.com/bgw-auth&url=https://raw.githubusercontent.com/hareeqi/iot-bgw/master/swagger.json)
 
