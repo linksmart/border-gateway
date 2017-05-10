@@ -13,8 +13,8 @@ docker run --rm -p 443:443 -e "ADMIN_KEY_PASSWORD=test" hareeqi/bgw
 
 ## Usage
 
-* Map a volume to /bgw/config that contains three file "config.env", "[cert name].pem" and "[cert name].pem" 
-* Edit config.env to your desired sittings [example here](https://github.com/hareeqi/iot-bgw/blob/master/config/config.env)
+* Map a volume to /bgw/config that contains three files "config.env", "[cert name].pem" and "[cert name].pem" [example](https://github.com/hareeqi/iot-bgw/blob/master/config/)
+* Edit config.env to your desired sittings [example](https://github.com/hareeqi/iot-bgw/blob/master/config/config.env)
 * You final docker comman looks like this.
 ```
 docker run -p 443:443 -p 8883:8883 -v /path/on/host/config:/bgw/config hareeqi/bgw
