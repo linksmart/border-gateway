@@ -1,5 +1,5 @@
-## iot-bgw
-iot-bgw Container, contains BGW external interface, http-proxy, mqtt-proxy and auth server
+# iot-bgw
+IoT Border Gateway, remote access and security for the internet of things, contains BGW external interface, http-proxy, mqtt-proxy and auth server
 
 
 ## Try it out
@@ -8,7 +8,7 @@ docker pull hareeqi/bgw
 docker run --rm -p 443:443 -e "ADMIN_KEY_PASSWORD=test" hareeqi/bgw
 ```
 * Admin key "admin.test.hzytPLXkpcxWRLAx5z9wnzxf9r33YlcNGl8OVgC5GnH"
-* [Test Link](https://bgw.hareeqi.com/bgw-auth/user?bgw_key=admin.test.hzytPLXkpcxWRLAx5z9wnzxf9r33YlcNGl8OVgC5GnH)
+* [Test Link](https://bgw.hareeqi.com/bgw-auth/user?bgw_key=admin.test.hzytPLXkpcxWRLAx5z9wnzxf9r33YlcNGl8OVgC5GnH) note: port 443 requires sudo access
 
 
 ## Usage
