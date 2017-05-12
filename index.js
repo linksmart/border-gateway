@@ -3,7 +3,6 @@
 const fs = require('fs');
 const tls = require('tls');
 const net = require('net');
-const Proxy =  require('tcp-proxy')
 const insubnet = require('insubnet')
 const config = require('./config')
 const {AAA, CAT} = require('../iot-bgw-aaa-client')
