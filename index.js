@@ -5,7 +5,7 @@ const tls = require('tls');
 const net = require('net');
 const insubnet = require('insubnet')
 const config = require('./config')
-const {AAA, CAT} = require('../iot-bgw-aaa-client')
+const {AAA, CAT, debug} = require('../iot-bgw-aaa-client')
 
 
 var options = {
@@ -54,6 +54,7 @@ config.servers.forEach((srv) => {
       AAA.log(CAT.CON_END,`${srcClient.remoteAddress}:${srcClient.remotePort} > ${srv.bind_port}  > ${name}`);
     })
   })
+  external_interface.on('tlsClientError',(e)=>debug('tls error,this could be a none tls connection, make sure to establish a proper tls connection, details...',e.stack || e))
   external_interface.listen(srv.bind_port,srv.bind_address,()=>
   AAA.log(CAT.PROCESS_START,`Forwarding ${srv.name} ${srv.bind_address}:${srv.bind_port} ===> ${srv.dest_address}:${srv.dest_port}`));
 })
