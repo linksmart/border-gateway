@@ -39,13 +39,8 @@ fs.writeFileSync(outFile,env+json)
 
 function json2env(){
   let e = ""
-  let j = {}
-  try {
-    j = JSON.parse(fs.readFileSync(jsonFile))
-  } catch (r){
-    console.log(prefix,"could not json parse config.json");
-    console.log(r);
-  }
+  let j = JSON.parse(fs.readFileSync(jsonFile))
+
   Object.keys(j).forEach(function(key) {
         const value =  JSON.stringify(j[key])
         e += key.toUpperCase()+"="+value+"\n\n"
