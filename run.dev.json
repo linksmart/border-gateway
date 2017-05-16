@@ -1,23 +1,23 @@
 [
   {
     "uid": "external-interface",
-    "command":"nodemon -w ./dev/iot-bgw-aaa-client -w ./dev/iot-bgw-external-interface --inspect=9220 -r dotenv/config",
+    "command":"node ./node_modules/nodemon/bin/nodemon -w ./dev/iot-bgw-aaa-client -w ./dev/iot-bgw-external-interface --inspect=9220 -r dotenv/config",
     "script": "./dev/iot-bgw-external-interface/index.js"
   },
   {
     "uid": "http-proxy",
     "killSignal":"SIGINT",
-    "command":"nodemon -w ./dev/iot-bgw-aaa-client -w ./dev/iot-bgw-http-proxy --inspect=9221 -r dotenv/config",
+    "command":"node ./node_modules/nodemon/bin/nodemon -w ./dev/iot-bgw-aaa-client -w ./dev/iot-bgw-http-proxy --inspect=9221 -r dotenv/config",
     "script": "./dev/iot-bgw-http-proxy/index.js"
   },
   {
     "uid": "mqtt-proxy",
-    "command":"nodemon -w ./dev/iot-bgw-aaa-client -w ./dev/iot-bgw-mqtt-proxy --inspect=9222 -r dotenv/config",
+    "command":"node ./node_modules/nodemon/bin/nodemon -w ./dev/iot-bgw-aaa-client -w ./dev/iot-bgw-mqtt-proxy --inspect=9222 -r dotenv/config",
     "script": "./dev/iot-bgw-mqtt-proxy/index.js"
   },
   {
     "uid": "auth-server",
-    "command":"nodemon -w ./dev/iot-bgw-aaa-client -w ./dev/iot-bgw-auth-server --inspect=9223 -r dotenv/config",
+    "command":"node ./node_modules/nodemon/bin/nodemon -w ./dev/iot-bgw-aaa-client -w ./dev/iot-bgw-auth-server --inspect=9223 -r dotenv/config",
     "script": "./dev/iot-bgw-auth-server/index.js"
   }
 ]
