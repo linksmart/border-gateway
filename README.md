@@ -54,6 +54,5 @@ docker run --rm -v /my/host/dev:/bgw/dev hareeqi/bgw build
 3. Create and run a container with dependencies in dev mode:
 ```
 docker run -p 443:443 -p 8883:8883 -v /my/host/config:/bgw/config -v /my/host/dev:/bgw/dev hareeqi/bgw .dev
-
 ```
 Whenever you change the code in you local dev folder the component will automatically restarts and your changes are reflected immediately 
