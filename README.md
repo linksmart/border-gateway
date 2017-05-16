@@ -52,11 +52,11 @@ git clone --recursive https://github.com/hareeqi/iot-bgw.git
 
 2. Build the dependencies for all components and remove the container using this command:
 ```
-docker run --rm -v /my/host/dev:/bgw/dev hareeqi/bgw build
+docker run --rm -v /my/host/iot-bgw/dev:/bgw/dev hareeqi/bgw build
 ```
 
 3. Create and run a container with dependencies in dev mode:
 ```
-docker run -p 443:443 -p 8883:8883 -v /my/host/config:/bgw/config -v /my/host/dev:/bgw/dev hareeqi/bgw .dev
+docker run -p 443:443 -p 8883:8883 -v /my/host/config:/bgw/config -v /my/host/iot-bgw/dev:/bgw/dev hareeqi/bgw .dev
 ```
 Whenever you change the code in you local dev folder the component will automatically restarts and your changes are reflected immediately 
