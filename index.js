@@ -22,8 +22,8 @@ const server = net.createServer((srcClient)=> {
     const dstParser = mqtt.parser()
     srcClient.on('data',(data)=>srcParser.parse(data))
     dstClient.on('data',(data)=>config.authorize_response?dstParser.parse(data):srcClient.write(data))
-    dstClient.on('error',()=>{srcClient.destroy();dstClient.destroy()})
-    srcClient.on('error',()=>{srcClient.destroy();dstClient.destroy()})
+    dstClient.on('error',(err)=>{debug('err in dstClient',err);srcClient.destroy();dstClient.destroy()})
+    srcClient.on('error',(err)=>{debug('err in srcClient',err);srcClient.destroy();dstClient.destroy()})
 
     let client_key =''
     srcParser.on('packet',async (packet)=> {
