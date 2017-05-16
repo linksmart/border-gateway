@@ -55,7 +55,7 @@ git clone https://github.com/hareeqi/iot-bgw-http-proxy.git
 git clone https://github.com/hareeqi/iot-bgw-aaa-client.git
 ```
 
-2. Build the dependencies for each components and remove the container using this command:
+2. Build the dependencies for all components and remove the container using this command:
 ```
 docker run --rm -v /my/host/dev:/bgw/dev hareeqi/bgw build
 ```
