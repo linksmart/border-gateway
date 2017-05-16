@@ -6,8 +6,8 @@ WORKDIR /bgw
 RUN git clone https://github.com/hareeqi/iot-bgw.git .
 RUN npm install
 
-VOLUME /bgw/config /bgw/dev
-EXPOSE 443 8883
+VOLUME /bgw/config /bgw
+EXPOSE 80 443 8883
 
 ENTRYPOINT ["sh", "docker.sh"]
 CMD [""]

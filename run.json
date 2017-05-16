@@ -1,5 +1,10 @@
 [
   {
+    "uid": "http2https",
+    "command": "node -r dotenv/config",
+    "script": "http2https.js"
+  },
+  {
     "uid": "external-interface",
     "command": "node -r dotenv/config",
     "script": "./node_modules/iot-bgw-external-interface/index.js"

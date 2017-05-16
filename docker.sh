@@ -1,12 +1,13 @@
 #!/bin/bash
 
-if [ $1 = "build" ]; then
+if [[ $1 == "build" ]]; then
     echo Building the dependencies for all components...
-    npm install --prefix ./dev/iot-bgw-external-interface ./dev/iot-bgw-external-interface 
-    npm install --prefix ./dev/iot-bgw-auth-server ./dev/iot-bgw-auth-server 
-    npm install --prefix ./dev/iot-bgw-mqtt-proxy ./dev/iot-bgw-mqtt-proxy 
-    npm install --prefix ./dev/iot-bgw-http-proxy ./dev/iot-bgw-http-proxy 
-    npm install --prefix ./dev/iot-bgw-aaa-client ./dev/iot-bgw-aaa-client 
+    npm install --only=dev
+    cd dev/iot-bgw-external-interface && npm install && cd ../..
+    cd dev/iot-bgw-auth-server && npm install && cd ../..
+    cd dev/iot-bgw-mqtt-proxy && npm install && cd ../..
+    cd dev/iot-bgw-http-proxy && npm install && cd ../..
+    cd dev/iot-bgw-aaa-client && npm install && cd ../..
     echo Finished building the dependencies for all components
     exit 0
 fi

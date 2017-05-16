@@ -13,8 +13,6 @@
   "license": "ISC",
   "eslintConfig":{"parserOptions": {"ecmaVersion": 2017}},
   "dependencies": {
-    "dotenv": "^4.0.0",
-    "forever": "^0.15.3",
     "iot-bgw-aaa-client": "github:hareeqi/iot-bgw-aaa-client",
     "iot-bgw-auth-server": "github:hareeqi/iot-bgw-auth-server",
     "iot-bgw-external-interface": "github:hareeqi/iot-bgw-external-interface",
@@ -22,6 +20,8 @@
     "iot-bgw-mqtt-proxy": "github:hareeqi/iot-bgw-mqtt-proxy"
   },
   "devDependencies": {
+    "dotenv": "^4.0.0",
+    "forever": "^0.15.3",
     "nodemon": "^1.11.0"
   }
 }
