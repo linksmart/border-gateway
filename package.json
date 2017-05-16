@@ -8,6 +8,7 @@
   },
   "author": "",
   "license": "ISC",
+  "eslintConfig":{"parserOptions": {"ecmaVersion": 2017}},
   "dependencies": {
     "base-x": "^3.0.0",
     "bcrypt": "^1.0.2",
