@@ -46,7 +46,7 @@ docker run -p 443:443 -p 8883:8883 -v /path/on/host/config:/bgw/config hareeqi/b
 ## Development Mode
 1. If yoy would like to further devolope the bgw, in your local machine, create a folder called "dev" and do git clone for all the 5 components above.
 
-2. Build the dependencies for each omponents and remove the container using this command:
+2. Build the dependencies for each components and remove the container using this command:
 ```
 docker run --rm -v /my/host/dev:/bgw/dev hareeqi/bgw build
 ```
