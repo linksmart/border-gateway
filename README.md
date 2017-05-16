@@ -44,7 +44,8 @@ docker run -p 443:443 -p 8883:8883 -v /path/on/host/config:/bgw/config hareeqi/b
 * https://github.com/hareeqi/iot-bgw-aaa-client
 
 ## Development Mode
-If yoy would like to further devolope the bgw, in your local machine, create a folder called "dev" and do git clone for all the 5 components above and then run the following command
+* If yoy would like to further devolope the bgw, in your local machine, create a folder called "dev" and do git clone for all the 5 components above and then run the following command
+* In the directory of each component do "npm install" (if you don't have npm you can ash to the docker image and do it from there)
 
 ```
 docker run -p 443:443 -p 8883:8883 -v /my/host/config:/bgw/config -v /my/host/dev:/bgw/dev hareeqi/bgw .dev
