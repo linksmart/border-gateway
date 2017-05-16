@@ -44,15 +44,10 @@ docker run -p 443:443 -p 8883:8883 -v /path/on/host/config:/bgw/config hareeqi/b
 * https://github.com/hareeqi/iot-bgw-aaa-client
 
 ## Development Mode
-1. If yoy would like to further devolope the bgw, in your local machine, create a folder called "dev" and do git clone for all the 5 components above.
+
+1. If you would like to further develop the bgw, in your local machine, clone all the rep recursively by running this command
 ```
-mkdir dev
-cd dev
-git clone https://github.com/hareeqi/iot-bgw-external-interface.git
-git clone https://github.com/hareeqi/iot-bgw-auth-server.git
-git clone https://github.com/hareeqi/iot-bgw-mqtt-proxy.git
-git clone https://github.com/hareeqi/iot-bgw-http-proxy.git
-git clone https://github.com/hareeqi/iot-bgw-aaa-client.git
+git clone --recursive https://github.com/hareeqi/iot-bgw.git
 ```
 
 2. Build the dependencies for all components and remove the container using this command:
