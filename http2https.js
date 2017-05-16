@@ -6,7 +6,7 @@ destPort = (destPort && `:${destPort}`) || ""
 
 const server = http.createServer((req, res) => {
   console.log("received none https request...redirecting");
-  res.writeHead(301,{Location: `https://${req.headers.host.split(":")[0]}${destPort}/${req.url}`});
+  res.writeHead(301,{Location: `https://${req.headers.host.split(":")[0]}${destPort}${req.url}`});
   res.end();
 });
 server.listen(bindPort,()=>console.log(`http2https ==> ${bindPort}${destPort||`:${443}`}`));
