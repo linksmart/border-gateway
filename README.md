@@ -19,7 +19,7 @@ docker run --rm -p 443:443 -e "ADMIN_KEY_PASSWORD=test" hareeqi/bgw
  * provide a config file (either [config.env](https://github.com/hareeqi/iot-bgw/blob/master/config/config.env.example) or [config.json](https://github.com/hareeqi/iot-bgw/blob/master/config/config.json.example) or both)
 * You final docker run command looks like this.
 ```
-docker run -p 443:443 -p 8883:8883 -v /path/on/host/config:/bgw/config hareeqi/bgw
+docker run -p 80:80 -p 443:443 -p 8883:8883 -v /my/host/config:/bgw/config hareeqi/bgw
 ```
 
 
@@ -57,6 +57,6 @@ docker run --rm -v /my/host/iot-bgw/dev:/bgw/dev hareeqi/bgw build
 
 3. Create and run a container with dependencies in dev mode:
 ```
-docker run -p 443:443 -p 8883:8883 -v /my/host/iot-bgw:/bgw --name bgw-dev hareeqi/bgw .dev
+docker run -p 80:80 -p 443:443 -p 8883:8883 -v /my/host/iot-bgw:/bgw --name bgw-dev hareeqi/bgw .dev
 ```
 Whenever you change the code in you local dev folder the component will automatically restarts and your changes are reflected immediately 
