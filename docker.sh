@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [[ $1 == "build" ]]; then
+if [ "$1" = "build" ]; then
     echo Building the dependencies for all components...
     npm install --only=dev
     cd dev/iot-bgw-external-interface && npm install && cd ../..
