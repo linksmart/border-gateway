@@ -18,7 +18,7 @@ if [ "$1" = "part" ]; then
     node json2env.js && \
     node -r dotenv/config ./node_modules/iot-bgw-$2/index.js dotenv_config_path=./node_modules/config.env
 
-else if [ "$1" = "http2https" ]; then
+elif [ "$1" = "http2https" ]; then
 
     node json2env.js && \
     node -r dotenv/config http2https.js dotenv_config_path=./node_modules/config.env
