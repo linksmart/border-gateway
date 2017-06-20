@@ -8,7 +8,8 @@ services:
     volumes:
      - ./config:/bgw/config
     command: ["part", "auth-server"]
-  
+    restart: unless-stopped
+    
   extern-int:
     image: hareeqi/bgw
     environment:
@@ -20,7 +21,8 @@ services:
     volumes:
      - ./config:/bgw/config
     command: ["part", "external-interface"]
-  
+    restart: unless-stopped
+
   mqtt-proxy:
     image: hareeqi/bgw
     environment:
@@ -30,7 +32,8 @@ services:
     volumes:
      - ./config:/bgw/config
     command: ["part", "mqtt-proxy"]
-  
+    restart: unless-stopped
+
   http-proxy:
     image: hareeqi/bgw
     environment:
@@ -40,7 +43,8 @@ services:
     volumes:
     - ./config:/bgw/config
     command: ["part", "http-proxy"]
-  
+    restart: unless-stopped
+
   http2https:
     image: hareeqi/bgw
     ports:
@@ -48,3 +52,4 @@ services:
     volumes:
      - ./config:/bgw/config
     command: ["http2https"]
+    restart: unless-stopped
