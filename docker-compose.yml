@@ -1,0 +1,50 @@
+version: '2'
+services:
+  auth-server:
+    image: hareeqi/bgw
+    environment:
+     - AAA_CLIENT_NAME=" "
+     - AUTH_SERVER_BIND_ADDRESS=auth-server
+    volumes:
+     - ./config:/bgw/config
+    command: ["part", "auth-server"]
+  
+  extern-int:
+    image: hareeqi/bgw
+    environment:
+     - AAA_CLIENT_NAME=" "
+     - EI_SERVERS=[{"name":"http_proxy","bind_address":"0.0.0.0","bind_port":443,"dest_port":5050,"dest_address":"http-proxy","allowed_addresses":[]},{"name":"mqtt_proxy","bind_address":"0.0.0.0","bind_port":8883,"dest_port":5051,"dest_address":"mqtt-proxy","allowed_addresses":[]}]
+    ports:
+     - 443:443
+     - 8883:8883
+    volumes:
+     - ./config:/bgw/config
+    command: ["part", "external-interface"]
+  
+  mqtt-proxy:
+    image: hareeqi/bgw
+    environment:
+     - AAA_CLIENT_NAME=" "
+     - MQTT_PROXY_BIND_ADDRESS=mqtt-proxy
+     - AAA_CLIENT_HOST=http://auth-server:5055
+    volumes:
+     - ./config:/bgw/config
+    command: ["part", "mqtt-proxy"]
+  
+  http-proxy:
+    image: hareeqi/bgw
+    environment:
+     - AAA_CLIENT_NAME=" "
+     - HTTP_PROXY_BIND_ADDRESS=http-proxy
+     - AAA_CLIENT_HOST=http://auth-server:5055
+    volumes:
+    - ./config:/bgw/config
+    command: ["part", "http-proxy"]
+  
+  http2https:
+    image: hareeqi/bgw
+    ports:
+     - 80:80
+    volumes:
+     - ./config:/bgw/config
+    command: ["http2https"]

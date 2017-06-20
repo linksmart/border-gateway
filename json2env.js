@@ -2,7 +2,7 @@
 
 const fs = require('fs')
 
-const prefix = "==============================="
+const prefix = "json2env: "
 
 const envFile = "./config/config.env"
 const jsonFile = "./config/config.json"
