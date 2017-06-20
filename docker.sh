@@ -12,12 +12,27 @@ if [ "$1" = "build" ]; then
     exit 0
 fi
 
-trap './node_modules/.bin/forever stopall ; exit 0' INT
 
-node json2env.js && \
-./node_modules/.bin/forever --minUptime=1000 --spinSleepTime=1000 run$1.json --colors  dotenv_config_path=./node_modules/config.env &
+if [ "$1" = "part" ]; then
 
-while true
-do
-    sleep 1
-done
+    node json2env.js && \
+    node -r dotenv/config ./node_modules/iot-bgw-$2/index.js dotenv_config_path=./node_modules/config.env
+
+else if [ "$1" = "http2https" ]; then
+
+    node json2env.js && \
+    node -r dotenv/config http2https.js dotenv_config_path=./node_modules/config.env
+    
+else
+
+    trap './node_modules/.bin/forever stopall ; exit 0' INT
+
+    node json2env.js && \
+    ./node_modules/.bin/forever --minUptime=1000 --spinSleepTime=1000 run$1.json --colors  dotenv_config_path=./node_modules/config.env &
+
+    while true
+    do
+        sleep 1
+    done
+
+fi
