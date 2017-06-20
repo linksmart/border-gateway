@@ -9,22 +9,11 @@ services:
      - ./config:/bgw/config
     command: ["part", "auth-server"]
     restart: unless-stopped
-    
-  extern-int:
-    image: hareeqi/bgw
-    environment:
-     - AAA_CLIENT_NAME=" "
-     - EI_SERVERS=[{"name":"http_proxy","bind_address":"0.0.0.0","bind_port":443,"dest_port":5050,"dest_address":"http-proxy","allowed_addresses":[]},{"name":"mqtt_proxy","bind_address":"0.0.0.0","bind_port":8883,"dest_port":5051,"dest_address":"mqtt-proxy","allowed_addresses":[]}]
-    ports:
-     - 443:443
-     - 8883:8883
-    volumes:
-     - ./config:/bgw/config
-    command: ["part", "external-interface"]
-    restart: unless-stopped
 
   mqtt-proxy:
     image: hareeqi/bgw
+    links:
+     - auth-server
     environment:
      - AAA_CLIENT_NAME=" "
      - MQTT_PROXY_BIND_ADDRESS=mqtt-proxy
@@ -36,6 +25,8 @@ services:
 
   http-proxy:
     image: hareeqi/bgw
+    links:
+     - auth-server
     environment:
      - AAA_CLIENT_NAME=" "
      - HTTP_PROXY_BIND_ADDRESS=http-proxy
@@ -43,6 +34,22 @@ services:
     volumes:
     - ./config:/bgw/config
     command: ["part", "http-proxy"]
+    restart: unless-stopped
+
+  extern-int:
+    image: hareeqi/bgw
+    links:
+     - mqtt-proxy
+     - http-proxy
+    environment:
+     - AAA_CLIENT_NAME=" "
+     - EI_SERVERS=[{"name":"http_proxy","bind_address":"0.0.0.0","bind_port":443,"dest_port":5050,"dest_address":"http-proxy","allowed_addresses":[]},{"name":"mqtt_proxy","bind_address":"0.0.0.0","bind_port":8883,"dest_port":5051,"dest_address":"mqtt-proxy","allowed_addresses":[]}]
+    ports:
+     - 443:443
+     - 8883:8883
+    volumes:
+     - ./config:/bgw/config
+    command: ["part", "external-interface"]
     restart: unless-stopped
 
   http2https:
