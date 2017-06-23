@@ -1,6 +1,4 @@
-FROM node:7.9-alpine
-
-RUN apk add --no-cache g++ make python git
+FROM node:7.9
 
 WORKDIR /bgw
 RUN git clone https://github.com/hareeqi/iot-bgw.git .
