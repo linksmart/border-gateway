@@ -1,6 +1,7 @@
 
 
 let config = {
+cluster_mode: process.env.CLUSTER_MODE || false,
 private_bgw: false,
 tls_key: process.env.TLS_KEY || "./config/key.pem",
 tls_cert: process.env.TLS_CERT || "./config/srv.pem",
