@@ -4,7 +4,11 @@ const numCPUs = require('os').cpus().length;
 // end of cluster mode
 const cors = require('cors');
 const app = require('express')();
+const https = require('https');
+const http = require('http');
 const tranform = require('transformer-proxy');
+const agentHTTP  = new http.Agent({keepAlive:true});
+const agentHTTPS  = new https.Agent({keepAlive:true});
 const proxy = require('http-proxy').createProxyServer({});
 const config = require('./config')
 const { transformURI, bgwIfy, REQ_TYPES } = require('./utils')
@@ -49,6 +53,7 @@ if (config.cluster_mode && cluster.isMaster) {
       const proxyied_options= {
         target: req.bgw.forward_address || 'error' ,
         secure: !insecure,
+        agent: is_https?agentHTTPS:agentHTTP,
         changeOrigin:  (http_req && https_req)||
                        (is_https && https_req) ||
                        (!is_https && http_req)
