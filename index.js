@@ -1,3 +1,7 @@
+// for cluster mode
+const cluster = require('cluster');
+const numCPUs = require('os').cpus().length;
+// end of cluster mode
 const net = require('net');
 const tls = require('tls')
 const mqtt = require('mqtt-packet')
@@ -5,76 +9,85 @@ const config = require('./config')
 const {mqttAuth, AAA, CAT, isDebugOn,debug} = require('../iot-bgw-aaa-client')
 const validate = require('./validate')
 
-const broker = config.broker
-const options = {
-  host:broker.address,
-  port: broker.port,
-  ca: broker.tls && broker.tls_ca && [ fs.readFileSync(broker.tls_ca) ],
-  key: broker.tls && broker.tls_client_key && fs.readFileSync(broker.tls_client_key) ,
-  cert: broker.tls && broker.tls_client_cert && fs.readFileSync(broker.tls_client_cert)
-}
 
-const server = net.createServer((srcClient)=> {
+if (config.cluster_mode && cluster.isMaster) {
+  AAA.log(CAT.PROCESS_START,`Master PID ${process.pid} is running: CPU has ${numCPUs} cores`);
+  for (let i = 0; i < numCPUs; i++) cluster.fork();
+  cluster.on('exit', (worker, code, signal) =>  AAA.log(CAT.PROCESS_END,`worker ${worker.process.pid} died`));
 
-  const socketConnect = broker.tls?tls.connect:net.connect
-  const dstClient = socketConnect(options,()=>{
-    const srcParser = mqtt.parser()
-    const dstParser = mqtt.parser()
-    srcClient.on('data',(data)=>srcParser.parse(data))
-    dstClient.on('data',(data)=>config.authorize_response?dstParser.parse(data):srcClient.write(data))
-    dstClient.on('error',(err)=>{debug('err in dstClient',err);srcClient.destroy();dstClient.destroy()})
-    srcClient.on('error',(err)=>{debug('err in srcClient',err);srcClient.destroy();dstClient.destroy()})
+} else {
 
-    let client_key =''
-    srcParser.on('packet',async (packet)=> {
-      isDebugOn && debug('message from client',JSON.stringify(packet,null,4))
+  const broker = config.broker
+  const options = {
+    host:broker.address,
+    port: broker.port,
+    ca: broker.tls && broker.tls_ca && [ fs.readFileSync(broker.tls_ca) ],
+    key: broker.tls && broker.tls_client_key && fs.readFileSync(broker.tls_client_key) ,
+    cert: broker.tls && broker.tls_client_cert && fs.readFileSync(broker.tls_client_cert)
+  }
 
-      //get the client key and store it
-      if(packet.cmd == 'connect'){
-        client_key = packet.username
-        delete packet.username
-        delete packet.password
-        broker.username && (packet.username = broker.username)
-        broker.password && (packet.password = broker.password)
-      }
-      // validate the packet
-      let valid = await validate(srcClient.remotePort,packet,client_key)
-      valid.packet = valid.packet &&  mqtt.generate(valid.packet)
+  const server = net.createServer((srcClient)=> {
 
-      if (valid.status){
-        dstClient.write(valid.packet)
-      } else {
-        // if the packet is invlaid in the case of publish or sub and
-        // configs for diconnectin on unauthorized is set to tru, then disocnnect
-        if((packet.cmd == 'subscribe' && config.disconnect_on_unauthorized_subscribe) ||
-           (packet.cmd == 'publish' && config.disconnect_on_unauthorized_publish)){
-          AAA.log(CAT.CON_TERMINATE,'disconnecting client for unauthorized ',packet.cmd);
-          srcClient.destroy();
-          dstClient.destroy();
+    const socketConnect = broker.tls?tls.connect:net.connect
+    const dstClient = socketConnect(options,()=>{
+      const srcParser = mqtt.parser()
+      const dstParser = mqtt.parser()
+      srcClient.on('data',(data)=>srcParser.parse(data))
+      dstClient.on('data',(data)=>config.authorize_response?dstParser.parse(data):srcClient.write(data))
+      dstClient.on('error',(err)=>{debug('err in dstClient',err);srcClient.destroy();dstClient.destroy()})
+      srcClient.on('error',(err)=>{debug('err in srcClient',err);srcClient.destroy();dstClient.destroy()})
+
+      let client_key =''
+      srcParser.on('packet',async (packet)=> {
+        isDebugOn && debug('message from client',JSON.stringify(packet,null,4))
+
+        //get the client key and store it
+        if(packet.cmd == 'connect'){
+          client_key = packet.username
+          delete packet.username
+          delete packet.password
+          broker.username && (packet.username = broker.username)
+          broker.password && (packet.password = broker.password)
+        }
+        // validate the packet
+        let valid = await validate(srcClient.remotePort,packet,client_key)
+        valid.packet = valid.packet &&  mqtt.generate(valid.packet)
+
+        if (valid.status){
+          dstClient.write(valid.packet)
         } else {
+          // if the packet is invlaid in the case of publish or sub and
+          // configs for diconnectin on unauthorized is set to tru, then disocnnect
+          if((packet.cmd == 'subscribe' && config.disconnect_on_unauthorized_subscribe) ||
+             (packet.cmd == 'publish' && config.disconnect_on_unauthorized_publish)){
+            AAA.log(CAT.CON_TERMINATE,'disconnecting client for unauthorized ',packet.cmd);
+            srcClient.destroy();
+            dstClient.destroy();
+          } else {
 
-          valid.packet && srcClient.write(valid.packet)
+            valid.packet && srcClient.write(valid.packet)
+          }
         }
-      }
 
 
-    })
-    dstParser.on('packet', async (packet)=>{
-      isDebugOn && debug('message from broker',JSON.stringify(packet,null,4))
-      // only when autherize responce config is set true, i validate each responce to subscriptions
-      if (packet.cmd=='publish' && !(await mqttAuth(srcClient.remotePort,client_key,'SUB',packet.topic))){
-        if(config.disconnect_on_unauthorized_response ){
-          AAA.log(CAT.CON_TERMINATE,'disconnecting client for unauthorize subscription due to change user auth profile');
-          srcClient.destroy();
-          dstClient.destroy();
+      })
+      dstParser.on('packet', async (packet)=>{
+        isDebugOn && debug('message from broker',JSON.stringify(packet,null,4))
+        // only when autherize responce config is set true, i validate each responce to subscriptions
+        if (packet.cmd=='publish' && !(await mqttAuth(srcClient.remotePort,client_key,'SUB',packet.topic))){
+          if(config.disconnect_on_unauthorized_response ){
+            AAA.log(CAT.CON_TERMINATE,'disconnecting client for unauthorize subscription due to change user auth profile');
+            srcClient.destroy();
+            dstClient.destroy();
+          }
+        } else {
+          srcClient.write(mqtt.generate(packet))
         }
-      } else {
-        srcClient.write(mqtt.generate(packet))
-      }
+      })
     })
-  })
-});
+  });
 
 
-server.listen(config.bind_port, config.bind_port,()=>
-AAA.log(CAT.PROCESS_START,`listening on ${config.bind_address}:${config.bind_port}`));
+  server.listen(config.bind_port, config.bind_port,()=>
+  AAA.log(CAT.PROCESS_START,`PID ${process.pid} listening on ${config.bind_address}:${config.bind_port}`));
+}
