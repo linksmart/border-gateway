@@ -1,4 +1,5 @@
 let config = {
+  cluster_mode: process.env.CLUSTER_MODE || false,
   bind_address: "127.0.0.1",
   bind_port: 5050,
   external_domain: process.env.EXTERNAL_DOMAIN || "bgw.hareeqi.com",
