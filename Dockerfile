@@ -6,4 +6,5 @@ RUN npm install
 
 EXPOSE 80 443 8883
 
-ENTRYPOINT ["sh", "docker.sh"]
+ENTRYPOINT ["sh", "bgw.sh"]
+command: ["forever"]

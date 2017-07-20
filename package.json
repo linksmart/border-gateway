@@ -11,7 +11,11 @@
   },
   "author": "",
   "license": "ISC",
-  "eslintConfig":{"parserOptions": {"ecmaVersion": 2017}},
+  "eslintConfig": {
+    "parserOptions": {
+      "ecmaVersion": 2017
+    }
+  },
   "dependencies": {
     "iot-bgw-aaa-client": "github:hareeqi/iot-bgw-aaa-client",
     "iot-bgw-auth-server": "github:hareeqi/iot-bgw-auth-server",

@@ -58,5 +58,5 @@ services:
      - 80:80
     volumes:
      - ./config:/bgw/config
-    command: ["http2https"]
+    command: ["part", "http2https"]
     restart: unless-stopped
