@@ -2,6 +2,7 @@
 const cluster = require('cluster');
 const numCPUs = require('os').cpus().length;
 // end of cluster mode
+const fs = require('fs');
 const cors = require('cors');
 const app = require('express')();
 const https = require('https');
