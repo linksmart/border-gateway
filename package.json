@@ -15,7 +15,11 @@
   "bugs": {
     "url": "https://github.com/hareeqi/iot-bgw-http-proxy/issues"
   },
-  "eslintConfig":{"parserOptions": {"ecmaVersion": 2017}},
+  "eslintConfig": {
+    "parserOptions": {
+      "ecmaVersion": 2017
+    }
+  },
   "homepage": "https://github.com/hareeqi/iot-bgw-http-proxy#readme",
   "dependencies": {
     "base-x": "^3.0.0",

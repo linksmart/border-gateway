@@ -82,7 +82,15 @@ if (config.cluster_mode && cluster.isMaster) {
     }
 
   });
-
-  app.listen(config.bind_port, config.bind_address,()=>
-  AAA.log(CAT.PROCESS_START,`PID ${process.pid} listening on ${config.bind_address}:${config.bind_port}`));
+  if (config.direct_tls_mode) {
+    const options = {
+      key: fs.readFileSync(config.tls_key),
+      cert: fs.readFileSync(config.tls_cert)
+    }
+    https.createServer(options, app).listen(config.direct_tls_mode,  config.bind_address,()=>
+    AAA.log(CAT.PROCESS_START,`PID ${process.pid} listening on ${config.bind_address}:${config.direct_tls_mode}`));
+  } else {
+    app.listen(config.bind_port, config.bind_address,()=>
+    AAA.log(CAT.PROCESS_START,`PID ${process.pid} listening on ${config.bind_address}:${config.bind_port}`));
+  }
 }
