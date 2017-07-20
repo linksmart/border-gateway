@@ -15,7 +15,11 @@
   "bugs": {
     "url": "https://github.com/hareeqi/iot-bgw-external-interface/issues"
   },
-  "eslintConfig":{"parserOptions": {"ecmaVersion": 2017}},
+  "eslintConfig": {
+    "parserOptions": {
+      "ecmaVersion": 2017
+    }
+  },
   "homepage": "https://github.com/hareeqi/iot-bgw-external-interface#readme",
   "dependencies": {
     "insubnet": "0.0.8"
