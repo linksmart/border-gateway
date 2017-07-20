@@ -2,6 +2,7 @@
 const cluster = require('cluster');
 const numCPUs = require('os').cpus().length;
 // end of cluster mode
+const fs = require('fs');
 const net = require('net');
 const tls = require('tls')
 const mqtt = require('mqtt-packet')
