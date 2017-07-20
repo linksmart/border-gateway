@@ -16,9 +16,13 @@ if (config.cluster_mode && cluster.isMaster) {
   cluster.on('exit', (worker, code, signal) =>  AAA.log(CAT.PROCESS_END,`worker ${worker.process.pid} died`));
 
 } else {
-
+  const createServer = config.direct_tls_mode ? tls.createServer : net.createServer
+  const serverOptions = config.direct_tls_mode?{
+    key: fs.readFileSync(config.tls_key),
+    cert: fs.readFileSync(config.tls_cert)
+  }:{}
   const broker = config.broker
-  const options = {
+  const clientOptions = {
     host:broker.address,
     port: broker.port,
     ca: broker.tls && broker.tls_ca && [ fs.readFileSync(broker.tls_ca) ],
@@ -26,10 +30,10 @@ if (config.cluster_mode && cluster.isMaster) {
     cert: broker.tls && broker.tls_client_cert && fs.readFileSync(broker.tls_client_cert)
   }
 
-  const server = net.createServer((srcClient)=> {
+  const server = createServer((srcClient)=> {
 
     const socketConnect = broker.tls?tls.connect:net.connect
-    const dstClient = socketConnect(options,()=>{
+    const dstClient = socketConnect(clientOptions,()=>{
       const srcParser = mqtt.parser()
       const dstParser = mqtt.parser()
       srcClient.on('data',(data)=>srcParser.parse(data))
@@ -88,6 +92,7 @@ if (config.cluster_mode && cluster.isMaster) {
   });
 
 
-  server.listen(config.bind_port, config.bind_port,()=>
-  AAA.log(CAT.PROCESS_START,`PID ${process.pid} listening on ${config.bind_address}:${config.bind_port}`));
+  server.listen(config.direct_tls_mode || config.bind_port, config.bind_address,()=>
+  AAA.log(CAT.PROCESS_START,`PID ${process.pid} listening on ${config.bind_address}:${config.direct_tls_mode || config.bind_port}`));
+
 }

@@ -15,7 +15,11 @@
   "bugs": {
     "url": "https://github.com/hareeqi/iot-bgw-mqtt-proxy/issues"
   },
-  "eslintConfig":{"parserOptions": {"ecmaVersion": 2017}},
+  "eslintConfig": {
+    "parserOptions": {
+      "ecmaVersion": 2017
+    }
+  },
   "homepage": "https://github.com/hareeqi/iot-bgw-mqtt-proxy#readme",
   "dependencies": {
     "mqtt-packet": "^5.2.2"
