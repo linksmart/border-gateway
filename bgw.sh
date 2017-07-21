@@ -31,23 +31,16 @@ elif [ "$1" = "service" ]; then
 
     node json2env.js
     node -r dotenv/config http2https.js dotenv_config_path=./node_modules/config.env  &
-    hs_pid=$!
     run_service external-interface
-    ei_pid=$!
     run_service http-proxy
-    ht_pid=$!
     run_service mqtt-proxy
-    mq_pid=$!
     run_service auth-server
-    as_pid=$!
 
     if [ "$2" = "benchmark" ]; then
       HTTP_PROXY_DIRECT_TLS_MODE=5099 run_service http-proxy
-      bnh_pid=$!
       MQTT_PROXY_DIRECT_TLS_MODE=5098 run_service mqtt-proxy
-      bnm_pid=$!
     fi
-    trap 'kill $hs_pid ; kill $ei_pid ; kill $ht_pid ; kill $mq_pid ; kill $as_pid ; [ "$bnh_pid" != "" ] && kill $bnh_pid ; [ "$bnm_pid" != "" ] && kill $bnm_pid ; echo shutting down ; exit 0' INT
+    trap 'echo shutting down ; exit 0' INT
 
     while true
     do
@@ -59,17 +52,12 @@ elif [ "$1" = "dev" ]; then
 
     node json2env.js
     node -r dotenv/config http2https.js dotenv_config_path=./node_modules/config.env &
-    hs_pid=$!
     run__dev_service external-interface
-    ei_pid=$!
     run__dev_service http-proxy
-    ht_pid=$!
     run__dev_service mqtt-proxy
-    mq_pid=$!
     run__dev_service auth-server
-    as_pid=$!
 
-    trap 'kill $hs_pid ;kill $ei_pid ; kill $ht_pid ; kill $mq_pid ; kill $as_pid ;  echo shutting down ; exit 0' INT
+    trap 'echo shutting down ; exit 0' INT
 
     while true
     do
