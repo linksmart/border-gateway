@@ -43,9 +43,11 @@ elif [ "$1" = "service" ]; then
 
     if [ "$2" = "benchmark" ]; then
       HTTP_PROXY_DIRECT_TLS_MODE=5099 run_service http-proxy
-      bn_pid=$!
+      bnh_pid=$!
+      MQTT_PROXY_DIRECT_TLS_MODE=5098 run_service mqtt-proxy
+      bnm_pid=$!
     fi
-    trap 'kill $hs_pid ; kill $ei_pid ; kill $ht_pid ; kill $mq_pid ; kill $as_pid ; [ "$bn_pid" != "" ] && kill $bn_pid ; echo shutting down ; exit 0' INT
+    trap 'kill $hs_pid ; kill $ei_pid ; kill $ht_pid ; kill $mq_pid ; kill $as_pid ; [ "$bnh_pid" != "" ] && kill $bnh_pid ; [ "$bnm_pid" != "" ] && kill $bnm_pid ; echo shutting down ; exit 0' INT
 
     while true
     do
