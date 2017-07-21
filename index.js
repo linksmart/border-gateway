@@ -39,8 +39,8 @@ if (config.cluster_mode && cluster.isMaster) {
       const dstParser = mqtt.parser()
       srcClient.on('data',(data)=>srcParser.parse(data))
       dstClient.on('data',(data)=>config.authorize_response?dstParser.parse(data):srcClient.write(data))
-      dstClient.on('error',(err)=>{AAA.log(CAT.CON_TERMINATE,'Error in forwarding mostly due havey load');srcClient.destroy();dstClient.destroy()})
-      srcClient.on('error',(err)=>{AAA.log(CAT.CON_TERMINATE,'Error in forwarding mostly due havey load');srcClient.destroy();dstClient.destroy()})
+      dstClient.on('error',(err)=>{debug('err in dstClient',err);srcClient.destroy();dstClient.destroy()})
+      srcClient.on('error',(err)=>{debug('err in srcClient',err);srcClient.destroy();dstClient.destroy()})
 
       let client_key =''
       srcParser.on('packet',async (packet)=> {
@@ -56,10 +56,10 @@ if (config.cluster_mode && cluster.isMaster) {
         }
         // validate the packet
         let valid = await validate(srcClient.remotePort,packet,client_key)
-        valid.packet = valid.packet &&  mqtt.generate(valid.packet)
+        //valid.packet = valid.packet &&  mqtt.generate(valid.packet)
 
         if (valid.status){
-          dstClient.write(valid.packet)
+          mqtt.writeToStream(valid.packet, dstClient)
         } else {
           // if the packet is invlaid in the case of publish or sub and
           // configs for diconnectin on unauthorized is set to tru, then disocnnect
@@ -70,7 +70,7 @@ if (config.cluster_mode && cluster.isMaster) {
             dstClient.destroy();
           } else {
 
-            valid.packet && srcClient.write(valid.packet)
+            valid.packet && mqtt.writeToStream(valid.packet,srcClient)
           }
         }
 
@@ -86,7 +86,7 @@ if (config.cluster_mode && cluster.isMaster) {
             dstClient.destroy();
           }
         } else {
-          srcClient.write(mqtt.generate(packet))
+          mqtt.writeToStream(packet,srcClient)
         }
       })
     })
