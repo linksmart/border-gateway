@@ -31,7 +31,7 @@ if (config.cluster_mode && cluster.isMaster) {
     cert: broker.tls && broker.tls_client_cert && fs.readFileSync(broker.tls_client_cert)
   }
 
-  const server = createServer((srcClient)=> {
+  const server = createServer(serverOptions,(srcClient)=> {
 
     const socketConnect = broker.tls?tls.connect:net.connect
     const dstClient = socketConnect(clientOptions,()=>{
