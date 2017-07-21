@@ -39,8 +39,8 @@ if (config.cluster_mode && cluster.isMaster) {
       const dstParser = mqtt.parser()
       srcClient.on('data',(data)=>srcParser.parse(data))
       dstClient.on('data',(data)=>config.authorize_response?dstParser.parse(data):srcClient.write(data))
-      dstClient.on('error',(err)=>{debug('err in dstClient',err);srcClient.destroy();dstClient.destroy()})
-      srcClient.on('error',(err)=>{debug('err in srcClient',err);srcClient.destroy();dstClient.destroy()})
+      dstClient.on('error',(err)=>{AAA.log(CAT.CON_TERMINATE,'Error in forwarding mostly due havey load');srcClient.destroy();dstClient.destroy()})
+      srcClient.on('error',(err)=>{AAA.log(CAT.CON_TERMINATE,'Error in forwarding mostly due havey load');srcClient.destroy();dstClient.destroy()})
 
       let client_key =''
       srcParser.on('packet',async (packet)=> {
