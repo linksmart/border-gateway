@@ -60,3 +60,6 @@ docker run --rm -v /my/host/iot-bgw:/bgw hareeqi/bgw build
 docker run -p 80:80 -p 443:443 -p 8883:8883 -v /my/host/iot-bgw:/bgw hareeqi/bgw dev
 ```
 Whenever you change the code in you local dev folder the component will automatically restarts and your changes are reflected immediately 
+
+## Benchmarking
+https://github.com/hareeqi/iot-bgw-benchmark/
