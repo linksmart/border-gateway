@@ -38,7 +38,7 @@ if (config.cluster_mode && cluster.isMaster) {
       const srcParser = mqtt.parser()
       const dstParser = mqtt.parser()
       srcClient.on('data',(data)=>srcParser.parse(data))
-      dstClient.on('data',(data)=>config.authorize_response?dstParser.parse(data):srcClient.write(data))
+      config.authorize_response?dstClient.on('data',(data)=>dstParser.parse(data)):dstClient.pipe(srcClient);
       dstClient.on('error',(err)=>{debug('err in dstClient',err);srcClient.destroy();dstClient.destroy()})
       srcClient.on('error',(err)=>{debug('err in srcClient',err);srcClient.destroy();dstClient.destroy()})
 
@@ -56,9 +56,12 @@ if (config.cluster_mode && cluster.isMaster) {
         }
         // validate the packet
         let valid = await validate(srcClient.remotePort,packet,client_key)
+
+        // replaced  mqtt.generate with mqtt.writeToStream
         //valid.packet = valid.packet &&  mqtt.generate(valid.packet)
 
         if (valid.status){
+          //dstClient.write(valid.packet) // replaced  mqtt.generate with mqtt.writeToStream
           mqtt.writeToStream(valid.packet, dstClient)
         } else {
           // if the packet is invlaid in the case of publish or sub and
@@ -69,7 +72,7 @@ if (config.cluster_mode && cluster.isMaster) {
             srcClient.destroy();
             dstClient.destroy();
           } else {
-
+            //valid.packet && srcClient.write(valid.packet)  // replaced  mqtt.generate with mqtt.writeToStream
             valid.packet && mqtt.writeToStream(valid.packet,srcClient)
           }
         }
@@ -86,6 +89,7 @@ if (config.cluster_mode && cluster.isMaster) {
             dstClient.destroy();
           }
         } else {
+          // srcClient.write(mqtt.generate(packet)) // replaced  mqtt.generate with mqtt.writeToStream
           mqtt.writeToStream(packet,srcClient)
         }
       })
