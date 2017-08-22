@@ -1,9 +1,6 @@
 [submodule "dev/iot-bgw-auth-server"]
 	path = dev/iot-bgw-auth-server
 	url = https://github.com/hareeqi/iot-bgw-auth-server
-[submodule "dev/iot-bgw-external-interface"]
-	path = dev/iot-bgw-external-interface
-	url = https://github.com/hareeqi/iot-bgw-external-interface
 [submodule "dev/iot-bgw-mqtt-proxy"]
 	path = dev/iot-bgw-mqtt-proxy
 	url = https://github.com/hareeqi/iot-bgw-mqtt-proxy
