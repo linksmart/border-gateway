@@ -4,10 +4,11 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "forever stopall && forever run.dev.json --colors dotenv_config_path=./node_modules/config.env",
-    "start": "forever stopall && forever run.json --colors dotenv_config_path=./node_modules/config.env",
-    "stop": "forever stopall",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "clone-external-interface": " git clone https://github.com/hareeqi/iot-bgw-external-interface.git ./dev/iot-bgw-external-interface/",
+    "clone-http-proxy": " git clone https://github.com/hareeqi/iot-bgw-http-proxy.git ./dev/iot-bgw-http-proxy/",
+    "clone-mqtt-proxy": " git clone https://github.com/hareeqi/iot-bgw-mqtt-proxy.git ./dev/iot-bgw-mqtt-proxy/",
+    "clone-auth-server": " git clone https://github.com/hareeqi/iot-bgw-auth-server.git ./dev/iot-bgw-auth-server/",
+    "clone-aaa-client": " git clone https://github.com/hareeqi/iot-bgw-aaa-client.git ./dev/iot-bgw-aaa-client/"
   },
   "author": "",
   "license": "ISC",
