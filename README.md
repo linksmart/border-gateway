@@ -47,7 +47,7 @@ docker run -p 80:80 -p 443:443 -p 8883:8883 -v /my/host/config:/bgw/config haree
 
 1. If you would like to further develop the bgw, in your local machine, clone all the rep recursively by running this command
 ```
-git clone --recursive https://github.com/hareeqi/iot-bgw.git
+git clone https://github.com/hareeqi/iot-bgw.git
 ```
 
 2. Build the dependencies for all components and remove the container using this command:
