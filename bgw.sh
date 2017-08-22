@@ -10,6 +10,7 @@ function run__dev_service {
 if [ "$1" = "build" ]; then
     echo Building the dependencies for all components...
     npm install --only=dev
+    npm run clone-dev 
     cd dev/iot-bgw-external-interface && git checkout master && npm install && cd ../..
     cd dev/iot-bgw-auth-server && git checkout master && npm install && cd ../..
     cd dev/iot-bgw-mqtt-proxy && git checkout master && npm install && cd ../..
