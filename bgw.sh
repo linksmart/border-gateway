@@ -17,7 +17,7 @@ if [ "$1" = "build" ]; then
     npm run clone-http-proxy && cd dev/iot-bgw-http-proxy && npm install && cd ../..
     npm run clone-aaa-client && cd dev/iot-bgw-aaa-client && npm install && cd ../..
     
-    chmod -R 777 .
+    chmod -R o+wr dev/
     echo Finished building the dependencies for all components
     exit 0
 
