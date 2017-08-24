@@ -37,11 +37,11 @@ docker run -p 80:80 -p 443:443 -p 8883:8883 -v /my/host/config:/bgw/config haree
 * note: configs in config.json will be converted to envaiorment variables and passed to all components 
 
 ## Components
-* https://github.com/hareeqi/iot-bgw-external-interface
-* https://github.com/hareeqi/iot-bgw-auth-server
-* https://github.com/hareeqi/iot-bgw-mqtt-proxy
-* https://github.com/hareeqi/iot-bgw-http-proxy
-* https://github.com/hareeqi/iot-bgw-aaa-client
+* [iot-bgw-external-interface](../../../iot-bgw-external-interface)
+* [iot-bgw-auth-server](../../../iot-bgw-auth-server)
+* [iot-bgw-mqtt-proxy](../../../iot-bgw-mqtt-proxy[)
+* [iot-bgw-http-proxy](../../../iot-bgw-http-proxy)
+* [iot-bgw-aaa-client](../../../iot-bgw-aaa-client)
 
 ## Development Mode
 
@@ -62,4 +62,5 @@ docker run --rm -it -p 80:80 -p 443:443 -p 8883:8883 -v /my/host/iot-bgw:/bgw ha
 Whenever you change the code in you local dev folder the component will automatically restarts and your changes are reflected immediately 
 
 ## Benchmarking
-https://github.com/hareeqi/iot-bgw-benchmark/
+[iot-bgw-benchmark](../../../iot-bgw-benchmark)
+
