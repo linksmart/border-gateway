@@ -39,7 +39,7 @@ docker run -p 80:80 -p 443:443 -p 8883:8883 -v /my/host/config:/bgw/config haree
 ## Components
 * [iot-bgw-external-interface](../../../iot-bgw-external-interface)
 * [iot-bgw-auth-server](../../../iot-bgw-auth-server)
-* [iot-bgw-mqtt-proxy](../../../iot-bgw-mqtt-proxy[)
+* [iot-bgw-mqtt-proxy](../../../iot-bgw-mqtt-proxy)
 * [iot-bgw-http-proxy](../../../iot-bgw-http-proxy)
 * [iot-bgw-aaa-client](../../../iot-bgw-aaa-client)
 
