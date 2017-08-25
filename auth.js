@@ -1,11 +1,15 @@
 
 const url = require('url');
 const config = require('./config_mgr')();
-const validate = require('./validate')
+const internal = require('./validate')
+const openid = require("./openid_validate")
+let validate = {internal, openid} 
+validate =  validate[config.aaa_client.auth_provider]
 
-const mqttAuth = async (port,client_key,method,path='')=>{
+const mqttAuth = async (port,credentials,method,path='')=>{
     const payload = `MQTT/${method}/${config.broker.address}/${config.broker.port}/${path}`
-    return (await validate(payload,client_key,`[PORT:${port}]`)).status
+    return (await validate(payload,`[source:${port}]`,credentials.username,credentials.password)).status
+
 }
 
 const httpAuth = (req)=>{
@@ -32,7 +36,8 @@ const httpAuth = (req)=>{
     const path = url.parse(req.url).pathname || '/'
     const payload = `HTTP/${req.method}/${host}/${port}/${path.slice(1)}`
 
-   return validate(payload,client_key,`[PORT:${req.connection.remotePort}]`)
+    
+   return validate(payload,`[source:${req.connection.remotePort}]`,client_key)
 
 }
 
