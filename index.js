@@ -44,20 +44,21 @@ if (config.cluster_mode && cluster.isMaster) {
       dstClient.on('error',(err)=>{debug('err in dstClient',err);srcClient.destroy();dstClient.destroy()})
       srcClient.on('error',(err)=>{debug('err in srcClient',err);srcClient.destroy();dstClient.destroy()})
 
-      let client_key =''
+      let credentials ={}
       srcParser.on('packet',async (packet)=> {
         isDebugOn && debug('message from client',JSON.stringify(packet,null,4))
 
         //get the client key and store it
         if(packet.cmd == 'connect'){
-          client_key = packet.username
+          credentials = {username:packet.username , password:packet.password && ""+packet.password}
+
           delete packet.username
           delete packet.password
           broker.username && (packet.username = broker.username)
           broker.password && (packet.password = broker.password)
         }
         // validate the packet
-        let valid = await validate(srcClient.remotePort,packet,client_key)
+        let valid = await validate(srcClient.remotePort,packet,credentials)
 
         valid.packet = valid.packet &&  mqtt.generate(valid.packet)
 
@@ -81,7 +82,7 @@ if (config.cluster_mode && cluster.isMaster) {
       dstParser.on('packet', async (packet)=>{
         isDebugOn && debug('message from broker',JSON.stringify(packet,null,4))
         // only when autherize responce config is set true, i validate each responce to subscriptions
-        if (packet.cmd=='publish' && !(await mqttAuth(srcClient.remotePort,client_key,'SUB',packet.topic))){
+        if (packet.cmd=='publish' && !(await mqttAuth(srcClient.remotePort,credentials,'SUB',packet.topic))){
           if(config.disconnect_on_unauthorized_response ){
             AAA.log(CAT.CON_TERMINATE,'disconnecting client for unauthorize subscription due to change user auth profile');
             srcClient.destroy();
