@@ -42,8 +42,14 @@ let config = {
     cache_for: '10*60',
     purge_exp_cache_timer:'24*60*60',
     secret: process.env.TLS_KEY || "./config/key.pem",
-    host: "http://localhost:5055"
-    }
+    host: "http://localhost:5055",
+    auth_provider: "internal",
+    openid_clientid : "bgw_client",
+    openid_secret: "",
+    openid_grant_type:"password",
+    openid_anonymous_user: "anonymous",
+    openid_anonymous_pass: "anonymous"
+  }
 }
 
 require('../iot-bgw-aaa-client').init("HTTP_PROXY",config)
