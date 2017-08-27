@@ -41,12 +41,14 @@ if (config.cluster_mode && cluster.isMaster) {
       srcClient.on('data',(data)=>srcParser.parse(data))
       config.authorize_response?dstClient.on('data',(data)=>dstParser.parse(data)):dstClient.pipe(srcClient);
 
-      dstClient.on('error',(err)=>{debug('err in dstClient',err);srcClient.destroy();dstClient.destroy()})
-      srcClient.on('error',(err)=>{debug('err in srcClient',err);srcClient.destroy();dstClient.destroy()})
+      dstClient.on('error',(err)=>{debug('err in dstClient',err);srcClient && srcClient.end && srcClient.end();dstClient.destroy();})
+      srcClient.on('error',(err)=>{debug('err in srcClient',err);dstClient && dstClient.end && dstClient.end();srcClient.destroy();})
 
+      const clientAddress = `${srcClient.remoteAddress}:${srcClient.remotePort}`
       let credentials ={}
+      
       srcParser.on('packet',async (packet)=> {
-        isDebugOn && debug('message from client',JSON.stringify(packet,null,4))
+        debug('message from client ->',packet.cmd)
 
         //get the client key and store it
         if(packet.cmd == 'connect'){
@@ -58,7 +60,7 @@ if (config.cluster_mode && cluster.isMaster) {
           broker.password && (packet.password = broker.password)
         }
         // validate the packet
-        let valid = await validate(srcClient.remotePort,packet,credentials)
+        let valid = await validate(clientAddress,packet,credentials)
 
         valid.packet = valid.packet &&  mqtt.generate(valid.packet)
 
@@ -80,9 +82,9 @@ if (config.cluster_mode && cluster.isMaster) {
 
       })
       dstParser.on('packet', async (packet)=>{
-        isDebugOn && debug('message from broker',JSON.stringify(packet,null,4))
+        debug('message from broker ->',packet.cmd)
         // only when autherize responce config is set true, i validate each responce to subscriptions
-        if (packet.cmd=='publish' && !(await mqttAuth(srcClient.remotePort,credentials,'SUB',packet.topic))){
+        if (packet.cmd=='publish' && !(await mqttAuth(clientAddress,credentials,'SUB',packet.topic))){
           if(config.disconnect_on_unauthorized_response ){
             AAA.log(CAT.CON_TERMINATE,'disconnecting client for unauthorize subscription due to change user auth profile');
             srcClient.destroy();

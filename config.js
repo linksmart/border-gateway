@@ -31,7 +31,7 @@ aaa_client:{
     host: "http://localhost:5055",
     auth_provider: "internal",
     openid_clientid : "bgw_client",
-    openid_secret: "",
+    openid_clientsecret: "",
     openid_grant_type:"password",
     openid_anonymous_user: "anonymous",
     openid_anonymous_pass: "anonymous"
