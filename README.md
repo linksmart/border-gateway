@@ -63,4 +63,3 @@ Whenever you change the code in you local dev folder the component will automati
 
 ## Benchmarking
 [iot-bgw-benchmark](../../../iot-bgw-benchmark)
-
