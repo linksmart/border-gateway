@@ -12,22 +12,25 @@ config.aaa_client.purge_exp_cache_timer =  config.aaa_client.purge_exp_cache_tim
 let cache = {}
 
 
-const set = (key,res,path,port, profile, ...message)=>{
-  message && AAA.log(...message,path,port)
-  debug('caching profile',key.user_id,'for',config.aaa_client.cache_for)
-  cache[key.key]= {
+const set = (key,res,path,source, profile, ...message)=>{
+  message && AAA.log(...message,path,source)
+  debug('caching profile')
+  const cache_until = (profile && profile.cache_until)?profile.cache_until: (Date.now() + config.aaa_client.cache_for)
+  cache[key]= {
     aaa_message: message.join(' '),
     return_object: res,
     passed: !!profile,
     profile:profile,
-    cache_until: Date.now() + config.aaa_client.cache_for
+    cache_until: cache_until
   }
 }
 const get = (key)=> {
   if (cache[key] && Date.now() < cache[key].cache_until){
-    return cache[key]
+
+      return cache[key]
   }
-  return false
+  cache[key] && (cache[key].expired = true)
+  return cache[key]
 }
 
 setTimer && setInterval(()=>{

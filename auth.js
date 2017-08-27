@@ -3,7 +3,9 @@ const url = require('url');
 const config = require('./config_mgr')();
 const internal = require('./validate')
 const openid = require("./openid_validate")
-let validate = {internal, openid} 
+const decode64= (b64)=>new Buffer(b64, 'base64').toString('ascii')
+
+let validate = {internal, openid}
 validate =  validate[config.aaa_client.auth_provider]
 
 const mqttAuth = async (port,credentials,method,path='')=>{
@@ -13,31 +15,37 @@ const mqttAuth = async (port,credentials,method,path='')=>{
 }
 
 const httpAuth = (req)=>{
-    let client_key = false;
+    // in case of not open id then the username = bgw_key
+    let username = "";
+    let password = "";
     if (req.headers && req.headers.authorization) {
       var parts = req.headers.authorization.split(' ');
-      parts.length === 2 &&
-       (parts[0] === 'Bearer' && (client_key = parts[1])) ||
-       (parts[0] === 'Basic'  && (client_key = new Buffer(parts[1], 'base64').toString('ascii').split(':')[0]))
+      if(parts.length === 2 ) {
+        (parts[0] === 'Bearer' && (username = parts[1])) ||
+        (parts[0] === 'Basic'  && (username = decode64(parts[1])))
+        parts = username.split(":")
+        username = parts[0]
+        password = parts[1]
+      }
+
     } else if (req.query.bgw_key) {
-      client_key = req.query.bgw_key;
+      username = req.query.bgw_key;
       delete req.query.bgw_key
-      req.url = req.url.replace(`bgw_key=${client_key}`,"")
-      req.originalUrl = req.originalUrl.replace(`bgw_key=${client_key}`,"")
+      req.url = req.url.replace(`bgw_key=${username}`,"")
+      req.originalUrl = req.originalUrl.replace(`bgw_key=${username}`,"")
     }
 
     req.headers.authorization = (req.bgw.alias && req.bgw.alias.override_authorization_header )
                                 || config.override_authorization_header || ""
 
-
-    let host = req.bgw.forward_address.replace(/https?:\/\//,'').split(':')
-    let port = host[1] || (req.bgw.forward_address.startsWith('https')?443:80)
-    host = host[0]
+    const parse_fa =  url.parse(req.bgw.forward_address)
+    let host = parse_fa.hostname
+    let port = parse_fa.port || (parse_fa.protocol=='https:'?443:80)
     const path = url.parse(req.url).pathname || '/'
     const payload = `HTTP/${req.method}/${host}/${port}/${path.slice(1)}`
 
-    
-   return validate(payload,`[source:${req.connection.remotePort}]`,client_key)
+
+    return validate(payload,`[source:${req.connection.remoteAddress}:${req.connection.remotePort}]`,username,password)
 
 }
 
