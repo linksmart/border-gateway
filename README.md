@@ -45,7 +45,8 @@ docker run -p 80:80 -p 443:443 -p 8883:8883 -v /my/host/config:/bgw/config haree
 
 ## Development Mode
 
-1. If you would like to further develop the bgw, in your local machine, clone all the rep recursively by running this command
+If you would like to further develop the bgw in your local machine:
+1. Clone the rep by running this command
 ```
 git clone https://github.com/hareeqi/iot-bgw.git
 ```
