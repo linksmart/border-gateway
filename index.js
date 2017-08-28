@@ -11,17 +11,17 @@ const {mqttAuth, AAA, CAT, isDebugOn,debug} = require('../iot-bgw-aaa-client')
 const validate = require('./validate')
 
 
-if (config.cluster_mode && cluster.isMaster) {
+if (!config.single_core && cluster.isMaster) {
   AAA.log(CAT.PROCESS_START,`Master PID ${process.pid} is running: CPU has ${numCPUs} cores`);
   for (let i = 0; i < numCPUs; i++) cluster.fork();
   cluster.on('exit', (worker, code, signal) =>  AAA.log(CAT.PROCESS_END,`worker ${worker.process.pid} died`));
 
 } else {
-  const createServer = config.direct_tls_mode ? tls.createServer : net.createServer
-  const serverOptions = config.direct_tls_mode?{
+  const createServer = config.disable_bind_tls ?  net.createServer : tls.createServer
+  const serverOptions = config.disable_bind_tls?{}:{
     key: fs.readFileSync(config.tls_key),
     cert: fs.readFileSync(config.tls_cert)
-  }:{}
+  }
   const broker = config.broker
   const clientOptions = {
     host:broker.address,
@@ -46,7 +46,7 @@ if (config.cluster_mode && cluster.isMaster) {
 
       const clientAddress = `${srcClient.remoteAddress}:${srcClient.remotePort}`
       let credentials ={}
-      
+
       srcParser.on('packet',async (packet)=> {
         debug('message from client ->',packet.cmd)
 
@@ -98,7 +98,7 @@ if (config.cluster_mode && cluster.isMaster) {
   });
 
 
-  server.listen(config.direct_tls_mode || config.bind_port, config.bind_address,()=>
-  AAA.log(CAT.PROCESS_START,`PID ${process.pid} listening on ${config.bind_address}:${config.direct_tls_mode || config.bind_port}`));
+  server.listen(config.bind_port, config.bind_address,()=>
+  AAA.log(CAT.PROCESS_START,`PID ${process.pid} listening on ${config.bind_address}:${config.bind_port}`));
 
 }

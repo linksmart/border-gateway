@@ -1,8 +1,11 @@
+
+const ENABLE_EI = process.env.ENABLE_EI
+
 let config = {
-cluster_mode: process.env.CLUSTER_MODE || false,
-bind_address: "0.0.0.0",
-bind_port: 5051,
-direct_tls_mode:false,
+single_core: process.env.SINGLE_CORE  || false,
+bind_address: (ENABLE_EI && "127.0.0.1")||"0.0.0.0",
+bind_port: (ENABLE_EI && 5051) || 8883,
+disable_bind_tls: ENABLE_EI || false,
 tls_key: process.env.TLS_KEY || "./config/key.pem",
 tls_cert: process.env.TLS_CERT || "./config/srv.pem",
 disconnect_on_unauthorized_publish:false,
