@@ -76,7 +76,7 @@ else
   echo
   echo -e  '\t'     bgw service benchmark  '\t\t\t' Run all bgw components plus duplicates http and mqtt proxy
   echo
-  echo -e  '\t'     bgw part \$part_name   '\t\t\t' used to run a single service e.g. \(iot-bgw-mqtt-proxy or http2https\)
+  echo -e  '\t'     bgw part \$part_name   '\t\t\t' used to run a single service e.g. \(iot-bgw-mqtt-proxy or http2https\) good for docker compose
   echo
   echo -e  '\t'     bgw dev                '\t\t\t\t' Run bgw in dev mode using nodemon with reload on change
   echo
