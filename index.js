@@ -12,7 +12,7 @@ const {AAA, CAT, debug} = require('../iot-bgw-aaa-client')
 
 
 
-if (config.cluster_mode && cluster.isMaster) {
+if (!config.single_core && cluster.isMaster) {
   AAA.log(CAT.PROCESS_START,`Master PID ${process.pid} is running: CPU has ${numCPUs} cores`);
   for (let i = 0; i < numCPUs; i++) cluster.fork();
   cluster.on('exit', (worker, code, signal) =>  AAA.log(CAT.PROCESS_END,`worker ${worker.process.pid} died`));
