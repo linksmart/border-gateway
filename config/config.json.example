@@ -1,0 +1,6 @@
+{
+  "tls_key": "./config/key.pem",
+  "tls_cert": "./config/srv.pem",
+  "external_domain":"bgw.hareeqi.com",
+  "http_proxy_aliases":{}
+}
