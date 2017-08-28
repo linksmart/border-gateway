@@ -5,7 +5,7 @@ IoT Border Gateway, remote access and security for the internet of things, conta
 ## Try it out
 ```
 docker pull hareeqi/bgw
-docker run --rm -p 443:443 -e "ADMIN_KEY_PASSWORD=test" hareeqi/bgw
+docker run --rm -it -p 443:443 -e "ADMIN_KEY_PASSWORD=test" hareeqi/bgw
 ```
 * Admin key "admin.test.7UQ4zTKbjv85YKxJwX6Tky1tIl7cpvGHPdsqBTwGZMz"
 * [Test Link](https://bgw.hareeqi.com/bgw-auth/user?bgw_key=admin.test.7UQ4zTKbjv85YKxJwX6Tky1tIl7cpvGHPdsqBTwGZMz) note: port 443 requires sudo access
@@ -52,7 +52,7 @@ git clone https://github.com/hareeqi/iot-bgw.git
 
 2. Build the dependencies for all components and remove the container using this command:
 ```
-docker run --rm -v "$(pwd)"/iot-bgw:/bgw hareeqi/bgw build
+docker run --rm -it -v "$(pwd)"/iot-bgw:/bgw hareeqi/bgw build
 ```
 
 3. Create and run a container with dependencies in dev mode:
