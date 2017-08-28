@@ -6,5 +6,5 @@ RUN npm install
 
 EXPOSE 80 443 8883
 
-ENTRYPOINT ["bash", "bgw.sh"]
+ENTRYPOINT ["./bgw.sh"]
 CMD ["service"]
