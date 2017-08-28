@@ -6,7 +6,9 @@ function run_service {
 function run__dev_service {
   ENABLE_EI=TRUE SINGLE_CORE=TRUE node -r dotenv/config ./node_modules/nodemon/bin/nodemon -w ./dev/iot-bgw-aaa-client -w ./dev/iot-bgw-$1 ./dev/iot-bgw-$1/index.js dotenv_config_path=./node_modules/config.env
 }
-
+function json2env {
+  node json2env.js || kill -KILL 0
+}
 if [ "$1" = "build" ]; then
     echo Building the dependencies for all components...
     npm install --only=dev
@@ -23,12 +25,12 @@ if [ "$1" = "build" ]; then
 
 elif [ "$1" = "part" ]; then
 
-    node json2env.js
+    json2env
     run_service $2
 
 elif [ "$1" = "service" ]; then
 
-    node json2env.js
+    json2env
     run_service http2https &
 
     if [ "$2" = "enable_ei" ]; then
@@ -56,7 +58,7 @@ elif [ "$1" = "service" ]; then
 
 elif [ "$1" = "dev" ]; then
 
-    node json2env.js
+    json2env
     run_service http2https &
     run__dev_service external-interface &
     run__dev_service http-proxy &
