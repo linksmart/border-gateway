@@ -7,7 +7,7 @@ services:
      - AUTH_SERVER_BIND_ADDRESS=auth-server
     volumes:
      - ./config:/bgw/config
-    command: ["part", "auth-server"]
+    command: ["part", "iot-bgw-auth-server"]
     restart: unless-stopped
 
   mqtt-proxy:
@@ -20,7 +20,7 @@ services:
      - AAA_CLIENT_HOST=http://auth-server:5055
     volumes:
      - ./config:/bgw/config
-    command: ["part", "mqtt-proxy"]
+    command: ["part", "iot-bgw-mqtt-proxy"]
     restart: unless-stopped
 
   http-proxy:
@@ -33,7 +33,7 @@ services:
      - AAA_CLIENT_HOST=http://auth-server:5055
     volumes:
     - ./config:/bgw/config
-    command: ["part", "http-proxy"]
+    command: ["part", "iot-bgw-http-proxy"]
     restart: unless-stopped
 
   extern-int:
@@ -49,7 +49,7 @@ services:
      - 8883:8883
     volumes:
      - ./config:/bgw/config
-    command: ["part", "external-interface"]
+    command: ["part", "iot-bgw-external-interface"]
     restart: unless-stopped
 
   http2https:
