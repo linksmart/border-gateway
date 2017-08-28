@@ -15,7 +15,7 @@ const config = require('./config')
 const { transformURI, bgwIfy, REQ_TYPES } = require('./utils')
 const {httpAuth, AAA, CAT, debug, isDebugOn} = require('../iot-bgw-aaa-client')
 
-if (config.cluster_mode && cluster.isMaster) {
+if (!config.single_core && cluster.isMaster) {
   AAA.log(CAT.PROCESS_START,`Master PID ${process.pid} is running: CPU has ${numCPUs} cores`);
   for (let i = 0; i < numCPUs; i++) cluster.fork();
   cluster.on('exit', (worker, code, signal) =>  AAA.log(CAT.PROCESS_END,`worker ${worker.process.pid} died`));
@@ -83,15 +83,15 @@ if (config.cluster_mode && cluster.isMaster) {
     }
 
   });
-  if (config.direct_tls_mode) {
+  if (config.disable_bind_tls) {
+    app.listen(config.bind_port, config.bind_address,()=>
+    AAA.log(CAT.PROCESS_START,`PID ${process.pid} listening on ${config.bind_address}:${config.bind_port}`));
+  } else {
     const options = {
       key: fs.readFileSync(config.tls_key),
       cert: fs.readFileSync(config.tls_cert)
     }
-    https.createServer(options, app).listen(config.direct_tls_mode,  config.bind_address,()=>
-    AAA.log(CAT.PROCESS_START,`PID ${process.pid} listening on ${config.bind_address}:${config.direct_tls_mode}`));
-  } else {
-    app.listen(config.bind_port, config.bind_address,()=>
+    https.createServer(options, app).listen(config.bind_port, config.bind_address,()=>
     AAA.log(CAT.PROCESS_START,`PID ${process.pid} listening on ${config.bind_address}:${config.bind_port}`));
   }
 }

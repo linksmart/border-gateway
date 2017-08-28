@@ -1,9 +1,12 @@
+const ENABLE_EI = process.env.ENABLE_EI
+
+
 let config = {
-  cluster_mode: process.env.CLUSTER_MODE || false,
-  bind_address: "127.0.0.1",
-  bind_port: 5050,
+  single_core: process.env.SINGLE_CORE  || false,
+  bind_address: (ENABLE_EI && "127.0.0.1")||"0.0.0.0",
+  bind_port: (ENABLE_EI && 5050) || 443,
+  disable_bind_tls: ENABLE_EI || false,
   external_domain: process.env.EXTERNAL_DOMAIN || "bgw.hareeqi.com",
-  direct_tls_mode:false,
   tls_key: process.env.TLS_KEY || "./config/key.pem",
   tls_cert: process.env.TLS_CERT || "./config/srv.pem",
   external_port:"443",
