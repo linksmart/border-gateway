@@ -32,6 +32,8 @@ elif [ "$1" = "service" ]; then
 
     json2env
     run_service http2https &
+    run_service iot-bgw-auth-server &
+
 
     if [ "$2" = "enable_ei" ]; then
 
@@ -52,8 +54,6 @@ elif [ "$1" = "service" ]; then
       run_service iot-bgw-mqtt-proxy &
 
     fi
-
-    run_service iot-bgw-auth-server &
 
 
 elif [ "$1" = "dev" ]; then
