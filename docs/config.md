@@ -32,7 +32,7 @@ TLS_KEY=./config/key.pem
 File path to TLS key
 
 
-note: Configs can be set for a a single component by perpending the component prefix (i.e `HTTP_PROXY_TLS_KEY`)
+note: These configs can be set for a a single component by perpending the component prefix (i.e `HTTP_PROXY_TLS_KEY`)
 
 <a name="Global"></a>
 ### Global Configuration
@@ -44,15 +44,15 @@ The flag enables the external interface with all its features ( It is used in `.
 ```
 SINGLE_CORE=false
 ```
-by default the BGW runs multiple process for each CPU virtual core. This is important for scalability. Setting this to true will hinder scalability/performance and run the BGW on a single CPU virtual core only (it is used in `./bgw.sh dev` )
+By default the BGW runs multiple process for each CPU virtual core. It is important for scalability. Setting this to true will hinder scalability/performance and run the BGW on a single CPU virtual core only (it is used in `./bgw.sh dev`)
 
 ```
 DISABLE_BIND_TLS=false
 ```
-by default HTTP and MQTT Proxies bind on a TLS port, when `ENABLE_EI` is true then this becomes true and binding for MQTT and HTTP becomes not TLS as the External Interface will provide TLS termination instead.
+By default HTTP and MQTT Proxies bind on a TLS port, when `ENABLE_EI` is true then this becomes true and binding for MQTT and HTTP becomes not TLS as the External Interface will provide TLS termination instead.
 
 
-note: Configs can be set for a a single component by perpending the component prefix (i.e `HTTP_PROXY_SINGLE_CORE`)
+note: hese configs can be set for a a single component by perpending the prefix (i.e `HTTP_PROXY_SINGLE_CORE`)
 
 <a name="MQTT"></a>
 ### MQTT Proxy
@@ -112,6 +112,14 @@ When true the BGW will only forward defined aliases in the configs and not encod
 HTTP_PROXY_OVERRIDE_AUTHORIZATION_HEADER=false
 ```
 Insert an autherization header to all HTTP requests forwarded through the BGW HTTP Proxy. Usefull for internal auth
+```
+HTTP_PROXY_DISABLE_BGW_KEY_AS_URL_QUERY=false
+```
+Can be used as a security measure to prevent the bgw key to appear int the url or browser history
+```
+HTTP_PROXY_DISABLE_BGW_KEY_AS_URL_QUERY=false
+```
+Can be used as a security measure to prevent the bgw key to appear int the url or browser history
 ```
 HTTP_PROXY_DISABLE_BGW_KEY_AS_URL_QUERY=false
 ```
