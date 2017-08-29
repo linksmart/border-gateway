@@ -15,9 +15,9 @@
 * [AAA Client](#AAA)
 * [Open ID](#OpenID)
 
-
-### Required Configuration
 <a name="Required"></a>
+### Required Configuration
+
 ```
 EXTERNAL_DOMAIN=bgw.hareeqi.com
 ```
@@ -34,8 +34,9 @@ File path to TLS key
 
 note: Configs can be set for a a single component by perpending the component prefix (i.e `HTTP_PROXY_TLS_KEY`)
 
-### Global Configuration
 <a name="Global"></a>
+### Global Configuration
+
 ```
 ENABLE_EI=false
 ```
@@ -53,8 +54,9 @@ by default HTTP and MQTT Proxies bind on a TLS port, when `ENABLE_EI` is true th
 
 note: Configs can be set for a a single component by perpending the component prefix (i.e `HTTP_PROXY_SINGLE_CORE`)
 
-### MQTT Proxy
 <a name="MQTT"></a>
+### MQTT Proxy
+
 ```
 MQTT_PROXY_BIND_ADDRESS=0.0.0.0
 ```
@@ -90,3 +92,27 @@ The upstream broker information encoded in JSON. you can connect to a TLS broker
 HTTP_PROXY_BIND_ADDRESS=0.0.0.0
 ```
 The default bind address for HTTP Proxy is `0.0.0.0` where if the `enable_ei` is true then the default bind address is `127.0.0.1`
+```
+HTTP_PROXY_BIND_PORT=8883
+```
+The default bind port for HTTP Proxy is `443` where if the `enable_ei` is true then the default bind port is `5050`
+```
+HTTP_PROXY_EXTERNAL_PORT=443
+```
+This has nothing to do with the bind port, it is mainly used for translating internal addresses in the HTTP responce
+```
+HTTP_PROXY_SUB_DOMAIN_MODE=false
+```
+When true you can use `https://alias1.bgw.com` instead of `https://bgw.com/alias1`
+```
+HTTP_PROXY_ONLY_FORWARD_ALIASES=false
+```
+When true the BGW will only forward defined aliases in the configs and not encoded addrress provided by translation
+```
+HTTP_PROXY_OVERRIDE_AUTHORIZATION_HEADER=false
+```
+Insert an autherization header to all HTTP requests forwarded through the BGW HTTP Proxy. Usefull for internal auth
+```
+HTTP_PROXY_DISABLE_BGW_KEY_AS_URL_QUERY=false
+```
+Can be used as a security measure to prevent the bgw key to appear int the url or browser history
