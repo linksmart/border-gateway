@@ -1,5 +1,5 @@
 # iot-bgw
-IoT Border Gateway, remote access and security for the internet of things, contains BGW external interface, http-proxy, mqtt-proxy and auth server
+IoT Border Gateway, remote access and security for the Internet of Things, contains BGW external interface, http-proxy, mqtt-proxy and auth server
 
 
 ## Try it out
@@ -23,18 +23,19 @@ docker run -p 80:80 -p 443:443 -p 8883:8883 -v /my/host/config:/bgw/config haree
 ```
 
 
-## Swagger 
+## Swagger
 
-* Click autherize and set the api key to "Bearer [BGW ADMIN KEY]"
-* You can change the swagger target host host by chaning the url 
-* Click here to use swagger [Click here](http://hareeqi.com/swagger/?host=https://bgw.hareeqi.com/bgw-auth&url=https://raw.githubusercontent.com/hareeqi/iot-bgw/master/swagger.json)
+* Click authorize and set the api key to "Bearer [BGW ADMIN KEY]"
+* You can change the swagger target host host by changing the url
+* Click here to use swagger [Click here](http://hareeqi.com/swagger/?host=https://bgw.hareeqi.com/bgw-auth&url=https://raw.githubusercontent.com/hareeqi/iot-bgw/master/docs/swagger.json)
 
 ## Configs
-* All configs for the bgw are passed as envaiorment variables 
-* You can suppliy envaiorment variables from a file by providing config.env or config.json or both
+* All configs for the bgw are passed as environment variables
+* You can supply environment variables from a file by providing config.env or config.json or both
 * Each bgw component has a config prifix (**EI_, HTTP_PROXY_, MQTT_PROXY_, AUTH_SERVER_, AAA_CLIENT_**)
 * Shared config like the aaa client, can be used globally like AAA_CLIENT_ or selectivily like EI_AAA_CLEINT_
-* note: configs in config.json will be converted to envaiorment variables and passed to all components 
+* note: configs in config.json will be converted to environment variables and passed to all components
+* For all available configurations list ([click here](./docs/config.md))
 
 ## Components
 * [iot-bgw-external-interface](../../../iot-bgw-external-interface)
@@ -60,7 +61,7 @@ docker run --rm -it -v "$(pwd)"/iot-bgw:/bgw hareeqi/bgw build
 ```
 docker run --rm -it -p 80:80 -p 443:443 -p 8883:8883 -v "$(pwd)"/iot-bgw:/bgw hareeqi/bgw dev
 ```
-Whenever you change the code in you local dev folder the component will automatically restarts and your changes are reflected immediately 
+Whenever you change the code in you local dev folder the component will automatically restarts and your changes are reflected immediately
 
 ## Benchmarking
 [iot-bgw-benchmark](../../../iot-bgw-benchmark)

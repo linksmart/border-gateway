@@ -34,7 +34,6 @@ elif [ "$1" = "start" ]; then
     run_service http2https &
     run_service iot-bgw-auth-server &
 
-
     if [ "$2" = "enable_ei" ]; then
 
       run_service iot-bgw-external-interface &
@@ -55,7 +54,6 @@ elif [ "$1" = "start" ]; then
 
     fi
 
-
 elif [ "$1" = "dev" ]; then
 
     json2env
@@ -68,7 +66,6 @@ elif [ "$1" = "dev" ]; then
 else
   echo
   echo choose the correct bgw option
-
   echo
   echo -e  '\t'     bgw start            '\t\t\t\t' Start the bgw in default mode \(no ei\)
   echo
@@ -78,7 +75,9 @@ else
   echo
   echo -e  '\t'     bgw part \$part_name   '\t\t\t' used to start a single service e.g. \(iot-bgw-mqtt-proxy or http2https\) good for docker compose
   echo
-  echo -e  '\t'     bgw dev                '\t\t\t\t' Run bgw in dev mode using nodemon with reload on change
+  echo -e  '\t'     bgw dev                '\t\t\t\t' Start bgw in dev mode using nodemon with reload on change
+  echo
+  echo -e  '\t'     bgw build                '\t\t\t\t' Build dev dependencies for dev mode
   echo
   exit 1
 fi
