@@ -99,7 +99,7 @@ The default bind port for HTTP Proxy is `443` where if the `enable_ei` is true t
 ```
 HTTP_PROXY_EXTERNAL_PORT=443
 ```
-This has nothing to do with the bind port, it is mainly used for translating internal addresses in the HTTP responce
+This has nothing to do with the bind port, it is mainly used for translating internal addresses in the HTTP response
 ```
 HTTP_PROXY_SUB_DOMAIN_MODE=false
 ```
