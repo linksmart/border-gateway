@@ -18,7 +18,7 @@ let config = {
     https_req:false,
     http_req:false
     },
-  redirect_to_orginal_address_on_proxy_error:false,
+  redirect_to_original_address_on_proxy_error:false,
   redirect_on_invalid_external_domain:false,
   aliases: {
     rc:{
