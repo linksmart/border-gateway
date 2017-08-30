@@ -4,11 +4,11 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "clone-external-interface": " git clone https://github.com/hareeqi/iot-bgw-external-interface.git ./dev/iot-bgw-external-interface/",
-    "clone-http-proxy": " git clone https://github.com/hareeqi/iot-bgw-http-proxy.git ./dev/iot-bgw-http-proxy/",
-    "clone-mqtt-proxy": " git clone https://github.com/hareeqi/iot-bgw-mqtt-proxy.git ./dev/iot-bgw-mqtt-proxy/",
-    "clone-auth-server": " git clone https://github.com/hareeqi/iot-bgw-auth-server.git ./dev/iot-bgw-auth-server/",
-    "clone-aaa-client": " git clone https://github.com/hareeqi/iot-bgw-aaa-client.git ./dev/iot-bgw-aaa-client/"
+    "clone-external-interface": " git clone https://code.linksmart.eu/scm/bgw/iot-bgw-external-interface.git ./dev/iot-bgw-external-interface/",
+    "clone-http-proxy": " git clone https://code.linksmart.eu/scm/bgw/iot-bgw-http-proxy.git ./dev/iot-bgw-http-proxy/",
+    "clone-mqtt-proxy": " git clone https://code.linksmart.eu/scm/bgw/iot-bgw-mqtt-proxy.git ./dev/iot-bgw-mqtt-proxy/",
+    "clone-auth-server": " git clone https://code.linksmart.eu/scm/bgw/iot-bgw-auth-server.git ./dev/iot-bgw-auth-server/",
+    "clone-aaa-client": " git clone https://code.linksmart.eu/scm/bgw/iot-bgw-aaa-client.git ./dev/iot-bgw-aaa-client/"
   },
   "author": "",
   "license": "ISC",
@@ -18,11 +18,11 @@
     }
   },
   "dependencies": {
-    "iot-bgw-aaa-client": "github:hareeqi/iot-bgw-aaa-client",
-    "iot-bgw-auth-server": "github:hareeqi/iot-bgw-auth-server",
-    "iot-bgw-external-interface": "github:hareeqi/iot-bgw-external-interface",
-    "iot-bgw-http-proxy": "github:hareeqi/iot-bgw-http-proxy",
-    "iot-bgw-mqtt-proxy": "github:hareeqi/iot-bgw-mqtt-proxy"
+    "iot-bgw-aaa-client": "git+https://code.linksmart.eu/scm/bgw/iot-bgw-aaa-client.git",
+    "iot-bgw-auth-server": "git+https://code.linksmart.eu/scm/bgw/iot-bgw-auth-server.git",
+    "iot-bgw-external-interface": "git+https://code.linksmart.eu/scm/bgw/iot-bgw-external-interface.git",
+    "iot-bgw-http-proxy": "git+https://code.linksmart.eu/scm/bgw/iot-bgw-http-proxy.git",
+    "iot-bgw-mqtt-proxy": "git+https://code.linksmart.eu/scm/bgw/iot-bgw-mqtt-proxy.git"
   },
   "devDependencies": {
     "dotenv": "^4.0.0",

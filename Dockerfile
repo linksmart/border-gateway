@@ -1,7 +1,7 @@
 FROM node:7.9
 
 WORKDIR /bgw
-RUN git clone https://github.com/hareeqi/iot-bgw.git .
+RUN git clone https://code.linksmart.eu/scm/bgw/iot-bgw.git .
 RUN npm install
 
 EXPOSE 80 443 8883
