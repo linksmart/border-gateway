@@ -3,8 +3,8 @@ IoT Border Gateway, remote access and security for the Internet of Things, conta
 
 ## Try it out
 ```
-docker pull hareeqi/bgw
-docker run --rm -it -p 443:443 -e "ADMIN_KEY_PASSWORD=test" hareeqi/bgw
+docker pull docker.linksmart.eu/bgw
+docker run --rm -it -p 443:443 -e "ADMIN_KEY_PASSWORD=test" docker.linksmart.eu/bgw
 ```
 * Admin key "admin.test.7UQ4zTKbjv85YKxJwX6Tky1tIl7cpvGHPdsqBTwGZMz"
 * [Test Link](https://bgw.hareeqi.com/bgw-auth/user?bgw_key=admin.test.7UQ4zTKbjv85YKxJwX6Tky1tIl7cpvGHPdsqBTwGZMz) note: port 443 requires sudo access
@@ -18,7 +18,7 @@ docker run --rm -it -p 443:443 -e "ADMIN_KEY_PASSWORD=test" hareeqi/bgw
  * provide a config file (either [config.env](./config/config.env.example) or [config.json](./config/config.json.example) or both)
 * You final docker run command looks like this.
 ```
-docker run -p 80:80 -p 443:443 -p 8883:8883 -v /my/host/config:/bgw/config hareeqi/bgw
+docker run -p 80:80 -p 443:443 -p 8883:8883 -v /my/host/config:/bgw/config docker.linksmart.eu/bgw
 ```
 
 <a name="swagger"></a>
@@ -53,12 +53,12 @@ git clone https://github.com/hareeqi/iot-bgw.git
 
 2. Build the dependencies for all components and remove the container using this command:
 ```
-docker run --rm -it -v "$(pwd)"/iot-bgw:/bgw hareeqi/bgw build
+docker run --rm -it -v "$(pwd)"/iot-bgw:/bgw docker.linksmart.eu/bgw build
 ```
 
 3. Create and run a container with dependencies in dev mode:
 ```
-docker run --rm -it -p 80:80 -p 443:443 -p 8883:8883 -v "$(pwd)"/iot-bgw:/bgw hareeqi/bgw dev
+docker run --rm -it -p 80:80 -p 443:443 -p 8883:8883 -v "$(pwd)"/iot-bgw:/bgw docker.linksmart.eu/bgw dev
 ```
 Whenever you change the code in you local dev folder the component will automatically restarts and your changes are reflected immediately
 
