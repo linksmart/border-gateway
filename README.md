@@ -22,7 +22,7 @@ docker run --rm -it -p 443:443 -e "ADMIN_KEY_PASSWORD=test" hareeqi/bgw
 docker run -p 80:80 -p 443:443 -p 8883:8883 -v /my/host/config:/bgw/config hareeqi/bgw
 ```
 
-
+<a name="swagger"></a>
 ## Swagger
 
 * Click authorize and set the api key to "Bearer [BGW ADMIN KEY]"

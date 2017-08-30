@@ -14,6 +14,7 @@
 * [Auth Server](#Auth)
 * [AAA Client](#AAA)
 * [Open ID](#OpenID)
+* [BGW user access rules](#rules)
 
 <a name="Required"></a>
 ### Required Configuration
@@ -50,6 +51,11 @@ By default the BGW runs multiple process for each CPU virtual core. It is import
 DISABLE_BIND_TLS=false
 ```
 By default HTTP and MQTT Proxies bind on a TLS port, when `ENABLE_EI` is true then this becomes true and binding for MQTT and HTTP becomes not TLS as the External Interface will provide TLS termination instead.
+```
+ADMIN_KEY_PASSWORD=""
+```
+By default every time the auth server is restarted, it generates a new BGW admin key that can be found in `admin_api_key.txt` file in the config folder. This key always re-generate with every restart as a a security measure. However during development or setup this can be a hassle so this option allows you set a fixed string that ensures the BGW admin key remains the same even when the auth server is restarted.
+
 
 
 note: These configs can be set for a a single component by perpending the prefix (i.e `HTTP_PROXY_SINGLE_CORE`)
@@ -121,10 +127,92 @@ HTTP_PROXY_CHANGE_ORIGIN_ON={"https_req":false,"http_req":false}
 ```
 Change the origin of in the HHTP request to match the match the internal resource being forwarded to
 ```
-HTTP_PROXY_REDIRECT_TO_ORGINAL_ADDRESS_ON_PROXY_ERROR=false
+HTTP_PROXY_REDIRECT_TO_ORIGINAL_ADDRESS_ON_PROXY_ERROR=false
 ```
 In case the HTTP proxy could not forward the request to the internal server setting this to true will return 301 redirecting to the original int location
 ```
 HTTP_PROXY_REDIRECT_ON_INVALID_EXTERNAL_DOMAIN=false
 ```
 When trying to access by IP address or another domain, setting this true will redirect to the correct domain.
+```
+HTTP_PROXY_ALIASES={"alias1":{"local_address":"http://alman:8081" .... },"rc2":{"local_address":"http://saar:8081"}}
+```
+Aliases is the most critical config in the HTTP Proxy. Its value is a JSON encoded string that allows you to define short names for internal services to be accessible from outside instead of using encoded long URLs. Each alias can be defined with the following properties:
+  * **local_address:** "http://saar:8081"
+  * **override_authorization_header:** ""
+  * **change_origin_on:** {"https_req":false,"http_req":false}
+  * **translate_local_addresses:** {"enabled":false, "whitelist":["\*.ietf.org"]}
+  * **insecure:** false
+  * **use_basic_auth:** false
+
+Translation allows you to encode all URLs in the HTTP response of this alias to base64 and enables it to be accessible from outside. white-listing
+of translation allows you to exclude certain domains or translation. The insure flag disables the checking of a TLS validity of an internal address. Basic auth allows you enable user name and password prompts on any internal website.
+
+
+<a name="EI"></a>
+### External Interface
+The BGW is an optional component to the BGW that enables extra features that can be used with HTTP or MQTT proxy and can be started with. `./bgw.sh start enable_ei`
+
+```
+EI_REQUEST_CLIENT_CERT=false
+```
+clients connecting to the BGW have to authenticate them selfs with a certificate
+```
+EI_CLIENT_CA_PATH=""
+```
+File path to the certificate authority for connecting clients certificate
+```
+EI_ENABLE_ALPN_MODE=""
+```
+Allows running multiple protocols on the same port using the TLS ALPN extension.
+```
+EI_ENABLE_SNI_MODE=""
+```
+Allows running multiple protocols on the same port using sub-domains available in the TLS SNI extension.
+```
+EI_PRIVATE_BGW=false
+```
+Setting this to true enables IP filtering based on source addresses
+```
+EI_GLOBAL_ALLOWED_ADDRESSES=["0.0.0.0/0"]
+```
+When `EI_PRIVATE_BGW` config is true you can filter IP networks/subnets by providing an array of the filtered networks
+```
+EI_SERVERS=[{"name":"http_proxy"....},{"name":"mqtt_proxy"....}]
+```
+A JSON string indicates the other BGW components the external interface is pointing to, by defaults it only points to HTTP and MQTT proxy. each internal BGW component can have the following properties:
+* **name:** "http_proxy"
+* **bind_address:**  "0.0.0.0"
+* **bind_port:** 443
+* **dest_port:** 5050
+* **dest_address:** "127.0.0.1"
+* **allowed_addresses:** ["0.0.0.0/0"]
+
+The name property is also used for the ALPN mode.
+
+
+
+<a name="Auth"></a>
+### Auth Server
+The Auth Server is an Identity Management and Access Control Server (IAM) that can be access using the [REST API](../README.md#swagger). The Auth server has the following configs
+
+```
+AUTH_SERVER_BIND_ADDRESS=127.0.0.1
+```
+The default bind address for Auth Server is `127.0.0.1`
+```
+AUTH_SERVER_BIND_PORT=5055
+```
+The default bind port for the Auth Server is `5055`
+```
+AUTH_SERVER_ DB_FILE_PATH="./config/bgw_db"
+```
+The Auth Server will create the leveldb files in this path
+```
+AUTH_SERVER_API_ADMIN_KEY_FILE_PATH="./config/"
+```
+When the Auth sever starts it will create the BGW Admin Key file in the following path
+```
+AUTH_SERVER_VALID_TO="365*24*60*60"
+```
+Whenever you create a new user using the REST API, By default the generated key will be valid for onr year unless the valid_to field was specified in the REST request or the default configuration above is changed.  
