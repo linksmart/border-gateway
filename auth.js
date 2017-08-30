@@ -41,8 +41,8 @@ const httpAuth = (req)=>{
     const parse_fa =  url.parse(req.bgw.forward_address)
     let host = parse_fa.hostname
     let port = parse_fa.port || (parse_fa.protocol=='https:'?443:80)
-    const path = url.parse(req.url).pathname || '/'
-    const payload = `HTTP/${req.method}/${host}/${port}/${path.slice(1)}`
+    const path = `${parse_fa.pathname}${url.parse(req.url).pathname}`.replace('//','/')
+    const payload = `HTTP/${req.method}/${host}/${port}${path}`
 
 
     return validate(payload,`[source:${req.connection.remoteAddress}:${req.connection.remotePort}]`,username,password)

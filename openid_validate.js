@@ -68,7 +68,7 @@ module.exports = async(path, source, username=anonymous_user, password=anonymous
   profile.at_body = JSON.parse(new Buffer(profile.access_token.split(".")[1], 'base64').toString('ascii'))
 
 
-  if(!profile.at_body|| !profile.at_body.preferred_username  || !(profile.at_body.bgw_rules || profile.at_body.bgw_rules) ){
+  if(!profile.at_body|| !profile.at_body.preferred_username  || !(profile.at_body.bgw_rules || profile.at_body.group_bgw_rules) ){
     const res = {status:false,error:'Incorrect username or bgw rules from open id provider, double check your credentials'}
     cache.set(key,res,path,source,false,CAT.PROFILE,"DENIED",(grant_type=='password'?username:grant_type),"User profile has been removed or corrupted, check user credentials");
     return res
