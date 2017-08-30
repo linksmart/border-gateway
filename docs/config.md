@@ -17,7 +17,7 @@
 * [BGW user access rules](#rules)
 
 <a name="Required"></a>
-### Required Configuration
+## Required Configuration
 
 ```
 EXTERNAL_DOMAIN=bgw.hareeqi.com
@@ -36,7 +36,7 @@ File path to TLS key
 note: These configs can be set for a a single component by perpending the prefix (i.e `HTTP_PROXY_TLS_KEY`)
 
 <a name="Global"></a>
-### Global Configuration
+## Global Configuration
 
 ```
 ENABLE_EI=false
@@ -61,7 +61,7 @@ By default every time the auth server is restarted, it generates a new BGW admin
 note: These configs can be set for a a single component by perpending the prefix (i.e `HTTP_PROXY_SINGLE_CORE`)
 
 <a name="MQTT"></a>
-### MQTT Proxy
+## MQTT Proxy
 
 ```
 MQTT_PROXY_BIND_ADDRESS=0.0.0.0
@@ -93,7 +93,7 @@ MQTT_PROXY_BROKER={"address":"iot.eclipse.org","port":1883,"username":"","passwo
 The upstream broker information encoded in JSON. you can connect to a TLS broker with username and password and provide a Certificate Authority and client certificates
 
 <a name="HTTP"></a>
-### HTTP Proxy
+## HTTP Proxy
 ```
 HTTP_PROXY_BIND_ADDRESS=0.0.0.0
 ```
@@ -150,7 +150,7 @@ of translation allows you to exclude certain domains or translation. The insure 
 
 
 <a name="EI"></a>
-### External Interface
+## External Interface
 The BGW is an optional component to the BGW that enables extra features that can be used with HTTP or MQTT proxy and can be started with. `./bgw.sh start enable_ei`
 
 ```
@@ -193,7 +193,7 @@ The name property is also used for the ALPN mode.
 
 
 <a name="Auth"></a>
-### Auth Server
+## Auth Server
 The Auth Server is an Identity Management and Access Control Server (IAM) that can be access using the [REST API](../README.md#swagger). The Auth server has the following configs
 
 ```
