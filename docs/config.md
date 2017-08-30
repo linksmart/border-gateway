@@ -32,7 +32,7 @@ TLS_KEY=./config/key.pem
 File path to TLS key
 
 
-note: These configs can be set for a a single component by perpending the component prefix (i.e `HTTP_PROXY_TLS_KEY`)
+note: These configs can be set for a a single component by perpending the prefix (i.e `HTTP_PROXY_TLS_KEY`)
 
 <a name="Global"></a>
 ### Global Configuration
@@ -52,7 +52,7 @@ DISABLE_BIND_TLS=false
 By default HTTP and MQTT Proxies bind on a TLS port, when `ENABLE_EI` is true then this becomes true and binding for MQTT and HTTP becomes not TLS as the External Interface will provide TLS termination instead.
 
 
-note: hese configs can be set for a a single component by perpending the prefix (i.e `HTTP_PROXY_SINGLE_CORE`)
+note: These configs can be set for a a single component by perpending the prefix (i.e `HTTP_PROXY_SINGLE_CORE`)
 
 <a name="MQTT"></a>
 ### MQTT Proxy
@@ -86,8 +86,8 @@ MQTT_PROXY_BROKER={"address":"iot.eclipse.org","port":1883,"username":"","passwo
 ```
 The upstream broker information encoded in JSON. you can connect to a TLS broker with username and password and provide a Certificate Authority and client certificates
 
-### HTTP Proxy
 <a name="HTTP"></a>
+### HTTP Proxy
 ```
 HTTP_PROXY_BIND_ADDRESS=0.0.0.0
 ```
@@ -107,20 +107,24 @@ When true you can use `https://alias1.bgw.com` instead of `https://bgw.com/alias
 ```
 HTTP_PROXY_ONLY_FORWARD_ALIASES=false
 ```
-When true the BGW will only forward defined aliases in the configs and not encoded addrress provided by translation
+When true the BGW will only forward defined aliases in the configs and not encoded addresses provided by translation
 ```
 HTTP_PROXY_OVERRIDE_AUTHORIZATION_HEADER=false
 ```
-Insert an autherization header to all HTTP requests forwarded through the BGW HTTP Proxy. Usefull for internal auth
+Insert an authorization header to all HTTP requests forwarded through the BGW HTTP Proxy. Useful for internal auth
 ```
 HTTP_PROXY_DISABLE_BGW_KEY_AS_URL_QUERY=false
 ```
 Can be used as a security measure to prevent the bgw key to appear int the url or browser history
 ```
-HTTP_PROXY_DISABLE_BGW_KEY_AS_URL_QUERY=false
+HTTP_PROXY_CHANGE_ORIGIN_ON={"https_req":false,"http_req":false}
 ```
-Can be used as a security measure to prevent the bgw key to appear int the url or browser history
+Change the origin of in the HHTP request to match the match the internal resource being forwarded to
 ```
-HTTP_PROXY_DISABLE_BGW_KEY_AS_URL_QUERY=false
+HTTP_PROXY_REDIRECT_TO_ORGINAL_ADDRESS_ON_PROXY_ERROR=false
 ```
-Can be used as a security measure to prevent the bgw key to appear int the url or browser history
+In case the HTTP proxy could not forward the request to the internal server setting this to true will return 301 redirecting to the original int location
+```
+HTTP_PROXY_REDIRECT_ON_INVALID_EXTERNAL_DOMAIN=false
+```
+When trying to access by IP address or another domain, setting this true will redirect to the correct domain.
