@@ -14,7 +14,7 @@
 * [Auth Server](#Auth)
 * [AAA Client](#AAA)
 * [Open ID](#OpenID)
-* [BGW user access rules](#rules)
+* [User Access Rules](#rules)
 
 <a name="Required"></a>
 ## Required Configuration
@@ -215,4 +215,88 @@ When the Auth sever starts it will create the BGW Admin Key file in the followin
 ```
 AUTH_SERVER_VALID_TO="365*24*60*60"
 ```
-Whenever you create a new user using the REST API, By default the generated key will be valid for onr year unless the valid_to field was specified in the REST request or the default configuration above is changed.  
+Whenever you create a new user using the REST API, By default the generated key will be valid for only one year unless the valid_to field was specified in the REST request or the default configuration above is changed.
+
+
+
+<a name="AAA"></a>
+## AAA Client
+The AAA Client is a shared component among all BGW components, It provides Authentication, Authorization and Accounting to the BGW. All the below configs can be limited to a certain component by providing the component prefix i.e `HTTP_PROXY_`
+
+```
+AAA_CLIENT_NAME= http-proxy | mqtt-proxy | ...
+```
+The name that will appear in the logs from that component
+```
+AAA_CLIENT_LOG_LEVEL=info
+```
+the log level, available levels are `all, debug, info, warn, error, fatal, off`
+```
+AAA_CLIENT_NO_COLOR= false
+```
+Setting this to true will disable colors from appearing in the console
+```
+AAA_CLIENT_TIMESTAMP=false
+```
+Your logging service doesn't provide a timestamps, this will generate one
+```
+AAA_CLIENT_DISABLE_CAT=[]
+```
+Disables a certain logging category from appearing, Possible values for the array `PROCESS_START, PROCESS_END, BUG, DEBUG, RULE_ALLOW, CON_TERMINATE, CON_START, CON_END, RULE_DENY, PROFILE, PASSWORD, SUSPENDED, EXPIRED, INVALID_KEY, MISSING_KEY, WRONG_AUTH_SERVER_RES`
+```
+AAA_CLIENT_CACHE_FOR='10*60'
+```
+When a profile retrieved from the Auth Server it is cached for 10 minutes by default (In open id when correct credentials are provided, the access token is cached till the according to the exp field)
+```
+AAA_CLIENT_NO_COLOR= false
+```
+Setting this to true will disable colors from appearing in the console
+```
+AAA_CLIENT_PURGE_EXP_CACHE_TIMER='24*60*60'
+```
+By default every day the BGW will purge expired cached profiled from memory who have not been used again.
+```
+AAA_CLIENT_SECRET= TLS_KEY file path
+```
+By default the BGW will use the TLS key file, hash it and then use it as secret for HMAC key generation using the bgw Auth Server
+```
+AAA_CLIENT_AUTH_PROVIDER=internal
+```
+The auth provider mode `internal` or `openid`
+```
+AAA_CLIENT_HOST="http://localhost:5055"
+```
+The url for the BGW Auth Server or open id provider
+
+<a name="OpenID"></a>
+## Open ID
+In case you would like to use an IAM provider other than the BGW Auth Server. You can use Open ID through key clock server for example. below are the configs.
+```
+AAA_CLIENT_AUTH_PROVIDER=openid
+```
+Setting auth provider to `openid`
+```
+AAA_CLIENT_HOST=https://auth.fit.fraunhofer.de/kc/realms/bgw_example
+```
+The openid provider URL
+```
+AAA_CLIENT_OPENID_CLIENTID=bgw_client
+```
+Open id client id
+```
+AAA_CLIENT_OPENID_CLIENTSECRET=""
+```
+The openid client secert
+```
+AAA_CLIENT_OPENID_GRANT_TYPE="password"
+```
+The BGW supports  three open if grant types `password` , `token`, `authorization_code`
+```
+AAA_CLIENT_ANONYMOUS_USER=anonymous
+```
+User name for an profile designated for anonymous users who doesn't provide credentials. This is important if you want some internal services to be accessible publicly  
+
+```
+AAA_CLIENT_ANONYMOUS_PASS=anonymous
+```
+The password for the anonymous user.
