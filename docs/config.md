@@ -292,12 +292,12 @@ AAA_CLIENT_OPENID_GRANT_TYPE="password"
 ```
 The BGW supports  three open if grant types `password` , `token`, `authorization_code`. For authorization_code the redirect_uri is the same as the host above.
 ```
-AAA_CLIENT_ANONYMOUS_USER=anonymous
+AAA_CLIENT_OPENID_ANONYMOUS_USER=anonymous
 ```
 User name for an profile designated for anonymous users who doesn't provide credentials. This is important if you want some internal services to be accessible publicly  
 
 ```
-AAA_CLIENT_ANONYMOUS_PASS=anonymous
+AAA_CLIENT_OPENID_ANONYMOUS_PASS=anonymous
 ```
 The password for the anonymous user.
 
@@ -305,7 +305,7 @@ The password for the anonymous user.
 
 <a name="rules"></a>
 ## User Access Rules
-Rules are defined either in the BGW Auth server useing the REST API above or using user/group attributes in open id and include it in the access token. the user attribute in openid must have the following names `bgw_rules` and `group_bgw_rule`. In Auth Server the rules are sent as a JSON array of strings while in open id the rules area a long string string separated by space for each rule.
+Rules are defined either in the BGW Auth server useing the REST API above or using user/group attributes in open id and include it in the access token. the user attribute in openid must have the following names `bgw_rules` and `group_bgw_rules`. In Auth Server the rules are sent as a JSON array of strings while in open id the rules area a long string string separated by space for each rule.
 
 
 The rules format is similar to an MQTT topic format
