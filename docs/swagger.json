@@ -3,7 +3,7 @@
     "info": {
         "version": "1.0.0",
         "title": "IoT Border Gateway Auth Server",
-        "description": "https://github.com/hareeqi/iot-bgw-auth-server"
+        "description": "The IoT Border Gateway is a policy enforcing apllication proxy for IoT protocols."
     },
     "securityDefinitions": {
       "api_key": {
