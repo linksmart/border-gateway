@@ -12,7 +12,6 @@
       "in": "header"
       }
     },
-    "host": "",
     "schemes": ["https"],
     "basePath": "/",
     "produces": [
