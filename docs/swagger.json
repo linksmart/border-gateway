@@ -12,7 +12,7 @@
       "in": "header"
       }
     },
-    "host": "locahost",
+    "host": "",
     "schemes": ["https"],
     "basePath": "/",
     "produces": [
