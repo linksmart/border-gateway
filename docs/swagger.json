@@ -3,7 +3,7 @@
     "info": {
         "version": "1.0.0",
         "title": "IoT Border Gateway Auth Server",
-        "description": "The IoT Border Gateway is a policy enforcing apllication proxy for IoT protocols."
+        "description": "The IoT Border Gateway is a policy enforcing application proxy for IoT protocols."
     },
     "securityDefinitions": {
       "api_key": {
@@ -14,7 +14,7 @@
     },
     "host": "locahost",
     "schemes": ["https"],
-    "basePath": "/",
+    "basePath": "/bgw-auth",
     "produces": [
         "application/json"
     ],
@@ -231,7 +231,7 @@
               "parameters": [
                     {
                         "name": "profile",
-                        "description": "All feilds are optional",
+                        "description": "All fields are optional",
                         "in": "body",
                         "required": false,
                         "schema": {
