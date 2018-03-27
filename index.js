@@ -17,12 +17,14 @@ if (!config.single_core && cluster.isMaster) {
   cluster.on('exit', (worker, code, signal) =>  AAA.log(CAT.PROCESS_END,`worker ${worker.process.pid} died`));
 
 } else {
+  AAA.log(CAT.PROCESS_START,`Start single server PID ${process.pid}`);
   const createServer = config.disable_bind_tls ?  net.createServer : tls.createServer
   const serverOptions = config.disable_bind_tls?{}:{
     key: fs.readFileSync(config.tls_key),
     cert: fs.readFileSync(config.tls_cert)
   }
   const broker = config.broker
+  debug('test debug(), broker =',broker)
   const clientOptions = {
     host:broker.address,
     port: broker.port,
@@ -50,7 +52,7 @@ if (!config.single_core && cluster.isMaster) {
       srcParser.on('packet',async (packet)=> {
         debug('message from client ->',packet.cmd)
 
-        //get the client key and store it
+        // get the client key and store it
         if(packet.cmd == 'connect'){
           credentials = {username:packet.username , password:packet.password && ""+packet.password}
 
@@ -65,17 +67,22 @@ if (!config.single_core && cluster.isMaster) {
         valid.packet = valid.packet &&  mqtt.generate(valid.packet)
 
         if (valid.status){
-          dstClient.write(valid.packet) // replaced  mqtt.generate with mqtt.writeToStream
+          dstClient.write(valid.packet) // replaced mqtt.generate with
+										// mqtt.writeToStream
         } else {
           // if the packet is invlaid in the case of publish or sub and
-          // configs for diconnectin on unauthorized is set to tru, then disocnnect
+          // configs for diconnectin on unauthorized is set to tru, then
+			// disocnnect
           if((packet.cmd == 'subscribe' && config.disconnect_on_unauthorized_subscribe) ||
              (packet.cmd == 'publish' && config.disconnect_on_unauthorized_publish)){
             AAA.log(CAT.CON_TERMINATE,'disconnecting client for unauthorized ',packet.cmd);
             srcClient.destroy();
             dstClient.destroy();
           } else {
-            valid.packet && srcClient.write(valid.packet)  // replaced  mqtt.generate with mqtt.writeToStream
+            valid.packet && srcClient.write(valid.packet)  // replaced
+															// mqtt.generate
+															// with
+															// mqtt.writeToStream
           }
         }
 
@@ -83,7 +90,8 @@ if (!config.single_core && cluster.isMaster) {
       })
       dstParser.on('packet', async (packet)=>{
         debug('message from broker ->',packet.cmd)
-        // only when autherize responce config is set true, i validate each responce to subscriptions
+        // only when autherize responce config is set true, i validate each
+		// responce to subscriptions
         if (packet.cmd=='publish' && !(await mqttAuth(clientAddress,credentials,'SUB',packet.topic))){
           if(config.disconnect_on_unauthorized_response ){
             AAA.log(CAT.CON_TERMINATE,'disconnecting client for unauthorize subscription due to change user auth profile');
@@ -91,7 +99,8 @@ if (!config.single_core && cluster.isMaster) {
             dstClient.destroy();
           }
         } else {
-          srcClient.write(mqtt.generate(packet)) // replaced  mqtt.generate with mqtt.writeToStream
+          srcClient.write(mqtt.generate(packet)) // replaced mqtt.generate
+													// with mqtt.writeToStream
         }
       })
     })
