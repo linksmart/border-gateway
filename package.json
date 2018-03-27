@@ -6,7 +6,7 @@
   "scripts": {
     "clone-external-interface": " git clone https://code.linksmart.eu/scm/bgw/iot-bgw-external-interface.git ./dev/iot-bgw-external-interface/",
     "clone-http-proxy": " git clone https://code.linksmart.eu/scm/bgw/iot-bgw-http-proxy.git ./dev/iot-bgw-http-proxy/",
-    "clone-mqtt-proxy": " git clone https://code.linksmart.eu/scm/bgw/iot-bgw-mqtt-proxy.git ./dev/iot-bgw-mqtt-proxy/",
+    "clone-mqtt-proxy": " git clone https://code.linksmart.eu/scm/bgw/iot-bgw-mqtt-proxy.git#bugfix/LS-240 ./dev/iot-bgw-mqtt-proxy/",
     "clone-auth-server": " git clone https://code.linksmart.eu/scm/bgw/iot-bgw-auth-server.git ./dev/iot-bgw-auth-server/",
     "clone-aaa-client": " git clone https://code.linksmart.eu/scm/bgw/iot-bgw-aaa-client.git ./dev/iot-bgw-aaa-client/"
   },
