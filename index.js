@@ -47,6 +47,7 @@ if (!config.single_core && cluster.isMaster) {
       srcClient.on('error',(err)=>{debug('err in srcClient',err);dstClient && dstClient.end && dstClient.end();srcClient.destroy();})
 
       const clientAddress = `${srcClient.remoteAddress}:${srcClient.remotePort}`
+    	  debug('clientAddress =',clientAddress)
       let credentials ={}
 
       srcParser.on('packet',async (packet)=> {
