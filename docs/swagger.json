@@ -12,7 +12,7 @@
       "in": "header"
       }
     },
-    "host": "locahost",
+    "host": "bgw.linksmart.eu",
     "schemes": ["https"],
     "basePath": "/bgw-auth",
     "produces": [
