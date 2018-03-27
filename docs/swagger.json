@@ -13,8 +13,8 @@
       }
     },
     "host": "bgw.linksmart.eu",
-    "schemes": ["https"],
     "basePath": "/bgw-auth",
+    "schemes": ["https"],
     "produces": [
         "application/json"
     ],
