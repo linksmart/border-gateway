@@ -12,7 +12,7 @@
          "in":"header"
       }
    },
-   "host":"bgw.linksmart.eu",
+   "host":"localhost",
    "schemes":[  
       "https"
    ],
