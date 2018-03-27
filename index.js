@@ -17,12 +17,14 @@ if (!config.single_core && cluster.isMaster) {
   cluster.on('exit', (worker, code, signal) =>  AAA.log(CAT.PROCESS_END,`worker ${worker.process.pid} died`));
 
 } else {
+  AAA.log(CAT.PROCESS_START,`Start single server PID ${process.pid}`);
   const createServer = config.disable_bind_tls ?  net.createServer : tls.createServer
   const serverOptions = config.disable_bind_tls?{}:{
     key: fs.readFileSync(config.tls_key),
     cert: fs.readFileSync(config.tls_cert)
   }
   const broker = config.broker
+  debug('test debug(), broker =',broker)
   const clientOptions = {
     host:broker.address,
     port: broker.port,
