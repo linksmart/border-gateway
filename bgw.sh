@@ -3,6 +3,9 @@
 function run_service {
   node -r dotenv/config ./node_modules/$1/index.js dotenv_config_path=./node_modules/config.env || kill -KILL 0
 }
+function run_inspect_service {
+  node --inspect -r dotenv/config ./node_modules/$1/index.js dotenv_config_path=./node_modules/config.env || kill -KILL 0
+}
 function run__dev_service {
   ENABLE_EI=TRUE SINGLE_CORE=TRUE node -r dotenv/config ./node_modules/nodemon/bin/nodemon -w ./dev/iot-bgw-aaa-client -w ./dev/iot-bgw-$1 ./dev/iot-bgw-$1/index.js dotenv_config_path=./node_modules/config.env
 }
@@ -50,7 +53,7 @@ elif [ "$1" = "start" ]; then
     else
 
       run_service iot-bgw-http-proxy &
-      run_service iot-bgw-mqtt-proxy &
+      run_inspect_service iot-bgw-mqtt-proxy &
 
     fi
 
