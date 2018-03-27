@@ -101,7 +101,8 @@ if (!config.single_core && cluster.isMaster) {
           }
         } else {
           srcClient.write(mqtt.generate(packet)) // replaced mqtt.generate
-													// with mqtt.writeToStream
+													// with
+													// mqtt.writeToStream
         }
       })
     })
