@@ -2,11 +2,14 @@ const {connack,suback,puback,pubrec} = require('./packet_template')
 const {mqttAuth, AAA, CAT, isDebugOn,debug} = require('../iot-bgw-aaa-client')
 
 AAA.log(CAT.DEBUG,`Before packet validation`);
-// debug('validate.js, port =',port)
-debug('validate.js, packet =',packet)
-// debug('validate.js, key =',key)
+
 module.exports = async (port, packet, key)=> {
-  let result = true
+  
+    debug('validate.js, port =',port)
+    debug('validate.js, packet =',packet)
+     debug('validate.js, key =',key)
+    
+    let result = true
   switch(  packet.cmd ){
       case 'connect':
     	  AAA.log(CAT.DEBUG,`case connect`);
