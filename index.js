@@ -19,6 +19,7 @@ if (!config.single_core && cluster.isMaster) {
 } else {
   AAA.log(CAT.PROCESS_START,`Start single server PID ${process.pid}`);
   const createServer = config.disable_bind_tls ?  net.createServer : tls.createServer
+	  debug('index.js, createServer =',createServer)	  
   const serverOptions = config.disable_bind_tls?{}:{
     key: fs.readFileSync(config.tls_key),
     cert: fs.readFileSync(config.tls_cert)
@@ -36,6 +37,7 @@ if (!config.single_core && cluster.isMaster) {
   const server = createServer(serverOptions,(srcClient)=> {
       
       debug('index.js, srcClient =',srcClient)
+      debug('index.js, serverOptions =',serverOptions)
 
     const socketConnect = broker.tls?tls.connect:net.connect
     const dstClient = socketConnect(clientOptions,()=>{
