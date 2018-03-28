@@ -24,7 +24,7 @@ if (!config.single_core && cluster.isMaster) {
     cert: fs.readFileSync(config.tls_cert)
   }
   const broker = config.broker
-  debug('test debug(), broker =',broker)
+  debug('index.js, broker =',broker)
   const clientOptions = {
     host:broker.address,
     port: broker.port,
@@ -35,7 +35,7 @@ if (!config.single_core && cluster.isMaster) {
 
   const server = createServer(serverOptions,(srcClient)=> {
       
-      debug('srcClient =',srcClient)
+      debug('index.js, srcClient =',srcClient)
 
     const socketConnect = broker.tls?tls.connect:net.connect
     const dstClient = socketConnect(clientOptions,()=>{
@@ -49,11 +49,11 @@ if (!config.single_core && cluster.isMaster) {
       srcClient.on('error',(err)=>{debug('err in srcClient',err);dstClient && dstClient.end && dstClient.end();srcClient.destroy();})
 
       const clientAddress = `${srcClient.remoteAddress}:${srcClient.remotePort}`
-    	  debug('clientAddress =',clientAddress)
+    	  debug('index.js, clientAddress =',clientAddress)
       let credentials ={}
 
       srcParser.on('packet',async (packet)=> {
-        debug('message from client ->',packet.cmd)
+        debug('index.js, message from client (packet.cmd) = ',packet.cmd)
 
         // get the client key and store it
         if(packet.cmd == 'connect'){
@@ -91,8 +91,8 @@ if (!config.single_core && cluster.isMaster) {
 
 
       })
-      dstParser.on('packet', async (packet)=>{
-        debug('message from broker ->',packet.cmd)
+      dstParser.on('index.js, packet', async (packet)=>{
+        debug('index, js, message from broker (packet.cmd) =',packet.cmd)
         // only when autherize responce config is set true, i validate each
 		// responce to subscriptions
         if (packet.cmd=='publish' && !(await mqttAuth(clientAddress,credentials,'SUB',packet.topic))){
@@ -113,6 +113,6 @@ if (!config.single_core && cluster.isMaster) {
 
   server.listen(config.bind_port, config.bind_address,()=>
   AAA.log(CAT.PROCESS_START,`PID ${process.pid} listening on ${config.bind_address}:${config.bind_port}`));
-  debug('test debug(), server =',server)
+  debug('validate.js, server =',server)
 
 }
