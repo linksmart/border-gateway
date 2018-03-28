@@ -20,13 +20,13 @@ if (!config.single_core && cluster.isMaster) {
   AAA.log(CAT.PROCESS_START,`Start single server PID ${process.pid}`);
   debug('index.js, config.disable_bind_tls =',config.disable_bind_tls)
   const createServer = config.disable_bind_tls ?  net.createServer : tls.createServer
-	  debug('index.js, createServer =',createServer)	  
+	// debug('index.js, createServer =',createServer)
   const serverOptions = config.disable_bind_tls?{}:{
     key: fs.readFileSync(config.tls_key),
     cert: fs.readFileSync(config.tls_cert)
   }
   const broker = config.broker
-  debug('index.js, broker =',broker)
+  // debug('index.js, broker =',broker)
   const clientOptions = {
     host:broker.address,
     port: broker.port,
@@ -37,8 +37,8 @@ if (!config.single_core && cluster.isMaster) {
 
   const server = createServer(serverOptions,(srcClient)=> {
       
-      debug('index.js, srcClient =',srcClient)
-      debug('index.js, serverOptions =',serverOptions)
+      // debug('index.js, srcClient =',srcClient)
+      // debug('index.js, serverOptions =',serverOptions)
 
     const socketConnect = broker.tls?tls.connect:net.connect
     const dstClient = socketConnect(clientOptions,()=>{
@@ -55,7 +55,7 @@ if (!config.single_core && cluster.isMaster) {
     	  debug('index.js, clientAddress =',clientAddress)
       let credentials ={}
 
-      debug('index.js, packet =',packet)
+      // debug('index.js, packet =',packet)
       srcParser.on('packet',async (packet)=> {
         debug('index.js, message from client (packet.cmd) = ',packet.cmd)
 
@@ -119,7 +119,7 @@ if (!config.single_core && cluster.isMaster) {
   AAA.log(CAT.PROCESS_START,`PID ${process.pid} listening on ${config.bind_address}:${config.bind_port}`));
   debug('validate.js, server =',server)
   debug('validate.js, NODE_DEBUG =',process.env.NODE_DEBUG)
-  debug('validate.js, HOSTNAME =',process.env.HOSTNAME)
-  debug('validate.js, EXTERNAL_DOMAIN =',process.env.EXTERNAL_DOMAIN)
+  // debug('validate.js, HOSTNAME =',process.env.HOSTNAME)
+  // debug('validate.js, EXTERNAL_DOMAIN =',process.env.EXTERNAL_DOMAIN)
   
 }
