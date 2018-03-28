@@ -34,6 +34,8 @@ if (!config.single_core && cluster.isMaster) {
   }
 
   const server = createServer(serverOptions,(srcClient)=> {
+      
+      debug('srcClient =',srcClient)
 
     const socketConnect = broker.tls?tls.connect:net.connect
     const dstClient = socketConnect(clientOptions,()=>{
@@ -111,5 +113,6 @@ if (!config.single_core && cluster.isMaster) {
 
   server.listen(config.bind_port, config.bind_address,()=>
   AAA.log(CAT.PROCESS_START,`PID ${process.pid} listening on ${config.bind_address}:${config.bind_port}`));
+  debug('test debug(), server =',server)
 
 }
