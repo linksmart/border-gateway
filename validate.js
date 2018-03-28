@@ -48,7 +48,7 @@ module.exports = async(path,source,client_key)=> {
     return {status:false, error:`Error in contacting the Border Gateway Auth server, ensure the auth server is running and your bgw configration is correct` }
   }
 
-  AAA.log(DEBUG,"Check anonymous (profile,profile.password,profile.valid_rom,profile.valid_to,Array.isArray(profile.rules))",profile,profile.password,profile.valid_rom,profile.valid_to,Array.isArray(profile.rules));
+  AAA.log(CAT.DEBUG,"Check anonymous (profile,profile.password,profile.valid_rom,profile.valid_to,Array.isArray(profile.rules))",profile,profile.password,profile.valid_rom,profile.valid_to,Array.isArray(profile.rules));
   if(!profile || !profile.password ||  isNaN(profile.valid_from || NaN) || isNaN(profile.valid_to || NaN)  || !Array.isArray(profile.rules)){
     const res = {status:false,error:'Supplied BGW API key associated with a user profile that has been removed or corrupted'}
     cache.set(key.key,res,path,source,false,CAT.PROFILE,"DENIED",key.user_id,"User profile has been removed or corrupted");
