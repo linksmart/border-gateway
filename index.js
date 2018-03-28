@@ -52,6 +52,7 @@ if (!config.single_core && cluster.isMaster) {
     	  debug('index.js, clientAddress =',clientAddress)
       let credentials ={}
 
+      debug('index.js, packet =',packet)
       srcParser.on('packet',async (packet)=> {
         debug('index.js, message from client (packet.cmd) = ',packet.cmd)
 
