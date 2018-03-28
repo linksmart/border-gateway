@@ -1,5 +1,5 @@
 const ENABLE_EI = process.env.ENABLE_EI
-const DISABLE_BIND_TLS = process.env.ENABLE_EI
+const DISABLE_BIND_TLS = process.env.DISABLE_BIND_TLS
 
 let config = {
     single_core : process.env.SINGLE_CORE || false,
