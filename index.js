@@ -117,5 +117,8 @@ if (!config.single_core && cluster.isMaster) {
   server.listen(config.bind_port, config.bind_address,()=>
   AAA.log(CAT.PROCESS_START,`PID ${process.pid} listening on ${config.bind_address}:${config.bind_port}`));
   debug('validate.js, server =',server)
-
+  debug('validate.js, NODE_DEBUG =',process.env.NODE_DEBUG)
+  debug('validate.js, HOSTNAME =',process.env.HOSTNAME)
+  debug('validate.js, EXTERNAL_DOMAIN =',process.env.EXTERNAL_DOMAIN)
+  
 }
