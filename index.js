@@ -21,7 +21,7 @@ if (!config.single_core && cluster.isMaster) {
     AAA.log(CAT.PROCESS_START, `Start single server PID ${process.pid}`);
     debug('index.js, config.disable_bind_tls =', config.disable_bind_tls);
     const createServer = config.disable_bind_tls ? net.createServer : tls.createServer;
-    debug('index.js, createServer =',createServer)
+    //debug('index.js, createServer =',createServer)
     const serverOptions = config.disable_bind_tls ? {} : {
         key: fs.readFileSync(config.tls_key),
         cert: fs.readFileSync(config.tls_cert)
@@ -61,7 +61,7 @@ if (!config.single_core && cluster.isMaster) {
             });
 
             const clientAddress = `${srcClient.remoteAddress}:${srcClient.remotePort}`;
-            debug('index.js, clientAddress =', clientAddress);
+            //debug('index.js, clientAddress =', clientAddress);
             let credentials = {};
 
             // debug('index.js, packet =',packet)
@@ -126,8 +126,8 @@ if (!config.single_core && cluster.isMaster) {
 
     server.listen(config.bind_port, config.bind_address, () =>
         AAA.log(CAT.PROCESS_START, `PID ${process.pid} listening on ${config.bind_address}:${config.bind_port}`));
-    debug('validate.js, server =', server);
-    debug('validate.js, NODE_DEBUG =', process.env.NODE_DEBUG);
+    //debug('validate.js, server =', server);
+    //debug('validate.js, NODE_DEBUG =', process.env.NODE_DEBUG);
     // debug('validate.js, HOSTNAME =',process.env.HOSTNAME)
     // debug('validate.js, EXTERNAL_DOMAIN =',process.env.EXTERNAL_DOMAIN)
 
