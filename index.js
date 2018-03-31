@@ -30,6 +30,7 @@ if (!config.single_core && cluster.isMaster) {
     };
 
     config.servers.forEach((srv) => {
+        AAA.log(CAT.PROCESS_START, `Creating server ${srv.name} for external interface...`);
         const external_interface = tls.createServer(options, function (srcClient) {
 
             let dstClient = false;
