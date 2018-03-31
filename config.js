@@ -5,7 +5,7 @@ let config = {
     single_core: process.env.SINGLE_CORE || false,
     bind_address: (ENABLE_EI && "127.0.0.1") || "0.0.0.0",
     bind_port: (ENABLE_EI && 5051) || 8883,
-    disable_bind_tls: ENABLE_EI || DISABLE_BIND_TLS || false,
+    disable_bind_tls: DISABLE_BIND_TLS || false,
     tls_key: process.env.TLS_KEY || "./config/key.pem",
     tls_cert: process.env.TLS_CERT || "./config/srv.pem",
     disconnect_on_unauthorized_publish: false,
