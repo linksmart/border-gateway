@@ -21,7 +21,7 @@ if (!config.single_core && cluster.isMaster) {
     AAA.log(CAT.PROCESS_START, `Start single server PID ${process.pid}`);
     debug('index.js, config.disable_bind_tls =', config.disable_bind_tls);
     const createServer = config.disable_bind_tls ? net.createServer : tls.createServer;
-    // debug('index.js, createServer =',createServer)
+    debug('index.js, createServer =',createServer)
     const serverOptions = config.disable_bind_tls ? {} : {
         key: fs.readFileSync(config.tls_key),
         cert: fs.readFileSync(config.tls_cert)
