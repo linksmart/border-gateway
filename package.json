@@ -20,7 +20,7 @@
   "dependencies": {
     "iot-bgw-aaa-client": "git+https://code.linksmart.eu/scm/bgw/iot-bgw-aaa-client.git#bugfix/LS-240",
     "iot-bgw-auth-server": "git+https://code.linksmart.eu/scm/bgw/iot-bgw-auth-server.git#bugfix/LS-240",
-    "iot-bgw-external-interface": "git+https://code.linksmart.eu/scm/bgw/iot-bgw-external-interface.git",
+    "iot-bgw-external-interface": "git+https://code.linksmart.eu/scm/bgw/iot-bgw-external-interface.git#bugfix/LS-240",
     "iot-bgw-http-proxy": "git+https://code.linksmart.eu/scm/bgw/iot-bgw-http-proxy.git#bugfix/LS-240",
     "iot-bgw-mqtt-proxy": "git+https://code.linksmart.eu/scm/bgw/iot-bgw-mqtt-proxy.git#bugfix/LS-240"
   },
