@@ -60,9 +60,6 @@
                 },
                 "suspended": {  
                     "type": "boolean"
-                },
-                "rules_policy_deny_match": {  
-                    "type": "boolean"
                 }
             }
         },
@@ -105,9 +102,6 @@
                 },
                 "suspended": {  
                     "type": "boolean"
-                },
-                "rules_policy_deny_match": {  
-                    "type": "boolean"
                 }
             }
         },
@@ -134,9 +128,6 @@
                     "type": "integer"
                 },
                 "suspended": {  
-                    "type": "boolean"
-                },
-                "rules_policy_deny_match": {  
                     "type": "boolean"
                 }
             }
@@ -167,9 +158,6 @@
                     "type": "integer"
                 },
                 "suspended": {  
-                    "type": "boolean"
-                },
-                "rules_policy_deny_match": {  
                     "type": "boolean"
                 }
             }
