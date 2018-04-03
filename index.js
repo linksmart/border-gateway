@@ -65,7 +65,7 @@ if (!config.single_core && cluster.isMaster) {
 
             // debug('index.js, packet =',packet)
             srcParser.on('packet', async (packet) => {
-                debug('index.js, message from client (packet.cmd) = ', packet.cmd);
+                // debug('index.js, message from client (packet.cmd) = ', packet.cmd);
 
                 // get the client key and store it
                 if (packet.cmd === 'connect') {
