@@ -99,7 +99,7 @@ HTTP_PROXY_BIND_ADDRESS=0.0.0.0
 ```
 The default bind address for HTTP Proxy is `0.0.0.0` where if the `enable_ei` is true then the default bind address is `127.0.0.1`
 ```
-HTTP_PROXY_BIND_PORT=8883
+HTTP_PROXY_BIND_PORT=443
 ```
 The default bind port for HTTP Proxy is `443` where if the `enable_ei` is true then the default bind port is `5050`
 ```
@@ -270,7 +270,7 @@ The url for the BGW Auth Server or open id provider
 
 <a name="OpenID"></a>
 ## Open ID
-In case you would like to use an IAM provider other than the BGW Auth Server. You can use Open ID through key clock server for example. below are the configs.
+In case you would like to use an IAM provider other than the BGW Auth Server. You can use Open ID through keycloak server for example. below are the configs.
 ```
 AAA_CLIENT_AUTH_PROVIDER=openid
 ```
@@ -286,7 +286,7 @@ Open id client id
 ```
 AAA_CLIENT_OPENID_CLIENTSECRET=""
 ```
-The openid client secert
+The openid client secret
 ```
 AAA_CLIENT_OPENID_GRANT_TYPE="password"
 ```
