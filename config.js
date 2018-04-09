@@ -3,8 +3,7 @@ const DISABLE_BIND_TLS = process.env.DISABLE_BIND_TLS;
 
 let config = {
     single_core: process.env.SINGLE_CORE || false,
-    // bind_address: (ENABLE_EI && "127.0.0.1") || "0.0.0.0",
-    bind_address: "0.0.0.0",
+    bind_address: (ENABLE_EI && "127.0.0.1") || "0.0.0.0",
     bind_port: (ENABLE_EI && 5051) || 8883,
 disable_bind_tls: ENABLE_EI || false,
     tls_key: process.env.TLS_KEY || "./config/key.pem",
