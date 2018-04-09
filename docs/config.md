@@ -290,7 +290,7 @@ The openid client secret
 ```
 AAA_CLIENT_OPENID_GRANT_TYPE="password"
 ```
-The BGW supports  three open if grant types `password` , `token`, `authorization_code`. For authorization_code the redirect_uri is the same as the host above.
+The BGW supports  three openID grant types `password` , `refresh_token`, `authorization_code`. For authorization_code the redirect_uri is the same as the host above.
 ```
 AAA_CLIENT_OPENID_ANONYMOUS_USER=anonymous
 ```
