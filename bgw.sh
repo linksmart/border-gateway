@@ -37,7 +37,7 @@ elif [ "$1" = "start" ]; then
 
     json2env
     # export NODE_DEBUG=cluster,net,http,fs,tls,module,timers node
-    # export NODE_DEBUG=net,http,tls node
+    export NODE_DEBUG=net,http,tls node
     run_service http2https &
     run_service iot-bgw-auth-server &
 
