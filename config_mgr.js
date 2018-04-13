@@ -18,7 +18,7 @@ const setConfig = (prefix, c) => {
     parseConfig(prefix, c);
 
     setupAdminKey(c);
-    //setupBgwAuthAlias(c)
+    setupBgwAuthAlias(c)
     config = c;
 };
 
