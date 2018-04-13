@@ -59,5 +59,5 @@ let config = {
     }
 };
 
-require('../iot-bgw-aaa-client').init("HTTP_PROXY", config);
+//require('../iot-bgw-aaa-client').init("HTTP_PROXY", config);
 module.exports = config;
