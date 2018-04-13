@@ -6,7 +6,7 @@ let config = {
     single_core: process.env.SINGLE_CORE || false,
     bind_address: (ENABLE_EI && "127.0.0.1") || "0.0.0.0", //true if ENABLE_EI is set on any value!
     bind_port: (ENABLE_EI && 5050) || 443, //true if ENABLE_EI is set on any value!
-  disable_bind_tls: ENABLE_EI || false, //true if ENABLE_EI is set on any value!
+    disable_bind_tls: ENABLE_EI || false, //true if ENABLE_EI is set on any value!
     external_domain: process.env.EXTERNAL_DOMAIN || "bgw.hareeqi.com",
     tls_key: process.env.TLS_KEY || "./config/key.pem",
     tls_cert: process.env.TLS_CERT || "./config/srv.pem",
@@ -35,6 +35,9 @@ let config = {
             insecure: false,
             override_authorization_header: "",
             use_basic_auth: false
+        },
+        sc: {
+            local_address: "http://localhost:8082"
         }
     },
     aaa_client: {
