@@ -18,12 +18,12 @@ const CAT = {
   INVALID_KEY:"W INVALID_KEY",
   MISSING_KEY:"W MISSING_KEY",
   WRONG_AUTH_SERVER_RES:"E WRONG_AUTH_SERVER_RES"
-}
-const log_levels = {"A":0,"D":1,"I":2,"W":3,"E":4,"F":5,"O":6}
-const ps_log_level = log_levels[config.aaa_client.log_level[0].toUpperCase()] -1
-const disabled_cat = {}
-config.aaa_client.disable_cat.forEach((cat)=>disabled_cat[cat]=true)
-const can_log = (cat)=> log_levels[cat[0]] > ps_log_level && !disabled_cat[cat.slice(2)]
+};
+const log_levels = {"A":0,"D":1,"I":2,"W":3,"E":4,"F":5,"O":6};
+const ps_log_level = log_levels[config.aaa_client.log_level[0].toUpperCase()] -1;
+const disabled_cat = {};
+config.aaa_client.disable_cat.forEach((cat)=>disabled_cat[cat]=true);
+const can_log = (cat)=> log_levels[cat[0]] > ps_log_level && !disabled_cat[cat.slice(2)];
 
 
 let process_color = {
@@ -31,29 +31,29 @@ let process_color = {
   mqtt:chalk.bgBlue,
   exte:chalk.bgGreen,
   auth:chalk.bgMagenta
-}
-process_color = process_color[config.aaa_client.name.slice(0,4)]
-process_color = process_color ? process_color : chalk.reset
+};
+process_color = process_color[config.aaa_client.name.slice(0,4)];
+process_color = process_color ? process_color : chalk.reset;
 let cat_color = {
   "D":chalk.dim,
   "W":chalk.yellow,
   "F":chalk.red,
   "E":chalk.red
-}
-const timestamp = ()=> `[${new Date().toLocaleString()}]`
+};
+const timestamp = ()=> `[${new Date().toLocaleString()}]`;
 
 const logFunction = {
   log :(cat, ...arg)=> can_log(cat) && console.log(config.aaa_client.name,"AAA", cat, ...arg),
   logTS :(cat, ...arg)=> can_log(cat) && console.log(timestamp(),config.aaa_client.name,"AAA", cat, ...arg),
   logColor : (cat, ...arg)=> can_log(cat) && console.log(process_color(config.aaa_client.name,"AAA"), cat_color[cat[0]]?cat_color[cat[0]](cat, ...arg):chalk.reset(cat,...arg)),
   logColorTS : (cat, ...arg)=> can_log(cat) &&console.log(process_color(timestamp(),config.aaa_client.name,"AAA"), cat_color[cat[0]]?cat_color[cat[0]](cat, ...arg):chalk.reset(cat,...arg))
-}
-const isTS = config.aaa_client.timestamp ? "TS":""
-const isColor = config.aaa_client.no_color ? "" : "Color"
-const log = logFunction[`log${isColor}${isTS}`]
+};
+const isTS = config.aaa_client.timestamp ? "TS":"";
+const isColor = config.aaa_client.no_color ? "" : "Color";
+const log = logFunction[`log${isColor}${isTS}`];
 
-const debug = (...arg)=>log(CAT.DEBUG, ...arg)
-const isDebugOn = can_log("D")
+const debug = (...arg)=>log(CAT.DEBUG, ...arg);
+const isDebugOn = can_log("D");
 
 process.on('unhandledRejection', (err) => {
   log(CAT.BUG,err.stack);
@@ -67,17 +67,17 @@ process.on('uncaughtException', (err) => {
 const endProcess =(sig) => process.on(sig, () => {
   log(CAT.PROCESS_END, `Shutting down the bgw with ${sig}`);
   process.exit();
-})
-endProcess('SIGINT')
-endProcess('SIGTERM')
+});
+endProcess('SIGINT');
+endProcess('SIGTERM');
 
 
-let configCopy = Object.assign({},config)
-configCopy.aaa_client = Object.assign({},config.aaa_client)
-configCopy.aaa_client.secret = "[redacted]"
-setTimeout(()=>debug('configs',JSON.stringify(configCopy,null,4)),1000)
+let configCopy = Object.assign({},config);
+configCopy.aaa_client = Object.assign({},config.aaa_client);
+configCopy.aaa_client.secret = "[redacted]";
+setTimeout(()=>debug('configs', JSON.stringify(configCopy, null, 4)), 1000);
 
 
 
-module.exports = {log,CAT,debug,isDebugOn}
-module.exports.AAA = module.exports
+module.exports = {log,CAT,debug,isDebugOn};
+module.exports.AAA = module.exports;
