@@ -22,11 +22,11 @@
   },
   "homepage": "https://github.com/hareeqi/iot-bgw-http-proxy#readme",
   "dependencies": {
-    "base-x": "^3.0.0",
-    "cors": "^2.8.3",
-    "domain-match": "^1.0.0",
-    "express": "^4.15.2",
-    "http-proxy": "^1.16.2",
-    "transformer-proxy": "^0.3.3"
+    "base-x": "latest",
+    "cors": "latest",
+    "domain-match": "latest",
+    "express": "latest",
+    "http-proxy": "latest",
+    "transformer-proxy": "latest"
   }
 }
