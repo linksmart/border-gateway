@@ -38,8 +38,8 @@ let config = {
         },
 
         sc: {
-            local_address: "http://localhost:8082",
-            use_basic_auth: true
+            local_address: "https://iot.linksmart.eu/sc",
+            use_basic_auth: false
         }
     },
     aaa_client: {
