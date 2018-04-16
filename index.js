@@ -5,7 +5,7 @@ const numCPUs = require('os').cpus().length;
 const fs = require('fs');
 const tls = require('tls');
 const net = require('net');
-const insubnet = require('insubnet');
+//const insubnet = require('insubnet');
 const config = require('./config');
 const {AAA, CAT, debug} = require('../iot-bgw-aaa-client');
 
@@ -46,13 +46,15 @@ if (!config.single_core && cluster.isMaster) {
 
             const {dest_address, dest_port, name, allowed_addresses} = ALPN_srv || SNI_srv || srv;
 
-            if (config.private_bgw &&
-                    (!insubnet.Validate(srcClient.remoteAddress, config.global_allowed_addresses) ||
-                            !insubnet.Validate(srcClient.remoteAddress, allowed_addresses || []))) {
-                AAA.log(CAT.CON_TERMINATE, `This is a private BGW: illegal connection made by ${srcClient.remoteAddress}`);
-                srcClient.destroy();
-
-            } else if (config.enable_ALPN_mode && srcClient.alpnProtocol === 'bgw_info') {
+            //if (config.private_bgw &&
+            //        (!insubnet.Validate(srcClient.remoteAddress, config.global_allowed_addresses) ||
+            //                !insubnet.Validate(srcClient.remoteAddress, allowed_addresses || []))) {
+            //    AAA.log(CAT.CON_TERMINATE, `This is a private BGW: illegal connection made by ${srcClient.remoteAddress}`);
+            //    srcClient.destroy();
+            //
+            //} 
+            //else
+            if (config.enable_ALPN_mode && srcClient.alpnProtocol === 'bgw_info') {
                 srcClient.end(config.servers.reduce((a, c) => a + ',' + c.name, ''));
             } else if (srcClient.remoteAddress && srcClient.remotePort) {
                 dstClient = net.connect({host: dest_address, port: dest_port}, () => {
