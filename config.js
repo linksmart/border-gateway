@@ -38,8 +38,8 @@ let config = {
         },
 
         sc: {
-            local_address: "http://localhost:8082",
-            use_basic_auth: true
+            local_address: "http://localhost:8082"//,
+//            use_basic_auth: true
         }
     },
     aaa_client: {
