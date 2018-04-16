@@ -40,7 +40,7 @@ const can_log = (cat)=> log_levels[cat[0]] > ps_log_level && !disabled_cat[cat.s
 //  "F":chalk.red,
 //  "E":chalk.red
 //};
-//const timestamp = ()=> `[${new Date().toLocaleString()}]`;
+const timestamp = ()=> `[${new Date().toLocaleString()}]`;
 
 const logFunction = {
   log :(cat, ...arg)=> can_log(cat) && console.log(config.aaa_client.name,"AAA", cat, ...arg),
