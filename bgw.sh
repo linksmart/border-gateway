@@ -19,7 +19,7 @@ if [ "$1" = "build" ]; then
     npm install --only=dev
 
     npm run clone-external-interface && cd dev/iot-bgw-external-interface && npm install && cd ../..
-    npm run clone-auth-server && cd dev/iot-bgw-auth-server && npm install && cd ../..
+    #npm run clone-auth-server && cd dev/iot-bgw-auth-server && npm install && cd ../..
     npm run clone-mqtt-proxy && cd dev/iot-bgw-mqtt-proxy && npm install && cd ../..
     npm run clone-http-proxy && cd dev/iot-bgw-http-proxy && npm install && cd ../..
     npm run clone-aaa-client && cd dev/iot-bgw-aaa-client && npm install && cd ../..
@@ -39,7 +39,7 @@ elif [ "$1" = "start" ]; then
     # export NODE_DEBUG=cluster,net,http,fs,tls,module,timers node
     # export NODE_DEBUG=net,http,tls node
     run_service http2https &
-    run_service iot-bgw-auth-server &
+    #run_service iot-bgw-auth-server &
 
     if [ "$2" = "enable_ei" ]; then
 
@@ -75,7 +75,7 @@ elif [ "$1" = "dev" ]; then
     run__dev_service external-interface &
     run__dev_service http-proxy &
     run__dev_service mqtt-proxy &
-    run__dev_service auth-server &
+    #run__dev_service auth-server &
 
 else
   echo
