@@ -34,7 +34,7 @@ let config = {
             },
             insecure: false,
             override_authorization_header: "",
-            use_basic_auth: false
+            use_basic_auth: true
         },
 
         sc: {
