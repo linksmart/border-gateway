@@ -1,4 +1,5 @@
-FROM node:7.9
+FROM node:latest
+#FROM node:7.9
 
 WORKDIR /bgw
 RUN git clone https://code.linksmart.eu/scm/bgw/iot-bgw.git .
