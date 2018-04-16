@@ -38,7 +38,7 @@ let config = {
         },
 
         sc: {
-            local_address: "localhost:8082",
+            local_address: "http://localhost:8082",
             use_basic_auth: false
         }
     },
