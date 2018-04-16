@@ -34,12 +34,12 @@ let config = {
             },
             insecure: false,
             override_authorization_header: "",
-            use_basic_auth: true
+            use_basic_auth: false
         },
 
         sc: {
-            local_address: "http://localhost:8082"//,
-//            use_basic_auth: true
+            local_address: "http://localhost:8082",
+            use_basic_auth: true
         }
     },
     aaa_client: {
