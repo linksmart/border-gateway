@@ -21,7 +21,4 @@
     }
   },
   "homepage": "https://github.com/hareeqi/iot-bgw-external-interface#readme",
-  "dependencies": {
-    "insubnet": "0.0.8"
-  }
 }
