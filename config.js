@@ -36,8 +36,10 @@ let config = {
             override_authorization_header: "",
             use_basic_auth: false
         },
+
         sc: {
-            local_address: "http://localhost:8082"
+            local_address: "http://localhost:8082",
+            use_basic_auth: true
         }
     },
     aaa_client: {
