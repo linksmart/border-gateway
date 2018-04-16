@@ -7,7 +7,6 @@
     "clone-external-interface": " git clone https://code.linksmart.eu/scm/bgw/iot-bgw-external-interface.git ./dev/iot-bgw-external-interface/",
     "clone-http-proxy": " git clone https://code.linksmart.eu/scm/bgw/iot-bgw-http-proxy.git ./dev/iot-bgw-http-proxy/",
     "clone-mqtt-proxy": " git clone -b bugfix/LS-240 --single-branch https://code.linksmart.eu/scm/bgw/iot-bgw-mqtt-proxy.git ./dev/iot-bgw-mqtt-proxy/",
-    "clone-auth-server": " git clone https://code.linksmart.eu/scm/bgw/iot-bgw-auth-server.git ./dev/iot-bgw-auth-server/",
     "clone-aaa-client": " git clone https://code.linksmart.eu/scm/bgw/iot-bgw-aaa-client.git ./dev/iot-bgw-aaa-client/"
   },
   "author": "",
@@ -19,7 +18,6 @@
   },
   "dependencies": {
     "iot-bgw-aaa-client": "git+https://code.linksmart.eu/scm/bgw/iot-bgw-aaa-client.git#bugfix/LS-240",
-    "iot-bgw-auth-server": "git+https://code.linksmart.eu/scm/bgw/iot-bgw-auth-server.git#bugfix/LS-240",
     "iot-bgw-external-interface": "git+https://code.linksmart.eu/scm/bgw/iot-bgw-external-interface.git#bugfix/LS-240",
     "iot-bgw-http-proxy": "git+https://code.linksmart.eu/scm/bgw/iot-bgw-http-proxy.git#bugfix/LS-240",
     "iot-bgw-mqtt-proxy": "git+https://code.linksmart.eu/scm/bgw/iot-bgw-mqtt-proxy.git#bugfix/LS-240"
