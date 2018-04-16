@@ -52,7 +52,7 @@ let config = {
         purge_exp_cache_timer: '24*60*60',
         secret: process.env.TLS_KEY || "./config/key.pem",
         host: "http://localhost:5055",
-        auth_provider: "internal",
+        auth_provider: "openid",
         openid_clientid: "bgw_client",
         openid_clientsecret: "",
         openid_grant_type: "password",
