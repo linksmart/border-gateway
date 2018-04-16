@@ -22,6 +22,6 @@
   },
   "homepage": "https://github.com/hareeqi/iot-bgw-mqtt-proxy#readme",
   "dependencies": {
-    "mqtt-packet": "^5.4.0"
+    "mqtt-packet": "latest"
   }
 }
