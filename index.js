@@ -1,14 +1,14 @@
-const { setConfig } = require('./config_mgr')
+const { setConfig } = require('./config_mgr');
 
-let  index =  {}
+let  index =  {};
 
 index.init = (prefix,config)=>{
 
     setConfig(prefix,config);
 
-    const {httpAuth, mqttAuth } = require('./auth')
-    const {hmac, genId, sign,verify } = require('./key')
-    const {AAA, CAT,debug,isDebugOn} = require('./log')
+    const {httpAuth, mqttAuth } = require('./auth');
+    //const {hmac, genId, sign,verify } = require('./key')
+    const {AAA, CAT,debug,isDebugOn} = require('./log');
 
     index.hmac   =  hmac ;
     index.genId  =  genId ;
@@ -25,6 +25,6 @@ index.init = (prefix,config)=>{
     return index;
 
 
-}
+};
 
-module.exports = index
+module.exports = index;
