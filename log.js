@@ -1,4 +1,4 @@
-const chalk = require('chalk');
+//const chalk = require('chalk');
 const config = require('./config_mgr')();
 
 const CAT = {
@@ -26,27 +26,27 @@ config.aaa_client.disable_cat.forEach((cat)=>disabled_cat[cat]=true);
 const can_log = (cat)=> log_levels[cat[0]] > ps_log_level && !disabled_cat[cat.slice(2)];
 
 
-let process_color = {
-  http:chalk.bgCyan,
-  mqtt:chalk.bgBlue,
-  exte:chalk.bgGreen,
-  auth:chalk.bgMagenta
-};
-process_color = process_color[config.aaa_client.name.slice(0,4)];
-process_color = process_color ? process_color : chalk.reset;
-let cat_color = {
-  "D":chalk.dim,
-  "W":chalk.yellow,
-  "F":chalk.red,
-  "E":chalk.red
-};
-const timestamp = ()=> `[${new Date().toLocaleString()}]`;
+//let process_color = {
+//  http:chalk.bgCyan,
+//  mqtt:chalk.bgBlue,
+//  exte:chalk.bgGreen,
+//  auth:chalk.bgMagenta
+//};
+//process_color = process_color[config.aaa_client.name.slice(0,4)];
+//process_color = process_color ? process_color : chalk.reset;
+//let cat_color = {
+//  "D":chalk.dim,
+//  "W":chalk.yellow,
+//  "F":chalk.red,
+//  "E":chalk.red
+//};
+//const timestamp = ()=> `[${new Date().toLocaleString()}]`;
 
 const logFunction = {
   log :(cat, ...arg)=> can_log(cat) && console.log(config.aaa_client.name,"AAA", cat, ...arg),
-  logTS :(cat, ...arg)=> can_log(cat) && console.log(timestamp(),config.aaa_client.name,"AAA", cat, ...arg),
-  logColor : (cat, ...arg)=> can_log(cat) && console.log(process_color(config.aaa_client.name,"AAA"), cat_color[cat[0]]?cat_color[cat[0]](cat, ...arg):chalk.reset(cat,...arg)),
-  logColorTS : (cat, ...arg)=> can_log(cat) &&console.log(process_color(timestamp(),config.aaa_client.name,"AAA"), cat_color[cat[0]]?cat_color[cat[0]](cat, ...arg):chalk.reset(cat,...arg))
+  logTS :(cat, ...arg)=> can_log(cat) && console.log(timestamp(),config.aaa_client.name,"AAA", cat, ...arg)//,
+//  logColor : (cat, ...arg)=> can_log(cat) && console.log(process_color(config.aaa_client.name,"AAA"), cat_color[cat[0]]?cat_color[cat[0]](cat, ...arg):chalk.reset(cat,...arg)),
+//  logColorTS : (cat, ...arg)=> can_log(cat) &&console.log(process_color(timestamp(),config.aaa_client.name,"AAA"), cat_color[cat[0]]?cat_color[cat[0]](cat, ...arg):chalk.reset(cat,...arg))
 };
 const isTS = config.aaa_client.timestamp ? "TS":"";
 const isColor = config.aaa_client.no_color ? "" : "Color";
