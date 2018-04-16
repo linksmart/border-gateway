@@ -8,9 +8,9 @@ function run_service {
 function run_inspect_service {
   node --inspect=0.0.0.0:9229 -r dotenv/config ./node_modules/$1/index.js dotenv_config_path=./node_modules/config.env || kill -KILL 0
 }
-function run__dev_service {
-  ENABLE_EI=TRUE SINGLE_CORE=TRUE node -r dotenv/config ./node_modules/nodemon/bin/nodemon -w ./dev/iot-bgw-aaa-client -w ./dev/iot-bgw-$1 ./dev/iot-bgw-$1/index.js dotenv_config_path=./node_modules/config.env
-}
+#function run__dev_service {
+#  ENABLE_EI=TRUE SINGLE_CORE=TRUE node -r dotenv/config ./node_modules/nodemon/bin/nodemon -w ./dev/iot-bgw-aaa-client -w ./dev/iot-bgw-$1 ./dev/iot-bgw-$1/index.js dotenv_config_path=./node_modules/config.env
+#}
 function json2env {
   node json2env.js || exit 1
 }
@@ -68,14 +68,14 @@ elif [ "$1" = "start" ]; then
       #run_inspect_service iot-bgw-mqtt-proxy &
     fi
 
-elif [ "$1" = "dev" ]; then
+#elif [ "$1" = "dev" ]; then
 
-    json2env
-    run_service http2https &
-    run__dev_service external-interface &
-    run__dev_service http-proxy &
-    run__dev_service mqtt-proxy &
-    #run__dev_service auth-server &
+#    json2env
+#    run_service http2https &
+#    run__dev_service external-interface &
+#    run__dev_service http-proxy &
+#    run__dev_service mqtt-proxy &
+#    run__dev_service auth-server &
 
 else
   echo
