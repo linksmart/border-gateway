@@ -22,25 +22,25 @@ let config = {
     redirect_to_original_address_on_proxy_error: false,
     redirect_on_invalid_external_domain: false,
     aliases: {
-        rc: {
-            local_address: "http://alman:8081",
-            change_origin_on: {
-                https_req: false,
-                http_req: false
-            },
-            translate_local_addresses: {
-                enabled: false,
-                whitelist: ["*.ietf.org"]
-            },
-            insecure: false,
-            override_authorization_header: "",
-            use_basic_auth: false
-        },
-
-        sc: {
-            local_address: "http://localhost:8082",
-            use_basic_auth: false
-        }
+//        rc: {
+//            local_address: "http://alman:8081",
+//            change_origin_on: {
+//                https_req: false,
+//                http_req: false
+//            },
+//            translate_local_addresses: {
+//                enabled: false,
+//                whitelist: ["*.ietf.org"]
+//            },
+//            insecure: false,
+//            override_authorization_header: "",
+//            use_basic_auth: false
+//        },
+//
+//        sc: {
+//            local_address: "http://localhost:8082",
+//            use_basic_auth: false
+//        }
     },
     aaa_client: {
         name: "http-proxy",
