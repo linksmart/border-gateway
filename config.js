@@ -39,7 +39,7 @@ let config = {
 
         sc: {
             local_address: "http://localhost:8082",
-            use_basic_auth: true
+            use_basic_auth: false
         }
     },
     aaa_client: {
