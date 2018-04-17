@@ -16,8 +16,8 @@ const mqttAuth = async (port,credentials,method,path='')=>{
 
 const httpAuth = (req)=>{
     // in case of not open id then the username = bgw_key
-    let username = "";
-    let password = "";
+    //let username = "";
+    //let password = "";
     if (req.headers && req.headers.authorization) {
       var parts = req.headers.authorization.split(' ');
       if(parts.length === 2 ) {
