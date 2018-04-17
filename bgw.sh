@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set -x
-
 function run_service {
   node -r dotenv/config ./node_modules/$1/index.js dotenv_config_path=./node_modules/config.env || kill -KILL 0
 }
