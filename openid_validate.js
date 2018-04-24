@@ -2,7 +2,7 @@ const fetch = require('node-fetch');
 const qs = require("querystring");
 const matchRules = require('./rules');
 const config = require('./config_mgr')();
-//const cache = require('./cache');
+const cache = require('./cache');
 const {AAA, CAT, isDebugOn, debug} = require('./log');
 
 let parse_credentials = {
@@ -21,21 +21,21 @@ module.exports = async(path, source, username = anonymous_user, password = anony
     let req_credentials = parse_credentials[grant_type](username, password);
 
 
-//    const cached = cache.get(key);
-//    if (cached) {
-//        if (cached.expired) {
-//            if (config_grant !== "password") {
-//                debug('Expired profile, using refresh token to retrive new tokens');
-//                grant_type = "refresh_token";
-//                req_credentials = parse_credentials[grant_type](cached.profile.refresh_token);
-//            }
-//        } else if (cached.passed) {
-//            return matchRules(cached.profile, path, source, true);
-//        } else {
-//            AAA.log(cached.aaa_message, path, source, '[cached profile]');
-//            return cached.return_object;
-//        }
-//    }
+    const cached = cache.get(key);
+    if (cached) {
+        if (cached.expired) {
+            if (config_grant !== "password") {
+                debug('Expired profile, using refresh token to retrive new tokens');
+                grant_type = "refresh_token";
+                req_credentials = parse_credentials[grant_type](cached.profile.refresh_token);
+            }
+        } else if (cached.passed) {
+            return matchRules(cached.profile, path, source, true);
+        } else {
+            AAA.log(cached.aaa_message, path, source, '[cached profile]');
+            return cached.return_object;
+        }
+    }
 
     const options = {
         method: "POST",
@@ -50,7 +50,7 @@ module.exports = async(path, source, username = anonymous_user, password = anony
     options.body = qs.stringify(options.body);
 
     try {
-        let result = await fetch(`${config.aaa_client.host}/protocol/openid-connect/token`, options);
+        let result = await fetch(`${config.aaa_client.host}/protocol/openid-connect/token`, options); // see https://www.keycloak.org/docs/3.0/securing_apps/topics/oidc/oidc-generic.html
         profile = await result.json();
         isDebugOn && debug('open id server result ', JSON.stringify(profile));
     } catch (e) {
