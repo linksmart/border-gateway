@@ -45,4 +45,6 @@ setTimer && setInterval(()=>{
   debug(`purged a total of ${counter} from cache`);
 },config.aaa_client.purge_exp_cache_timer);
 
-module.exports=(set,get);
+module.exports=set;
+module.exports=get;
+
