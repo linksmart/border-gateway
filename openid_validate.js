@@ -2,7 +2,7 @@ const fetch = require('node-fetch');
 const qs = require("querystring");
 const matchRules = require('./rules');
 const config = require('./config_mgr')();
-const cache = require('./cache');
+//const cache = require('./cache');
 const {AAA, CAT, isDebugOn, debug} = require('./log');
 
 let parse_credentials = {
@@ -21,21 +21,21 @@ module.exports = async(path, source, username = anonymous_user, password = anony
     let req_credentials = parse_credentials[grant_type](username, password);
 
 
-    const cached = cache.get(key);
-    if (cached) {
-        if (cached.expired) {
-            if (config_grant !== "password") {
-                debug('Expired profile, using refresh token to retrive new tokens');
-                grant_type = "refresh_token";
-                req_credentials = parse_credentials[grant_type](cached.profile.refresh_token);
-            }
-        } else if (cached.passed) {
-            return matchRules(cached.profile, path, source, true);
-        } else {
-            AAA.log(cached.aaa_message, path, source, '[cached profile]');
-            return cached.return_object;
-        }
-    }
+//    const cached = cache.get(key);
+//    if (cached) {
+//        if (cached.expired) {
+//            if (config_grant !== "password") {
+//                debug('Expired profile, using refresh token to retrive new tokens');
+//                grant_type = "refresh_token";
+//                req_credentials = parse_credentials[grant_type](cached.profile.refresh_token);
+//            }
+//        } else if (cached.passed) {
+//            return matchRules(cached.profile, path, source, true);
+//        } else {
+//            AAA.log(cached.aaa_message, path, source, '[cached profile]');
+//            return cached.return_object;
+//        }
+//    }
 
     const options = {
         method: "POST",
