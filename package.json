@@ -23,7 +23,6 @@
     "iot-bgw-mqtt-proxy": "git+https://code.linksmart.eu/scm/bgw/iot-bgw-mqtt-proxy.git#bugfix/LS-240"
   },
   "devDependencies": {
-    "dotenv": "latest",
-    "http2https": "latest"
+    "dotenv": "latest"
   }
 }
