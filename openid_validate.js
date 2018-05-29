@@ -2,7 +2,7 @@ const fetch = require('node-fetch');
 const qs = require("querystring");
 const matchRules = require('./rules');
 const config = require('./config_mgr')();
-const cache = require('./cache');
+//const cache = require('./cache');
 const {AAA, CAT, isDebugOn, debug} = require('./log');
 
 let parse_credentials = {
@@ -21,21 +21,21 @@ module.exports = async(path, source, username = anonymous_user, password = anony
     let req_credentials = parse_credentials[grant_type](username, password);
 
 
-    const cached = cache.get(key);
-    if (cached) {
-        if (cached.expired) {
-            if (config_grant !== "password") {
-                debug('Expired profile, using refresh token to retrive new tokens');
-                grant_type = "refresh_token";
-                req_credentials = parse_credentials[grant_type](cached.profile.refresh_token);
-            }
-        } else if (cached.passed) {
-            return matchRules(cached.profile, path, source, true);
-        } else {
-            AAA.log(cached.aaa_message, path, source, '[cached profile]');
-            return cached.return_object;
-        }
-    }
+//    const cached = cache.get(key);
+//    if (cached) {
+//        if (cached.expired) {
+//            if (config_grant !== "password") {
+//                debug('Expired profile, using refresh token to retrive new tokens');
+//                grant_type = "refresh_token";
+//                req_credentials = parse_credentials[grant_type](cached.profile.refresh_token);
+//            }
+//        } else if (cached.passed) {
+//            return matchRules(cached.profile, path, source, true);
+//        } else {
+//            AAA.log(cached.aaa_message, path, source, '[cached profile]');
+//            return cached.return_object;
+//        }
+//    }
 
     const options = {
         method: "POST",
@@ -60,7 +60,7 @@ module.exports = async(path, source, username = anonymous_user, password = anony
 
     if (!profile || !profile.access_token || !profile.refresh_token) {
         const res = {status: false, error: 'Incorrect tokens from open id provider, double check your credentials'};
-        cache.set(key, res, path, source, false, CAT.PROFILE, "DENIED", (grant_type === 'password' ? username : grant_type), "Incorrect tokens from open id provider, check user credentials");
+//        cache.set(key, res, path, source, false, CAT.PROFILE, "DENIED", (grant_type === 'password' ? username : grant_type), "Incorrect tokens from open id provider, check user credentials");
         return res;
     }
 
@@ -69,15 +69,15 @@ module.exports = async(path, source, username = anonymous_user, password = anony
 
     if (!profile.at_body || !profile.at_body.preferred_username || !(profile.at_body.bgw_rules || profile.at_body.group_bgw_rules)) {
         const res = {status: false, error: 'Incorrect username or bgw rules from open id provider, double check your credentials'};
-        cache.set(key, res, path, source, false, CAT.PROFILE, "DENIED", (grant_type === 'password' ? username : grant_type), "User profile has been removed or corrupted, check user credentials");
+//        cache.set(key, res, path, source, false, CAT.PROFILE, "DENIED", (grant_type === 'password' ? username : grant_type), "User profile has been removed or corrupted, check user credentials");
         return res;
     }
 
-    profile.cache_until = profile.at_body.exp && (Number(profile.at_body.exp) * 1000);
+//    profile.cache_until = profile.at_body.exp && (Number(profile.at_body.exp) * 1000);
     profile.user_id = profile.at_body.preferred_username;
     profile.rules = profile.at_body.bgw_rules ? profile.at_body.bgw_rules.split(" ") : [];
     profile.rules = profile.rules.concat(profile.at_body.group_bgw_rules ? profile.at_body.group_bgw_rules.split(" ") : []);
-    cache.set(key, false, path, source, profile);
+//    cache.set(key, false, path, source, profile);
 
 
     return matchRules(profile, path, source);

@@ -15,6 +15,7 @@ let cache = {};
 const set = (key,res,path,source, profile, ...message)=>{
   message && AAA.log(...message,path,source);
   debug('caching profile');
+  debug('profile: ', JSON.stringify(profile, null, 4));
   const cache_until = (profile && profile.cache_until)?profile.cache_until: (Date.now() + config.aaa_client.cache_for);
   cache[key]= {
     aaa_message: message.join(' '),
