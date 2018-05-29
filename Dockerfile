@@ -3,7 +3,7 @@ FROM node:latest
 
 WORKDIR /bgw
 RUN git clone https://code.linksmart.eu/scm/bgw/iot-bgw.git .
-RUN git checkout -b bugfix/LS-240 origin/bugfix/LS-240
+RUN git checkout -b dev origin/dev
 RUN npm install
 
 EXPOSE 80 443 8883
