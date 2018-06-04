@@ -1,8 +1,8 @@
 # IoT-BGW Configuration
 * All configs for the bgw are passed as environment variables
 * You can supply environment variables from a file by providing config.env or config.json or both
-* Each bgw component has a config prifix (**EI_, HTTP_PROXY_, MQTT_PROXY_, AUTH_SERVER_, AAA_CLIENT_**)
-* Shared config like the aaa client, can be used globally like AAA_CLIENT_ or selectivily like EI_AAA_CLEINT_
+* Each bgw component has a config prefix (**EI_, HTTP_PROXY_, MQTT_PROXY_, AUTH_SERVER_, AAA_CLIENT_**)
+* Shared config like the aaa client, can be used globally like AAA_CLIENT_ or selectively like EI_AAA_CLIENT_
 * note: configs in config.json will be converted to environment variables and passed to all components
 
 # Table of Contents
@@ -11,7 +11,6 @@
 * [MQTT Proxy](#MQTT)
 * [HTTP Proxy](#HTTP)
 * [External Interface](#EI)
-* [Auth Server](#Auth)
 * [AAA Client](#AAA)
 * [Open ID](#OpenID)
 * [User Access Rules](#rules)
@@ -39,7 +38,7 @@ note: These configs can be set for a a single component by perpending the prefix
 ## Global Configuration
 
 ```
-ENABLE_EI=false
+ENABLE_EI=true
 ```
 The flag enables the external interface with all its features ( It is used in `./bgw.sh start enable_ei`)
 ```
@@ -51,12 +50,6 @@ By default the BGW runs multiple process for each CPU virtual core. It is import
 DISABLE_BIND_TLS=false
 ```
 By default HTTP and MQTT Proxies bind on a TLS port, when `ENABLE_EI` is true then this becomes true and binding for MQTT and HTTP becomes not TLS as the External Interface will provide TLS termination instead.
-```
-ADMIN_KEY_PASSWORD=""
-```
-By default every time the auth server is restarted, it generates a new BGW admin key that can be found in `admin_api_key.txt` file in the config folder. This key always re-generate with every restart as a a security measure. However during development or setup this can be a hassle so this option allows you set a fixed string that ensures the BGW admin key remains the same even when the auth server is restarted.
-
-
 
 note: These configs can be set for a a single component by perpending the prefix (i.e `HTTP_PROXY_SINGLE_CORE`)
 
@@ -189,35 +182,6 @@ A JSON string indicates the other BGW components the external interface is point
 * **allowed_addresses:** ["0.0.0.0/0"]
 
 The name property is also used for the ALPN mode.
-
-
-
-<a name="Auth"></a>
-## Auth Server
-The Auth Server is an Identity Management and Access Control Server (IAM) that can be access using the [REST API](../README.md#swagger). The Auth server has the following configs
-
-```
-AUTH_SERVER_BIND_ADDRESS=127.0.0.1
-```
-The default bind address for Auth Server is `127.0.0.1`
-```
-AUTH_SERVER_BIND_PORT=5055
-```
-The default bind port for the Auth Server is `5055`
-```
-AUTH_SERVER_ DB_FILE_PATH="./config/bgw_db"
-```
-The Auth Server will create the leveldb files in this path
-```
-AUTH_SERVER_API_ADMIN_KEY_FILE_PATH="./config/"
-```
-When the Auth sever starts it will create the BGW Admin Key file in the following path
-```
-AUTH_SERVER_VALID_TO="365*24*60*60"
-```
-Whenever you create a new user using the REST API, By default the generated key will be valid for only one year unless the valid_to field was specified in the REST request or the default configuration above is changed.
-
-
 
 <a name="AAA"></a>
 ## AAA Client
