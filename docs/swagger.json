@@ -1,0 +1,419 @@
+{  
+    "swagger": "2.0",
+    "info": {  
+        "version": "1.0.0",
+        "title": "IoT Border Gateway Auth Server",
+        "description": "The IoT Border Gateway is a policy enforcing application proxy for IoT protocols."
+    },
+    "securityDefinitions": {  
+        "api_key": {  
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        }
+    },
+    "host": "bgw.linksmart.eu",
+    "schemes": [  
+        "https"
+    ],
+    "basePath": "/bgw-auth",
+    "produces": [  
+        "application/json"
+    ],
+    "definitions": {  
+        "GetAllUsers": {  
+            "title": "GetAllUsers",
+            "type": "object",
+            "properties": {  
+                "user_id": {  
+                    "type": "string"
+                },
+                "name": {  
+                    "type": "string"
+                },
+                "description": {  
+                    "type": "string"
+                },
+                "rules": {  
+                    "type": "array",
+                    "items": {  
+                        "type": "string"
+                    }
+                },
+                "created": {  
+                    "type": "integer"
+                },
+                "updated": {  
+                    "type": "integer"
+                },
+                "issued": {  
+                    "type": "integer"
+                },
+                "valid_from": {  
+                    "type": "integer"
+                },
+                "valid_to": {  
+                    "type": "integer"
+                },
+                "password": {  
+                    "type": "string"
+                },
+                "suspended": {  
+                    "type": "boolean"
+                }
+            }
+        },
+        "GetUser": {  
+            "title": "GetUser",
+            "type": "object",
+            "properties": {  
+                "user_id": {  
+                    "type": "string"
+                },
+                "name": {  
+                    "type": "string"
+                },
+                "description": {  
+                    "type": "string"
+                },
+                "rules": {  
+                    "type": "array",
+                    "items": {  
+                        "type": "string"
+                    }
+                },
+                "created": {  
+                    "type": "integer"
+                },
+                "updated": {  
+                    "type": "integer"
+                },
+                "issued": {  
+                    "type": "integer"
+                },
+                "valid_from": {  
+                    "type": "integer"
+                },
+                "valid_to": {  
+                    "type": "integer"
+                },
+                "password": {  
+                    "type": "string"
+                },
+                "suspended": {  
+                    "type": "boolean"
+                }
+            }
+        },
+        "PatchUser": {  
+            "title": "PatchUser",
+            "type": "object",
+            "properties": {  
+                "name": {  
+                    "type": "string"
+                },
+                "description": {  
+                    "type": "string"
+                },
+                "rules": {  
+                    "type": "array",
+                    "items": {  
+                        "type": "string"
+                    }
+                },
+                "valid_from": {  
+                    "type": "integer"
+                },
+                "valid_to": {  
+                    "type": "integer"
+                },
+                "suspended": {  
+                    "type": "boolean"
+                }
+            }
+        },
+        "PostUser": {  
+            "title": "PostUser",
+            "type": "object",
+            "properties": {  
+                "user_id": {  
+                    "type": "string"
+                },
+                "name": {  
+                    "type": "string"
+                },
+                "description": {  
+                    "type": "string"
+                },
+                "rules": {  
+                    "type": "array",
+                    "items": {  
+                        "type": "string"
+                    }
+                },
+                "valid_from": {  
+                    "type": "integer"
+                },
+                "valid_to": {  
+                    "type": "integer"
+                },
+                "suspended": {  
+                    "type": "boolean"
+                }
+            }
+        },
+        "KeyRes": {  
+            "title": "key",
+            "type": "object",
+            "properties": {  
+                "key": {  
+                    "type": "string"
+                }
+            }
+        },
+        "UnauthorizedRes": {  
+            "type": "object",
+            "properties": {  
+                "error": {  
+                    "type": "string"
+                }
+            }
+        },
+        "ErrorResponse": {  
+            "type": "object",
+            "properties": {  
+                "error": {  
+                    "type": "string"
+                }
+            }
+        }
+    },
+    "responses": {  
+        "RespInternalServerError": {  
+            "description": "Internal Server Error",
+            "schema": {  
+                "$ref": "#/definitions/ErrorResponse"
+            }
+        },
+        "Key": {  
+            "description": "New key issued",
+            "schema": {  
+                "$ref": "#/definitions/KeyRes"
+            }
+        },
+        "Unauthorized": {  
+            "description": "Unauthorized 401, make sure you click on the Authorize button and enter the bgw api key as \"Bearer [bgw_api_key]\" ",
+            "schema": {  
+                "$ref": "#/definitions/UnauthorizedRes"
+            }
+        }
+    },
+    "paths": {  
+        "/user/": {  
+            "get": {  
+                "summary": "Retrieves users list",
+                "security": [  
+                    {  
+                        "api_key": [  
+
+                        ]
+                    }
+                ],
+                "responses": {  
+                    "200": {  
+                        "description": "Successful response",
+                        "schema": {  
+                            "$ref": "#/definitions/GetAllUsers"
+                        }
+                    },
+                    "401": {  
+                        "description": "make sure you click on the Authorize button and enter the bgw api key as \"Bearer [bgw_api_key]\"",
+                        "schema": {  
+                            "$ref": "#/responses/Unauthorized"
+                        }
+                    },
+                    "500": {  
+                        "$ref": "#/responses/RespInternalServerError"
+                    }
+                }
+            },
+            "post": {  
+                "summary": "Creates new user",
+                "security": [  
+                    {  
+                        "api_key": [  
+
+                        ]
+                    }
+                ],
+                "parameters": [  
+                    {  
+                        "name": "profile",
+                        "description": "All fields are optional",
+                        "in": "body",
+                        "required": false,
+                        "schema": {  
+                            "$ref": "#/definitions/PostUser"
+                        }
+                    }
+                ],
+                "responses": {  
+                    "401": {  
+                        "description": "make sure you click on the Authorize button and enter the bgw api key as \"Bearer [bgw_api_key]\"",
+                        "schema": {  
+                            "$ref": "#/responses/Unauthorized"
+                        }
+                    },
+                    "200": {  
+                        "$ref": "#/responses/Key"
+                    },
+                    "500": {  
+                        "$ref": "#/responses/RespInternalServerError"
+                    }
+                }
+            }
+        },
+        "/user/{id}": {  
+            "get": {  
+                "summary": "Retrieves the full profile of a single user",
+                "security": [  
+                    {  
+                        "api_key": [  
+
+                        ]
+                    }
+                ],
+                "parameters": [  
+                    {  
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the user",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {  
+                    "401": {  
+                        "description": "make sure you click on the Authorize button and enter the bgw api key as \"Bearer [bgw_api_key]\"",
+                        "schema": {  
+                            "$ref": "#/responses/Unauthorized"
+                        }
+                    },
+                    "200": {  
+                        "description": "Successful response",
+                        "schema": {  
+                            "$ref": "#/definitions/GetUser"
+                        }
+                    },
+                    "500": {  
+                        "$ref": "#/responses/RespInternalServerError"
+                    }
+                }
+            },
+            "patch": {  
+                "summary": "Updates the full profile of a single user",
+                "security": [  
+                    {  
+                        "api_key": [  
+
+                        ]
+                    }
+                ],
+                "parameters": [  
+                    {  
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the user",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {  
+                        "name": "user",
+                        "description": "user profile",
+                        "in": "body",
+                        "required": true,
+                        "schema": {  
+                            "$ref": "#/definitions/PatchUser"
+                        }
+                    }
+                ],
+                "responses": {  
+                    "401": {  
+                        "description": "make sure you click on the Authorize button and enter the bgw api key as \"Bearer [bgw_api_key]\"",
+                        "schema": {  
+                            "$ref": "#/responses/Unauthorized"
+                        }
+                    },
+                    "500": {  
+                        "$ref": "#/responses/RespInternalServerError"
+                    }
+                }
+            },
+            "delete": {  
+                "summary": "Deletes a user",
+                "security": [  
+                    {  
+                        "api_key": [  
+
+                        ]
+                    }
+                ],
+                "parameters": [  
+                    {  
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the user",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {  
+                    "401": {  
+                        "description": "make sure you click on the Authorize button and enter the bgw api key as \"Bearer [bgw_api_key]\"",
+                        "schema": {  
+                            "$ref": "#/responses/Unauthorized"
+                        }
+                    },
+                    "500": {  
+                        "$ref": "#/responses/RespInternalServerError"
+                    }
+                }
+            }
+        },
+        "/user/{id}/renew_key": {  
+            "post": {  
+                "summary": "Revoke the old key and create a new one",
+                "security": [  
+                    {  
+                        "api_key": [  
+
+                        ]
+                    }
+                ],
+                "parameters": [  
+                    {  
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the user",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {  
+                    "401": {  
+                        "description": "make sure you click on the Authorize button and enter the bgw api key as \"Bearer [bgw_api_key]\"",
+                        "schema": {  
+                            "$ref": "#/responses/Unauthorized"
+                        }
+                    },
+                    "200": {  
+                        "$ref": "#/responses/Key"
+                    },
+                    "500": {  
+                        "$ref": "#/responses/RespInternalServerError"
+                    }
+                }
+            }
+        }
+    }
+}
