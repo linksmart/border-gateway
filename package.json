@@ -1,0 +1,32 @@
+{
+  "name": "iot-bgw-http-proxy",
+  "version": "1.0.0",
+  "description": "This is part of https://github.com/hareeqi/iot-bgw-external-interface",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hareeqi/iot-bgw-http-proxy.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/hareeqi/iot-bgw-http-proxy/issues"
+  },
+  "eslintConfig": {
+    "parserOptions": {
+      "ecmaVersion": 2017
+    }
+  },
+  "homepage": "https://github.com/hareeqi/iot-bgw-http-proxy#readme",
+  "dependencies": {
+    "base-x": "latest",
+    "cors": "latest",
+    "domain-match": "latest",
+    "express": "latest",
+    "http-proxy": "latest",
+    "transformer-proxy": "latest"
+  }
+}
