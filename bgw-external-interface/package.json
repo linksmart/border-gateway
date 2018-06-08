@@ -1,5 +1,5 @@
 {
-  "name": "iot-bgw-external-interface",
+  "name": "bgw-external-interface",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -7,19 +7,14 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
-    "type": "git",
-    "url": "git+https://github.com/hareeqi/iot-bgw-external-interface.git"
+    "type": "git"
   },
   "author": "",
   "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/hareeqi/iot-bgw-external-interface/issues"
-  },
   "eslintConfig": {
     "parserOptions": {
       "ecmaVersion": 2017
     }
   },
-  "homepage": "https://github.com/hareeqi/iot-bgw-external-interface#readme",
     "dependencies": {}
 }

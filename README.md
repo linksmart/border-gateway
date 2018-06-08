@@ -39,28 +39,28 @@ docker run -p 80:80 -p 443:443 -p 8883:8883 -v /my/host/config:/bgw/config docke
 
 ## Components
 
-* [iot-bgw-external-interface](../../iot-bgw-external-interface)
-* [iot-bgw-auth-server](../../iot-bgw-auth-server)
-* [iot-bgw-mqtt-proxy](../../iot-bgw-mqtt-proxy)
-* [iot-bgw-http-proxy](../../iot-bgw-http-proxy)
-* [iot-bgw-aaa-client](../../iot-bgw-aaa-client)
+* [bgw-external-interface](../../bgw-external-interface)
+* [bgw-auth-server](../../bgw-auth-server)
+* [bgw-mqtt-proxy](../../bgw-mqtt-proxy)
+* [bgw-http-proxy](../../bgw-http-proxy)
+* [bgw-aaa-client](../../bgw-aaa-client)
 
 ## Development Mode
 
 If you would like to further develop the bgw in your local machine:
 1. Clone the rep by running this command
 ```
-git clone https://code.linksmart.eu/scm/bgw/iot-bgw.git
+git clone https://code.linksmart.eu/scm/bgw/bgw.git
 ```
 
 2. Build the dependencies for all components and remove the container using this command:
 ```
-docker run --rm -it -v "$(pwd)"/iot-bgw:/bgw docker.linksmart.eu/bgw build
+docker run --rm -it -v "$(pwd)"/bgw:/bgw docker.linksmart.eu/bgw build
 ```
 
 3. Create and run a container with dependencies in dev mode:
 ```
-docker run --rm -it -p 80:80 -p 443:443 -p 8883:8883 -v "$(pwd)"/iot-bgw:/bgw docker.linksmart.eu/bgw dev
+docker run --rm -it -p 80:80 -p 443:443 -p 8883:8883 -v "$(pwd)"/bgw:/bgw docker.linksmart.eu/bgw dev
 ```
 Whenever you change the code in you local dev folder the component will automatically restarts and your changes are reflected immediately
 

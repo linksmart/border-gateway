@@ -1,5 +1,5 @@
 const {connack, suback, puback, pubrec} = require('./packet_template');
-const {mqttAuth, AAA, CAT, isDebugOn, debug} = require('../iot-bgw-aaa-client');
+const {mqttAuth, AAA, CAT, isDebugOn, debug} = require('../bgw-aaa-client');
 
 //AAA.log(CAT.DEBUG, `Before packet validation`);
 

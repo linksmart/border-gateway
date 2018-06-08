@@ -13,7 +13,7 @@ const agentHTTPS = new https.Agent({keepAlive: true});
 const proxy = require('http-proxy').createProxyServer({});
 const config = require('./config');
 const {transformURI, bgwIfy, REQ_TYPES} = require('./utils');
-const {httpAuth, AAA, CAT, debug, isDebugOn} = require('../iot-bgw-aaa-client');
+const {httpAuth, AAA, CAT, debug, isDebugOn} = require('../bgw-aaa-client');
 
 //debug('configs am Beginn von index.js', JSON.stringify(config, null, 4));
 
@@ -80,7 +80,7 @@ if (!config.single_core && cluster.isMaster) {
         isDebugOn && err && debug(err.stack || err);
         if (req.bgw && req.bgw.forward_address) {
             config.redirect_to_original_address_on_proxy_error ? res.redirect(req.bgw.forward_address + req.originalUrl) :
-                    res && res.status(500).json({error: `iot border gateway could not forward your request to ${req.bgw.forward_address}`});
+                    res && res.status(500).json({error: `border gateway could not forward your request to ${req.bgw.forward_address}`});
         } else {
             res && res.status(500).json({error: `There is a problem with the internal forward address, make suer the internal address exist and working: `});
         }

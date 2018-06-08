@@ -7,7 +7,7 @@ function run_inspect_service {
   node --inspect=0.0.0.0:$2 -r dotenv/config ./node_modules/$1/index.js dotenv_config_path=./node_modules/config.env || kill -KILL 0
 }
 #function run__dev_service {
-#  ENABLE_EI=TRUE SINGLE_CORE=TRUE node -r dotenv/config ./node_modules/nodemon/bin/nodemon -w ./dev/iot-bgw-aaa-client -w ./dev/iot-bgw-$1 ./dev/iot-bgw-$1/index.js dotenv_config_path=./node_modules/config.env
+#  ENABLE_EI=TRUE SINGLE_CORE=TRUE node -r dotenv/config ./node_modules/nodemon/bin/nodemon -w ./dev/bgw-aaa-client -w ./dev/bgw-$1 ./dev/bgw-$1/index.js dotenv_config_path=./node_modules/config.env
 #}
 function json2env {
   node json2env.js || exit 1
@@ -16,11 +16,11 @@ if [ "$1" = "build" ]; then
     echo Building the dependencies for all components...
     npm install --only=dev
 
-    npm run clone-external-interface && cd dev/iot-bgw-external-interface && npm install && cd ../..
-    #npm run clone-auth-server && cd dev/iot-bgw-auth-server && npm install && cd ../..
-    npm run clone-mqtt-proxy && cd dev/iot-bgw-mqtt-proxy && npm install && cd ../..
-    npm run clone-http-proxy && cd dev/iot-bgw-http-proxy && npm install && cd ../..
-    npm run clone-aaa-client && cd dev/iot-bgw-aaa-client && npm install && cd ../..
+    npm run clone-external-interface && cd dev/bgw-external-interface && npm install && cd ../..
+    #npm run clone-auth-server && cd dev/bgw-auth-server && npm install && cd ../..
+    npm run clone-mqtt-proxy && cd dev/bgw-mqtt-proxy && npm install && cd ../..
+    npm run clone-http-proxy && cd dev/bgw-http-proxy && npm install && cd ../..
+    npm run clone-aaa-client && cd dev/bgw-aaa-client && npm install && cd ../..
 
     chmod -R o+wr .
     echo Finished building the dependencies for all components
@@ -37,33 +37,33 @@ elif [ "$1" = "start" ]; then
     # export NODE_DEBUG=cluster,net,http,fs,tls,module,timers node
     # export NODE_DEBUG=net,http,tls node
     # run_service http2https &
-    #run_service iot-bgw-auth-server &
+    #run_service bgw-auth-server &
 
     if [ "$2" = "enable_ei" ]; then
 
-      #run_inspect_service iot-bgw-external-interface 9229 &
-      run_service iot-bgw-external-interface &
+      #run_inspect_service bgw-external-interface 9229 &
+      run_service bgw-external-interface &
 
-      #ENABLE_EI=TRUE run_service iot-bgw-http-proxy &
-      ENABLE_EI=TRUE run_inspect_service iot-bgw-http-proxy 9229 &
+      #ENABLE_EI=TRUE run_service bgw-http-proxy &
+      ENABLE_EI=TRUE run_inspect_service bgw-http-proxy 9229 &
       
-      #ENABLE_EI=TRUE run_service iot-bgw-mqtt-proxy &
-      ENABLE_EI=TRUE run_inspect_service iot-bgw-mqtt-proxy 9228 &
+      #ENABLE_EI=TRUE run_service bgw-mqtt-proxy &
+      ENABLE_EI=TRUE run_inspect_service bgw-mqtt-proxy 9228 &
 
     elif [ "$2" = "benchmark" ]; then
-      run_service iot-bgw-external-interface &
-      ENABLE_EI=TRUE run_service iot-bgw-http-proxy &
-      ENABLE_EI=TRUE run_service iot-bgw-mqtt-proxy &
-      HTTP_PROXY_BIND_PORT=5099 run_service iot-bgw-http-proxy &
-      MQTT_PROXY_BIND_PORT=5098 run_service iot-bgw-mqtt-proxy &
+      run_service bgw-external-interface &
+      ENABLE_EI=TRUE run_service bgw-http-proxy &
+      ENABLE_EI=TRUE run_service bgw-mqtt-proxy &
+      HTTP_PROXY_BIND_PORT=5099 run_service bgw-http-proxy &
+      MQTT_PROXY_BIND_PORT=5098 run_service bgw-mqtt-proxy &
 
     else
 
-      #run_service iot-bgw-http-proxy &
-      run_inspect_service iot-bgw-http-proxy 9229 &
+      #run_service bgw-http-proxy &
+      run_inspect_service bgw-http-proxy 9229 &
       
-      #run_service iot-bgw-mqtt-proxy &
-      run_inspect_service iot-bgw-mqtt-proxy 9228 &
+      #run_service bgw-mqtt-proxy &
+      run_inspect_service bgw-mqtt-proxy 9228 &
     fi
 
 #elif [ "$1" = "dev" ]; then
@@ -85,7 +85,7 @@ else
   echo
   echo -e  '\t'     bgw start benchmark  '\t\t\t' Start all bgw components plus duplicates http and mqtt proxy
   echo
-  echo -e  '\t'     bgw part \$part_name   '\t\t\t' used to start a single service e.g. \(iot-bgw-mqtt-proxy or http2https\) good for docker compose
+  echo -e  '\t'     bgw part \$part_name   '\t\t\t' used to start a single service e.g. \(bgw-mqtt-proxy or http2https\) good for docker compose
   echo
   echo -e  '\t'     bgw dev                '\t\t\t\t' Start bgw in dev mode using nodemon with reload on change
   echo

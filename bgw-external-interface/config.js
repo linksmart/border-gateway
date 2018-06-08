@@ -39,5 +39,5 @@ let config = {
     }
 };
 
-require('../iot-bgw-aaa-client').init("EI", config);
+require('../bgw-aaa-client').init("EI", config);
 module.exports = config;

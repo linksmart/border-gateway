@@ -6,7 +6,7 @@ let config = false;
 
 const getConfig = () => {
     if (!config) {
-        console.error(`BGW: Fatal Error you must init the auth client in your config.js (e.g. require('../iot-bgw-aaa-client').init(prefix,config)) and make sure to require config first thing in index.js`);
+        console.error(`BGW: Fatal Error you must init the auth client in your config.js (e.g. require('../bgw-aaa-client').init(prefix,config)) and make sure to require config first thing in index.js`);
         process.exit(1);
     }
     return config;

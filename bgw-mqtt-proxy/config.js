@@ -40,5 +40,5 @@ disable_bind_tls: ENABLE_EI || false, //true if ENABLE_EI is set on any value!
         openid_anonymous_pass: "anonymous"
     }
 };
-require('../iot-bgw-aaa-client').init("MQTT_PROXY", config);
+require('../bgw-aaa-client').init("MQTT_PROXY", config);
 module.exports = config;

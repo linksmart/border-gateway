@@ -1,0 +1,26 @@
+{
+  "name": "bgw",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "author": "",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://code.linksmart.eu/scm/bgw/bgw.git"
+  },
+  "eslintConfig": {
+    "parserOptions": {
+      "ecmaVersion": 2017
+    }
+  },
+  "dependencies": {
+    "bgw-aaa-client": "file:./bgw-aaa-client",
+    "bgw-external-interface": "file:./bgw-external-interface",
+    "bgw-http-proxy": "file:./bgw-http-proxy",
+    "bgw-mqtt-proxy": "file:./bgw-mqtt-proxy"
+},
+  "devDependencies": {
+    "dotenv": "latest"
+  }
+}

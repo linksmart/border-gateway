@@ -7,7 +7,7 @@ const net = require('net');
 const tls = require('tls');
 const mqtt = require('mqtt-packet');
 const config = require('./config');
-const {mqttAuth, AAA, CAT, isDebugOn, debug} = require('../iot-bgw-aaa-client');
+const {mqttAuth, AAA, CAT, isDebugOn, debug} = require('../bgw-aaa-client');
 const validate = require('./validate');
 
 if (!config.single_core && cluster.isMaster) {

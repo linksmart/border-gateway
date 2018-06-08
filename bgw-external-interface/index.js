@@ -7,7 +7,7 @@ const tls = require('tls');
 const net = require('net');
 //const insubnet = require('insubnet');
 const config = require('./config');
-const {AAA, CAT, debug} = require('../iot-bgw-aaa-client');
+const {AAA, CAT, debug} = require('../bgw-aaa-client');
 
 
 
