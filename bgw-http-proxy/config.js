@@ -1,12 +1,7 @@
-const ENABLE_EI = process.env.ENABLE_EI;
-const DISABLE_BIND_TLS = process.env.DISABLE_BIND_TLS;
-
-
 let config = {
     single_core: process.env.SINGLE_CORE || false,
-    bind_address: (ENABLE_EI && "127.0.0.1") || "0.0.0.0", //true if ENABLE_EI is set on any value!
-    bind_port: (ENABLE_EI && 5050) || 443, //true if ENABLE_EI is set on any value!
-    disable_bind_tls: ENABLE_EI || false, //true if ENABLE_EI is set on any value!
+    bind_address: process.env.HTTP_PROXY_BIND_ADDRESS,
+    bind_port: process.env.HTTP_PROXY_BIND_PORT,
     external_domain: process.env.EXTERNAL_DOMAIN || "bgw.hareeqi.com",
     tls_key: process.env.TLS_KEY || "./config/key.pem",
     tls_cert: process.env.TLS_CERT || "./config/srv.pem",

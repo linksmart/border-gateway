@@ -17,12 +17,12 @@ if (!config.single_core && cluster.isMaster) {
     cluster.on('exit', (worker, code, signal) => AAA.log(CAT.PROCESS_END, `worker ${worker.process.pid} died`));
 
 } else {
-    debug('index.js, config.disable_bind_tls =', config.disable_bind_tls);
-    const createServer = config.disable_bind_tls ? net.createServer : tls.createServer;
-    const serverOptions = config.disable_bind_tls ? {} : {
-        key: fs.readFileSync(config.tls_key),
-        cert: fs.readFileSync(config.tls_cert)
-    };
+//    const createServer = config.disable_bind_tls ? net.createServer : tls.createServer;
+//    const serverOptions = config.disable_bind_tls ? {} : {
+      const serverOptions = {};        
+//        key: fs.readFileSync(config.tls_key),
+//        cert: fs.readFileSync(config.tls_cert)
+//    };
     const broker = config.broker;
     // debug('index.js, broker =',broker)
     const clientOptions = {
@@ -34,7 +34,7 @@ if (!config.single_core && cluster.isMaster) {
     };
 
     AAA.log(CAT.PROCESS_START, "Creating mqtt-proxy server...");
-    const server = createServer(serverOptions, (srcClient) => {
+    const server = net.createServer(serverOptions, (srcClient) => {
 
         // debug('index.js, srcClient =',srcClient)
         // debug('index.js, serverOptions =',serverOptions)

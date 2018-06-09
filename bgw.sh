@@ -6,9 +6,8 @@ function run_service {
 function run_inspect_service {
   node --inspect=0.0.0.0:$2 -r dotenv/config ./node_modules/$1/index.js dotenv_config_path=./node_modules/config.env || kill -KILL 0
 }
-#function run__dev_service {
-#  ENABLE_EI=TRUE SINGLE_CORE=TRUE node -r dotenv/config ./node_modules/nodemon/bin/nodemon -w ./dev/bgw-aaa-client -w ./dev/bgw-$1 ./dev/bgw-$1/index.js dotenv_config_path=./node_modules/config.env
-#}
+
+
 function json2env {
   node json2env.js || exit 1
 }
@@ -44,16 +43,16 @@ elif [ "$1" = "start" ]; then
       #run_inspect_service bgw-external-interface 9229 &
       run_service bgw-external-interface &
 
-      #ENABLE_EI=TRUE run_service bgw-http-proxy &
-      ENABLE_EI=TRUE run_inspect_service bgw-http-proxy 9229 &
+      #run_service bgw-http-proxy &
+      run_inspect_service bgw-http-proxy 9229 &
       
-      #ENABLE_EI=TRUE run_service bgw-mqtt-proxy &
-      ENABLE_EI=TRUE run_inspect_service bgw-mqtt-proxy 9228 &
+      #run_service bgw-mqtt-proxy &
+      run_inspect_service bgw-mqtt-proxy 9228 &
 
     elif [ "$2" = "benchmark" ]; then
       run_service bgw-external-interface &
-      ENABLE_EI=TRUE run_service bgw-http-proxy &
-      ENABLE_EI=TRUE run_service bgw-mqtt-proxy &
+      run_service bgw-http-proxy &
+      run_service bgw-mqtt-proxy &
       HTTP_PROXY_BIND_PORT=5099 run_service bgw-http-proxy &
       MQTT_PROXY_BIND_PORT=5098 run_service bgw-mqtt-proxy &
 

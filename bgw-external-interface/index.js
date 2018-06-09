@@ -9,9 +9,6 @@ const net = require('net');
 const config = require('./config');
 const {AAA, CAT, debug} = require('../bgw-aaa-client');
 
-
-
-
 if (!config.single_core && cluster.isMaster) {
     AAA.log(CAT.PROCESS_START, `Master PID ${process.pid} is running: CPU has ${numCPUs} cores`);
     for (let i = 0; i < numCPUs; i++)

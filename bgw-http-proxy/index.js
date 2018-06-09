@@ -86,16 +86,16 @@ if (!config.single_core && cluster.isMaster) {
         }
 
     });
-    if (config.disable_bind_tls) {
+//    if (config.enable_ei) {
         app.listen(config.bind_port, config.bind_address, () =>
             AAA.log(CAT.PROCESS_START, `PID ${process.pid} listening on ${config.bind_address}:${config.bind_port}`));
-    } else {
-        const options = {
-            key: fs.readFileSync(config.tls_key),
-            cert: fs.readFileSync(config.tls_cert)
-        };
-        AAA.log(CAT.PROCESS_START, "Creating http-proxy server...");
-        https.createServer(options, app).listen(config.bind_port, config.bind_address, () =>
-            AAA.log(CAT.PROCESS_START, `PID ${process.pid} listening on ${config.bind_address}:${config.bind_port}`));
-    }
+//    } else {
+//        const options = {
+//            key: fs.readFileSync(config.tls_key),
+//            cert: fs.readFileSync(config.tls_cert)
+//        };
+//        AAA.log(CAT.PROCESS_START, "Creating http-proxy server...");
+//        https.createServer(options, app).listen(config.bind_port, config.bind_address, () =>
+//            AAA.log(CAT.PROCESS_START, `PID ${process.pid} listening on ${config.bind_address}:${config.bind_port}`));
+//    }
 }

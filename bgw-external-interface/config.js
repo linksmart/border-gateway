@@ -1,5 +1,3 @@
-
-
 let config = {
     single_core: process.env.SINGLE_CORE || false,
     private_bgw: false,
