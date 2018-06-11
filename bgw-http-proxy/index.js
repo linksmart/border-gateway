@@ -34,12 +34,15 @@ if (!config.single_core && cluster.isMaster) {
 
         bgwIfy(req);
         if (req.bgw.type === REQ_TYPES.UNKNOWN_REQUEST) {
-            res.status(404).json({error: 'unknow request type please make sure to use the full address https://' + config.external_domain + ":" + config.external_port});
+            //res.status(404).json({error: 'unknow request type please make sure to use the full address https://' + config.external_domain + ":" + config.external_port});
+            res.status(404).json({error: 'unknow request type please make sure to use the full address https://' + config.external_domain});
             return;
         }
         if (req.bgw.type === REQ_TYPES.INVALID_EXTERNAL_DOMAIN) {
-            config.redirect_on_invalid_external_domain ? res.redirect('https://' + config.external_domain + ":" + config.external_port + req.originalUrl) :
-                    res.status(404).json({error: 'Invalid external domain, use the full address https://' + config.external_domain + ":" + config.external_port});
+            //config.redirect_on_invalid_external_domain ? res.redirect('https://' + config.external_domain + ":" + config.external_port + req.originalUrl) :
+            //        res.status(404).json({error: 'Invalid external domain, use the full address https://' + config.external_domain + ":" + config.external_port});
+            config.redirect_on_invalid_external_domain ? res.redirect('https://' + config.external_domain + req.originalUrl) :
+                    res.status(404).json({error: 'Invalid external domain, use the full address https://' + config.external_domain});           
             return;
         }
         if (req.bgw.type === REQ_TYPES.PROMPT_BASIC_AUTH) {

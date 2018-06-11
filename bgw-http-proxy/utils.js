@@ -1,5 +1,5 @@
 const config = require('./config')
-const {transformURI ,decode } = require("./trasnlate_res");
+const {transformURI ,decode } = require("./translate_res");
 const url = require('url')
 
 

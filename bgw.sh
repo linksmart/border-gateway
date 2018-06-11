@@ -43,36 +43,20 @@ elif [ "$1" = "start" ]; then
       #run_inspect_service bgw-external-interface 9229 &
       run_service bgw-external-interface &
 
-      #run_service bgw-http-proxy &
-      run_inspect_service bgw-http-proxy 9229 &
+      #ENABLE_EI=TRUE run_service bgw-http-proxy &
+      ENABLE_EI=TRUE run_inspect_service bgw-http-proxy 9229 &
       
-      #run_service bgw-mqtt-proxy &
-      run_inspect_service bgw-mqtt-proxy 9228 &
-
-    elif [ "$2" = "benchmark" ]; then
-      run_service bgw-external-interface &
-      run_service bgw-http-proxy &
-      run_service bgw-mqtt-proxy &
-      HTTP_PROXY_BIND_PORT=5099 run_service bgw-http-proxy &
-      MQTT_PROXY_BIND_PORT=5098 run_service bgw-mqtt-proxy &
+      #ENABLE_EI=TRUE run_service bgw-mqtt-proxy &
+      ENABLE_EI=TRUE run_inspect_service bgw-mqtt-proxy 9228 &
 
     else
 
-      #run_service bgw-http-proxy &
-      run_inspect_service bgw-http-proxy 9229 &
+      #ENABLE_EI=FALSE run_service bgw-http-proxy &
+      ENABLE_EI=FALSE run_inspect_service bgw-http-proxy 9229 &
       
-      #run_service bgw-mqtt-proxy &
-      run_inspect_service bgw-mqtt-proxy 9228 &
+      #ENABLE_EI=FALSE run_service bgw-mqtt-proxy &
+      ENABLE_EI=FALSE run_inspect_service bgw-mqtt-proxy 9228 &
     fi
-
-#elif [ "$1" = "dev" ]; then
-
-#    json2env
-#    run_service http2https &
-#    run__dev_service external-interface &
-#    run__dev_service http-proxy &
-#    run__dev_service mqtt-proxy &
-#    run__dev_service auth-server &
 
 else
   echo
