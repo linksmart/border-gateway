@@ -15,8 +15,8 @@
 * [Open ID](#OpenID)
 * [User Access Rules](#rules)
 
-<a name="Required"></a>
-## Required Configuration
+<a name="Global"></a>
+## Global Configuration
 
 ```
 EXTERNAL_DOMAIN=bgw.hareeqi.com
@@ -31,27 +31,12 @@ TLS_KEY=./config/key.pem
 ```
 File path to TLS key
 
-
 note: These configs can be set for a a single component by perpending the prefix (i.e `HTTP_PROXY_TLS_KEY`)
 
-<a name="Global"></a>
-## Global Configuration
-
-```
-ENABLE_EI=true
-```
-The flag enables the external interface with all its features ( It is used in `./bgw.sh start enable_ei`)
 ```
 SINGLE_CORE=false
 ```
 By default the BGW runs multiple process for each CPU virtual core. It is important for scalability. Setting this to true will hinder scalability/performance and run the BGW on a single CPU virtual core only (it is used in `./bgw.sh dev`)
-
-```
-DISABLE_BIND_TLS=false
-```
-By default HTTP and MQTT Proxies bind on a TLS port, when `ENABLE_EI` is true then this becomes true and binding for MQTT and HTTP becomes not TLS as the External Interface will provide TLS termination instead.
-
-note: These configs can be set for a a single component by perpending the prefix (i.e `HTTP_PROXY_SINGLE_CORE`)
 
 <a name="MQTT"></a>
 ## MQTT Proxy
@@ -59,11 +44,11 @@ note: These configs can be set for a a single component by perpending the prefix
 ```
 MQTT_PROXY_BIND_ADDRESS=0.0.0.0
 ```
-The default bind address for MQTT Proxy is `0.0.0.0` where if the `enable_ei` is true then the default bind address is `127.0.0.1`
+The default bind address for MQTT Proxy is `0.0.0.0`. If external interface is enabled you may want to change it to `127.0.0.1`
 ```
-MQTT_PROXY_BIND_PORT=8883
+MQTT_PROXY_BIND_PORT=1883
 ```
-The default bind port for MQTT Proxy is `8883` where if the `enable_ei` is true then the default bind port is `5051`
+The usual bind port for MQTT Proxy is `1883`. If external interface is enabled set it to `5051` or any other available port.
 ```
 MQTT_PROXY_DISCONNECT_ON_UNAUTHORIZED_PUBLISH=false
 ```
@@ -90,11 +75,11 @@ The upstream broker information encoded in JSON. you can connect to a TLS broker
 ```
 HTTP_PROXY_BIND_ADDRESS=0.0.0.0
 ```
-The default bind address for HTTP Proxy is `0.0.0.0` where if the `enable_ei` is true then the default bind address is `127.0.0.1`
+The default bind address for HTTP Proxy is `0.0.0.0`. If external interface is enabled you may want to change it to `127.0.0.1`
 ```
 HTTP_PROXY_BIND_PORT=443
 ```
-The default bind port for HTTP Proxy is `443` where if the `enable_ei` is true then the default bind port is `5050`
+The usual bind port for HTTP Proxy is `80`. If external interface is enabled set it to `5050` or any other available port.
 ```
 HTTP_PROXY_EXTERNAL_PORT=443
 ```
