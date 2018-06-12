@@ -49,7 +49,7 @@ let config = {
         secret: process.env.TLS_KEY || "./config/key.pem",
         host: "http://localhost:5055",
         auth_provider: "openid",
-        openid_clientid: "bgw_client",
+        openid_clientid: process.env.AAA_CLIENT_OPENID_CLIENTID,
         openid_clientsecret: "",
         openid_grant_type: "password",
         openid_anonymous_user: "anonymous",
