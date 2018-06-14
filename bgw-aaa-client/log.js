@@ -48,10 +48,15 @@ const logFunction = {
 //  logColor : (cat, ...arg)=> can_log(cat) && console.log(process_color(config.aaa_client.name,"AAA"), cat_color[cat[0]]?cat_color[cat[0]](cat, ...arg):chalk.reset(cat,...arg)),
 //  logColorTS : (cat, ...arg)=> can_log(cat) &&console.log(process_color(timestamp(),config.aaa_client.name,"AAA"), cat_color[cat[0]]?cat_color[cat[0]](cat, ...arg):chalk.reset(cat,...arg))
 };
-const isTS = config.aaa_client.timestamp ? "TS":"";
+
+const isTS = (config.aaa_client.timestamp) ? "TS":"";
+
 //const isColor = config.aaa_client.no_color ? "" : "Color";
-//const log = logFunction[`log${isColor}${isTS}`];
+//onst log = logFunction[`log${isColor}${isTS}`];
 const log = logFunction[`log${isTS}`];
+//log(CAT.DEBUG,(typeof config.aaa_client.timestamp));
+//log(CAT.DEBUG,config.aaa_client.timestamp);
+//log(CAT.DEBUG,`log${isTS}`);
 
 const debug = (...arg)=>log(CAT.DEBUG, ...arg);
 const isDebugOn = can_log("D");

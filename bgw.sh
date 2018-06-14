@@ -43,19 +43,19 @@ elif [ "$1" = "start" ]; then
       #run_inspect_service bgw-external-interface 9229 &
       run_service bgw-external-interface &
 
-      #ENABLE_EI=TRUE run_service bgw-http-proxy &
-      ENABLE_EI=TRUE run_inspect_service bgw-http-proxy 9229 &
+      #ENABLE_EI=true run_service bgw-http-proxy &
+      ENABLE_EI=true run_inspect_service bgw-http-proxy 9229 &
       
-      #ENABLE_EI=TRUE run_service bgw-mqtt-proxy &
-      ENABLE_EI=TRUE run_inspect_service bgw-mqtt-proxy 9228 &
+      #ENABLE_EI=true run_service bgw-mqtt-proxy &
+      ENABLE_EI=true run_inspect_service bgw-mqtt-proxy 9228 &
 
     else
 
-      #ENABLE_EI=FALSE run_service bgw-http-proxy &
-      ENABLE_EI=FALSE run_inspect_service bgw-http-proxy 9229 &
+      #ENABLE_EI=false run_service bgw-http-proxy &
+      ENABLE_EI=false run_inspect_service bgw-http-proxy 9229 &
       
-      #ENABLE_EI=FALSE run_service bgw-mqtt-proxy &
-      ENABLE_EI=FALSE run_inspect_service bgw-mqtt-proxy 9228 &
+      #ENABLE_EI=false run_service bgw-mqtt-proxy &
+      ENABLE_EI=false run_inspect_service bgw-mqtt-proxy 9228 &
     fi
 
 else

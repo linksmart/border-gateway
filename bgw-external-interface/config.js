@@ -32,7 +32,7 @@ let config = {
         name: "external-interface",
         log_level: 'info',
         no_color: false,
-        timestamp: false,
+        timestamp: process.env.AAA_CLIENT_TIMESTAMP || false,
         disable_cat: []
     }
 };

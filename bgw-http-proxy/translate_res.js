@@ -1,6 +1,7 @@
 const  config = require('./config');
 const url = require("url");
 const domainMatch = require('domain-match');
+const {AAA, CAT, debug, isDebugOn} = require('../bgw-aaa-client');
 
 
 const bs36 = require('base-x')('0123456789abcdefghijklmnopqrstuvwxyz');
@@ -32,7 +33,8 @@ const transformURI = (data, req, res)=>
       return e;
     }
     // end checking whitlist
-    const protocol = (i.includes('http') && config.enable_ei==='TRUE')?  "https://":i+"://";
+    //AAA.log(CAT.DEBUG,(typeof config.enable_ei));
+    const protocol = (i.includes('http') && config.enable_ei.toUpperCase()==="TRUE")?  "https://":i+"://";
     const local_address = aliases[e]?aliases[e]:encode(e);
     const external_address = config.external_domain;
     //const external_port = (i.includes('http') && config.external_port == 443)? "" : `:${config.external_port}`

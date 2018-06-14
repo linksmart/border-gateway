@@ -22,7 +22,7 @@ let config = {
         name: "mqtt-proxy",
         log_level: 'info',
         no_color: false,
-        timestamp: false,
+        timestamp: process.env.AAA_CLIENT_TIMESTAMP || false,
         disable_cat: [],
         cache_for: '10*60',
         purge_exp_cache_timer: '24*60*60',
