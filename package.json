@@ -19,8 +19,9 @@
     "bgw-external-interface": "file:./bgw-external-interface",
     "bgw-http-proxy": "file:./bgw-http-proxy",
     "bgw-mqtt-proxy": "file:./bgw-mqtt-proxy"
-},
+  },
   "devDependencies": {
-    "dotenv": "latest"
+    "dotenv": "latest",
+    "eslint": "^4.19.1"
   }
 }
