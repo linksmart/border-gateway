@@ -6,7 +6,7 @@ RUN git clone https://code.linksmart.eu/scm/bgw/bgw.git /bgw
 RUN git checkout -b dev origin/dev
 RUN npm install
 
-EXPOSE 80 443 8883
+EXPOSE 443 8883
 
 ENTRYPOINT ["./bgw.sh"]
 #CMD ["start"]
