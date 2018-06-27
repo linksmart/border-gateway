@@ -239,7 +239,10 @@ The openid client secret
 ```
 AAA_CLIENT_OPENID_GRANT_TYPE="password"
 ```
-The BGW supports  three openID grant types `password` , `refresh_token`, `authorization_code`. For authorization_code the redirect_uri is the same as the host above.
+The BGW supports  three openID grant types `password` , `refresh_token`, `authorization_code`.
+  * **`refresh_token`:** Expiration time for refresh_token is configured in Keycloak Realm settings (Tokens / SSO Session Idle). Here is an example on how to obtain a refresh token: `curl -d "client_id=<$AAA_CLIENT_OPENID_CLIENTID>" -d "username=linksmart" -d "password=demo" -d "grant_type=password" -L "https://auth.fit.fraunhofer.de/kc/realms/<name_of_your_realm>/protocol/openid-connect/token"`. The value of field `refresh_token` can then be used to authorize http requests (Authorization: Bearer) or give it as username in an mqtt request.
+  * **`authorization_code`:** Your Keycloak client needs to have "Standard Flow Enabled" button on and the list of "Valid Redirect URIs" needs to include the value of `AAA_CLIENT_HOST`. Here is an example on how to obtain an authorization code: Put `https://auth.fit.fraunhofer.de/kc/realms/<name_of_your_realm>/protocol/openid-connect/auth?client_id=<$AAA_CLIENT_OPENID_CLIENTID>&response_type=code&redirect_uri=https%3A%2F%2Fauth.fit.fraunhofer.de%2Fkc%2Frealms%2F<name_of_your_realm>` into your browser and log in with username and password. Copy the value of field `code` from the URL and use it in the same way as a refresh token. The code can be used only once!
+
 ```
 AAA_CLIENT_OPENID_ANONYMOUS_USER=anonymous
 ```
