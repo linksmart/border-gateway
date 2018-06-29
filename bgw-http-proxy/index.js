@@ -15,7 +15,7 @@ const config = require('./config');
 const {transformURI, bgwIfy, REQ_TYPES} = require('./utils');
 const {httpAuth, AAA, CAT, debug, isDebugOn} = require('../bgw-aaa-client');
 
-//debug('configs am Beginn von index.js', JSON.stringify(config, null, 4));
+debug('http proxy configs am Beginn von index.js', JSON.stringify(config, null, 4));
 
 if (!config.single_core && cluster.isMaster) {
     AAA.log(CAT.PROCESS_START, `Master PID ${process.pid} is running: CPU has ${numCPUs} cores`);
@@ -90,8 +90,11 @@ if (!config.single_core && cluster.isMaster) {
 
     });
 //    if (config.enable_ei) {
-        app.listen(config.bind_port, config.bind_address, () =>
-            AAA.log(CAT.PROCESS_START, `PID ${process.pid} listening on ${config.bind_address}:${config.bind_port}`));
+    config.bind_addresses.forEach((addr) => {
+        AAA.log(CAT.DEBUG,(typeof addr));
+        app.listen(config.bind_port, addr, () =>
+            AAA.log(CAT.PROCESS_START, `PID ${process.pid} listening on ${addr}:${config.bind_port}`));
+    });
 //    } else {
 //        const options = {
 //            key: fs.readFileSync(config.tls_key),
