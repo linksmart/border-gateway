@@ -1,6 +1,7 @@
 FROM node:latest
 #FROM node:7.9
 
+COPY . /bgw
 WORKDIR /bgw
 RUN npm install
 
