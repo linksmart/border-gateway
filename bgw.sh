@@ -11,21 +11,7 @@ function run_inspect_service {
 function json2env {
   node json2env.js || exit 1
 }
-if [ "$1" = "build" ]; then
-    echo Building the dependencies for all components...
-    npm install --only=dev
-
-    npm run clone-external-interface && cd dev/bgw-external-interface && npm install && cd ../..
-    #npm run clone-auth-server && cd dev/bgw-auth-server && npm install && cd ../..
-    npm run clone-mqtt-proxy && cd dev/bgw-mqtt-proxy && npm install && cd ../..
-    npm run clone-http-proxy && cd dev/bgw-http-proxy && npm install && cd ../..
-    npm run clone-aaa-client && cd dev/bgw-aaa-client && npm install && cd ../..
-
-    chmod -R o+wr .
-    echo Finished building the dependencies for all components
-    exit 0
-
-elif [ "$1" = "part" ]; then
+if [ "$1" = "part" ]; then
 
     json2env
     run_service $2
@@ -43,19 +29,19 @@ elif [ "$1" = "start" ]; then
       #run_inspect_service bgw-external-interface 9229 &
       run_service bgw-external-interface &
 
-      #ENABLE_EI=true run_service bgw-http-proxy &
-      ENABLE_EI=true run_inspect_service bgw-http-proxy 9229 &
+      ENABLE_EI=true run_service bgw-http-proxy &
+      #ENABLE_EI=true run_inspect_service bgw-http-proxy 9229 &
       
-      #ENABLE_EI=true run_service bgw-mqtt-proxy &
-      ENABLE_EI=true run_inspect_service bgw-mqtt-proxy 9228 &
+      ENABLE_EI=true run_service bgw-mqtt-proxy &
+      #ENABLE_EI=true run_inspect_service bgw-mqtt-proxy 9228 &
 
     else
 
-      #ENABLE_EI=false run_service bgw-http-proxy &
-      ENABLE_EI=false run_inspect_service bgw-http-proxy 9229 &
+      ENABLE_EI=false run_service bgw-http-proxy &
+      #ENABLE_EI=false run_inspect_service bgw-http-proxy 9229 &
       
-      #ENABLE_EI=false run_service bgw-mqtt-proxy &
-      ENABLE_EI=false run_inspect_service bgw-mqtt-proxy 9228 &
+      ENABLE_EI=false run_service bgw-mqtt-proxy &
+      #ENABLE_EI=false run_inspect_service bgw-mqtt-proxy 9228 &
     fi
 
 else

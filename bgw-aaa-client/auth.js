@@ -21,17 +21,18 @@ const httpAuth = (req)=>{
     let password = undefined;
     //let username = config.aaa_client.openid_anonymous_user;
     //lett password = config.aaa_client.openid_anonymous_pass;
-    if (req.headers && req.headers.authorization) {
-      var parts = req.headers.authorization.split(' ');
-      if(parts.length === 2 ) {
-        (parts[0] === 'Bearer' && (username = parts[1])) ||
-        (parts[0] === 'Basic'  && (username = decode64(parts[1])));
-        parts = username.split(":");
-        username = parts[0];
-        password = parts[1];
-      }
-
-    } else if (req.query.bgw_key) {
+    // if (req.headers && req.headers.authorization) {
+    //   var parts = req.headers.authorization.split(' ');
+    //   if(parts.length === 2 ) {
+    //     (parts[0] === 'Bearer' && (username = parts[1])) ||
+    //     (parts[0] === 'Basic'  && (username = decode64(parts[1])));
+    //     parts = username.split(":");
+    //     username = parts[0];
+    //     password = parts[1];
+    //   }
+    //
+    // } else
+        if (req.query.bgw_key) {
       username = req.query.bgw_key;
       delete req.query.bgw_key;
       req.url = req.url.replace(`bgw_key=${username}`,"");

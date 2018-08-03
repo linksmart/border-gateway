@@ -15,8 +15,6 @@ const config = require('./config');
 const {transformURI, bgwIfy, REQ_TYPES} = require('./utils');
 const {httpAuth, AAA, CAT, debug, isDebugOn} = require('../bgw-aaa-client');
 
-debug('http proxy configs am Beginn von index.js', JSON.stringify(config, null, 4));
-
 if (!config.single_core && cluster.isMaster) {
     AAA.log(CAT.PROCESS_START, `Master PID ${process.pid} is running: CPU has ${numCPUs} cores`);
     for (let i = 0; i < numCPUs; i++)

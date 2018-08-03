@@ -10,7 +10,7 @@ const config = require('./config');
 const {mqttAuth, AAA, CAT, isDebugOn, debug} = require('../bgw-aaa-client');
 const validate = require('./validate');
 
-debug('mgtt proxy configs am Beginn von index.js', JSON.stringify(config, null, 4));
+//debug('mgtt proxy configs am Beginn von index.js', JSON.stringify(config, null, 4));
 
 if (!config.single_core && cluster.isMaster) {
     AAA.log(CAT.PROCESS_START, `Master PID ${process.pid} is running: CPU has ${numCPUs} cores`);
