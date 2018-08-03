@@ -93,7 +93,7 @@ HTTP_PROXY_ONLY_FORWARD_ALIASES=false
 ```
 When true the BGW will only forward defined aliases in the configs and not encoded addresses provided by translation
 ```
-HTTP_PROXY_OVERRIDE_AUTHORIZATION_HEADER=false
+HTTP_PROXY_OVERRIDE_AUTHORIZATION_HEADER=""
 ```
 Insert an authorization header to all HTTP requests forwarded through the BGW HTTP Proxy. Useful for internal auth
 ```
