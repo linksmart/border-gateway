@@ -24,7 +24,7 @@ const httpAuth = (req)=>{
     if (req.headers && req.headers.authorization) {
       var parts = req.headers.authorization.split(' ');
       if(parts.length === 2 ) {
-        (parts[0] === 'Bearer' && (username = parts[1])) ||
+        ((parts[0] === 'Bearer' || parts[0] === 'bearer') && (username = parts[1])) ||
         (parts[0] === 'Basic'  && (username = decode64(parts[1])));
         parts = username.split(":");
         username = parts[0];
