@@ -10,8 +10,6 @@ const config = require('./config');
 const {mqttAuth, AAA, CAT, isDebugOn, debug} = require('../bgw-aaa-client');
 const validate = require('./validate');
 
-//debug('mgtt proxy configs am Beginn von index.js', JSON.stringify(config, null, 4));
-
 if (!config.single_core && cluster.isMaster) {
     AAA.log(CAT.PROCESS_START, `Master PID ${process.pid} is running: CPU has ${numCPUs} cores`);
     for (let i = 0; i < numCPUs; i++)
@@ -123,12 +121,9 @@ if (!config.single_core && cluster.isMaster) {
         });
     });
 
-    config.bind_addresses.forEach((addr) => {
-        server.listen(config.bind_port, addr, () =>
-            AAA.log(CAT.PROCESS_START, `PID ${process.pid} listening on ${addr}:${config.bind_port}`));
-    });
 
-
+    server.listen(config.bind_port, config.bind_address, () =>
+        AAA.log(CAT.PROCESS_START, `PID ${process.pid} listening on ${config.bind_address}:${config.bind_port}`));
     //debug('validate.js, server =', server);
     //debug('validate.js, NODE_DEBUG =', process.env.NODE_DEBUG);
     // debug('validate.js, HOSTNAME =',process.env.HOSTNAME)
