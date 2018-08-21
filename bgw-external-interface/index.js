@@ -9,6 +9,8 @@ const net = require('net');
 const config = require('./config');
 const {AAA, CAT, debug} = require('../bgw-aaa-client');
 
+debug('external interface configs am Beginn von index.js', JSON.stringify(config, null, 4));
+
 if (!config.single_core && cluster.isMaster) {
     AAA.log(CAT.PROCESS_START, `Master PID ${process.pid} is running: CPU has ${numCPUs} cores`);
     for (let i = 0; i < numCPUs; i++)
@@ -72,8 +74,13 @@ if (!config.single_core && cluster.isMaster) {
             });
         });
         external_interface.on('tlsClientError', (e) => debug('tls error,this could be a none tls connection, make sure to establish a proper tls connection, details...', e.stack || e));
-        external_interface.listen(srv.bind_port, srv.bind_address, () =>
-            AAA.log(CAT.PROCESS_START, `PID ${process.pid} Forwarding ${srv.name} ${srv.bind_address}:${srv.bind_port} ===> ${srv.dest_address}:${srv.dest_port}`));
+
+        srv.bind_addresses.forEach((addr) => {
+            external_interface.listen(srv.bind_port, addr, () =>
+                AAA.log(CAT.PROCESS_START, `PID ${process.pid} Forwarding ${srv.name} ${addr}:${srv.bind_port} ===> ${srv.dest_address}:${srv.dest_port}`));
+        });
+
+
     });
 
 }

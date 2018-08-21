@@ -1,9 +1,13 @@
+const fs = require('fs');
+const jsonFile = "./config/config.json";
+let config_file = JSON.parse(fs.readFileSync(jsonFile));
+
 let config = {
-    single_core: process.env.SINGLE_CORE || false,
-    bind_address: process.env.MQTT_PROXY_BIND_ADDRESS,
-    bind_port: process.env.MQTT_PROXY_BIND_PORT,
-    tls_key: process.env.TLS_KEY || "./config/key.pem",
-    tls_cert: process.env.TLS_CERT || "./config/srv.pem",
+    single_core: config_file.single_core || false,
+    bind_addresses: config_file.mqtt_proxy_bind_addresses,
+    bind_port: config_file.mqtt_proxy_bind_port,
+    tls_key: config_file.tls_key,
+    tls_cert: config_file.tls_cert,
     disconnect_on_unauthorized_publish: false,
     disconnect_on_unauthorized_subscribe: false,
     authorize_response: false,
@@ -22,14 +26,14 @@ let config = {
         name: "mqtt-proxy",
         log_level: 'info',
         no_color: false,
-        timestamp: process.env.AAA_CLIENT_TIMESTAMP || false,
+        timestamp: config_file.aaa_client_timestamp || false,
         disable_cat: [],
         cache_for: '10*60',
         purge_exp_cache_timer: '24*60*60',
-        secret: process.env.TLS_KEY || "./config/key.pem",
+        secret: config_file.tls_key,
         host: "http://localhost:5055",
         auth_provider: "openid",
-        openid_clientid: process.env.AAA_CLIENT_OPENID_CLIENTID,
+        openid_clientid: config_file.aaa_client_openid_clientid,
         openid_clientsecret: "",
         openid_grant_type: "password",
         openid_anonymous_user: "anonymous",

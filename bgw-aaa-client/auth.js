@@ -19,26 +19,26 @@ const httpAuth = (req) => {
     let username = (req.bgw.alias && req.bgw.alias.username) || undefined;
     let password = (req.bgw.alias && req.bgw.alias.password) || undefined;
 
-    if (req.headers && req.headers.authorization) {
-        var parts = req.headers.authorization.split(' ');
-        if (parts.length === 2) {
-            // if ((parts[0] === 'Bearer' || parts[0] === 'bearer') && (username = parts[1]))
-            // {
-            //     parts = username.split(":");
-            //     username = parts[0];
-            //     password = parts[1];
-            // }
+     if (req.headers && req.headers.authorization) {
+         var parts = req.headers.authorization.split(' ');
+         if (parts.length === 2) {
+             // if (parts[0] === 'Bearer' && (username = parts[1]))
+             // {
+             //     parts = username.split(":");
+             //     username = parts[0];
+             //     password = parts[1];
+             // }
 
-            if (parts[0] === 'Basic' && (username = decode64(parts[1])))
-            {
-                parts = username.split(":");
-                username = parts[0];
-                password = parts[1];
-            }
-        }
+             if (parts[0] === 'Basic' && (username = decode64(parts[1])))
+             {
+                 parts = username.split(":");
+                 username = parts[0];
+                 password = parts[1];
+             }
+         }
 
-    } else
-    if (req.query.bgw_key) {
+     } else
+        if (req.query.bgw_key) {
         username = req.query.bgw_key;
         delete req.query.bgw_key;
         req.url = req.url.replace(`bgw_key=${username}`, "");
