@@ -26,7 +26,7 @@ elif [ "$1" = "start" ]; then
 
     if [ "$2" = "enable_ei" ]; then
 
-      run_inspect_service bgw-external-interface 9229 &
+      run_inspect_service bgw-external-interface 9227 &
       #run_service bgw-external-interface &
 
       #ENABLE_EI=true run_service bgw-http-proxy &
