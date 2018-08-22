@@ -22,12 +22,12 @@ const httpAuth = (req) => {
      if (req.headers && req.headers.authorization) {
          var parts = req.headers.authorization.split(' ');
          if (parts.length === 2) {
-             // if (parts[0] === 'Bearer' && (username = parts[1]))
-             // {
-             //     parts = username.split(":");
-             //     username = parts[0];
-             //     password = parts[1];
-             // }
+              if ((parts[0] === 'Bearer' || parts[0] === 'Bearer') && (username = parts[1]))
+              {
+                  parts = username.split(":");
+                  username = parts[0];
+                  password = parts[1];
+              }
 
              if (parts[0] === 'Basic' && (username = decode64(parts[1])))
              {
