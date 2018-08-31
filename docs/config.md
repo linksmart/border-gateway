@@ -191,7 +191,7 @@ Your logging service doesn't provide a timestamps, this will generate one
 ```
 AAA_CLIENT_DISABLE_CAT=[]
 ```
-Disables a certain logging category from appearing, Possible values for the array `PROCESS_START, PROCESS_END, BUG, DEBUG, RULE_ALLOW, CON_TERMINATE, CON_START, CON_END, RULE_DENY, PROFILE, PASSWORD, SUSPENDED, EXPIRED, INVALID_KEY, MISSING_KEY, WRONG_AUTH_SERVER_RES`
+Disables a certain logging category from appearing, Possible values for the array `PROCESS_START, PROCESS_END, BUG, DEBUG, RULE_ALLOW, CON_TERMINATE, CON_START, CON_END, RULE_DENY, PROFILE, PASSWORD, SUSPENDED, EXPIRED, INVALID_KEY, MISSING_KEY, WRONG_AUTH_SERVER_RES, INVALID_ACCESS_TOKEN`
 ```
 AAA_CLIENT_CACHE_FOR='10*60'
 ```

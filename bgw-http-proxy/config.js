@@ -56,6 +56,8 @@ let config = {
         openid_clientid: config_file.aaa_openid_client_id,
         openid_clientsecret: "",
         openid_grant_type: "password",
+        openid_realm_public_key_modulus: "***",
+        openid_realm_public_key_exponent: "***",
         openid_anonymous_user: "anonymous",
         openid_anonymous_pass: "anonymous"
     }
