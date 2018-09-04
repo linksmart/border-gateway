@@ -29,6 +29,14 @@ let config = {
                     dest_port: config_file.mqtt_proxy_bind_port || 5051,
                     dest_address: config_file.mqtt_proxy_bind_addresses[0],
                     allowed_addresses: []
+                },
+                {
+                    name: "websocket_proxy",
+                    bind_addresses: config_file.websocket_external_interface_bind_addresses,
+                    bind_port: config_file.websocket_external_interface_bind_port || 9001,
+                    dest_port: config_file.websocket_proxy_bind_port || 5052,
+                    dest_address: config_file.websocket_proxy_bind_addresses[0],
+                    allowed_addresses: []
                 }
             ],
     //global_allowed_addresses: ["0.0.0.0/0"],

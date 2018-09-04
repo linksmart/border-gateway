@@ -10,7 +10,6 @@ let config = {
     external_domain: config_file.external_domain,
     tls_key: config_file.tls_key,
     tls_cert: config_file.tls_cert,
-//    external_port: "443",
     sub_domain_mode: false,
     only_forward_aliases: false,
     override_authorization_header: "",
@@ -22,25 +21,6 @@ let config = {
     redirect_to_original_address_on_proxy_error: false,
     redirect_on_invalid_external_domain: false,
     aliases: {
-//        rc: {
-//            local_address: "http://alman:8081",
-//            change_origin_on: {
-//                https_req: false,
-//                http_req: false
-//            },
-//            translate_local_addresses: {
-//                enabled: false,
-//                whitelist: ["*.ietf.org"]
-//            },
-//            insecure: false,
-//            override_authorization_header: "",
-//            use_basic_auth: false
-//        },
-//
-//        sc: {
-//            local_address: "http://localhost:8082",
-//            use_basic_auth: false
-//        }
     },
     aaa_client: {
         name: "http-proxy",
@@ -53,7 +33,7 @@ let config = {
         secret: config_file.tls_key,
         host: "http://localhost:5055",
         auth_provider: "openid",
-        openid_clientid: config_file.aaa_openid_client_id,
+        openid_clientid: config_file.aaa_client_openid_clientid,
         openid_clientsecret: "",
         openid_grant_type: "password",
         openid_realm_public_key_modulus: "***",
@@ -62,6 +42,5 @@ let config = {
         openid_anonymous_pass: "anonymous"
     }
 };
-
 require('../bgw-aaa-client').init("HTTP_PROXY", config);
 module.exports = config;

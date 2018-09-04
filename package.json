@@ -18,7 +18,8 @@
     "bgw-aaa-client": "file:./bgw-aaa-client",
     "bgw-external-interface": "file:./bgw-external-interface",
     "bgw-http-proxy": "file:./bgw-http-proxy",
-    "bgw-mqtt-proxy": "file:./bgw-mqtt-proxy"
+    "bgw-mqtt-proxy": "file:./bgw-mqtt-proxy",
+    "bgw-websocket-proxy": "file:./bgw-websocket-proxy"
   },
   "devDependencies": {
     "dotenv": "latest",

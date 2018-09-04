@@ -7,7 +7,6 @@ function run_inspect_service {
   node --inspect=0.0.0.0:$2 -r dotenv/config ./node_modules/$1/index.js dotenv_config_path=./node_modules/config.env || kill -KILL 0
 }
 
-
 function json2env {
   node json2env.js || exit 1
 }
@@ -30,18 +29,24 @@ elif [ "$1" = "start" ]; then
       #run_service bgw-external-interface &
 
       #ENABLE_EI=true run_service bgw-http-proxy &
-      ENABLE_EI=true run_inspect_service bgw-http-proxy 9229 &
+      ENABLE_EI=true run_inspect_service bgw-http-proxy 9228 &
       
       #ENABLE_EI=true run_service bgw-mqtt-proxy &
-      ENABLE_EI=true run_inspect_service bgw-mqtt-proxy 9228 &
+      ENABLE_EI=true run_inspect_service bgw-mqtt-proxy 9229 &
+
+      #ENABLE_EI=true run_service bgw-mqtt-proxy &
+      ENABLE_EI=true run_inspect_service bgw-websocket-proxy 9230 &
 
     else
 
       #ENABLE_EI=false run_service bgw-http-proxy &
-      ENABLE_EI=false run_inspect_service bgw-http-proxy 9229 &
+      ENABLE_EI=false run_inspect_service bgw-http-proxy 9228 &
       
       #ENABLE_EI=false run_service bgw-mqtt-proxy &
-      ENABLE_EI=false run_inspect_service bgw-mqtt-proxy 9228 &
+      ENABLE_EI=false run_inspect_service bgw-mqtt-proxy 9229 &
+
+      #ENABLE_EI=false run_service bgw-mqtt-proxy &
+      ENABLE_EI=false run_inspect_service bgw-websocket-proxy 9230 &
     fi
 
 else

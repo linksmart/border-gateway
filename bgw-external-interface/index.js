@@ -45,14 +45,6 @@ if (!config.single_core && cluster.isMaster) {
 
             const {dest_address, dest_port, name, allowed_addresses} = ALPN_srv || SNI_srv || srv;
 
-            //if (config.private_bgw &&
-            //        (!insubnet.Validate(srcClient.remoteAddress, config.global_allowed_addresses) ||
-            //                !insubnet.Validate(srcClient.remoteAddress, allowed_addresses || []))) {
-            //    AAA.log(CAT.CON_TERMINATE, `This is a private BGW: illegal connection made by ${srcClient.remoteAddress}`);
-            //    srcClient.destroy();
-            //
-            //} 
-            //else
             if (config.enable_ALPN_mode && srcClient.alpnProtocol === 'bgw_info') {
                 srcClient.end(config.servers.reduce((a, c) => a + ',' + c.name, ''));
             } else if (srcClient.remoteAddress && srcClient.remotePort) {
