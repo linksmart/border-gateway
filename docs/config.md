@@ -34,7 +34,7 @@ File path to TLS key
 note: These configs can be set for a a single component by perpending the prefix (i.e `HTTP_PROXY_TLS_KEY`)
 
 ```
-SINGLE_CORE=false
+SINGLE_CORE=true
 ```
 By default the BGW runs multiple process for each CPU virtual core. It is important for scalability. Setting this to true will hinder scalability/performance and run the BGW on a single CPU virtual core only (it is used in `./bgw.sh dev`)
 
@@ -46,7 +46,7 @@ MQTT_PROXY_BIND_ADDRESS=0.0.0.0
 ```
 The default bind address for MQTT Proxy is `0.0.0.0`. If external interface is enabled you may want to change it to `127.0.0.1`
 ```
-MQTT_PROXY_BIND_PORT=1883
+MQTT_PROXY_BIND_PORT=5051
 ```
 The usual bind port for MQTT Proxy is `1883`. If external interface is enabled set it to `5051` or any other available port.
 ```
@@ -66,18 +66,18 @@ MQTT_PROXY_DISCONNECT_ON_UNAUTHORIZED_RESPONSE=false
 ```
 Recommended to be used with the config above `MQTT_PROXY_AUTHORIZE_RESPONSE`
 ```
-MQTT_PROXY_BROKER={"address":"iot.eclipse.org","port":1883,"username":"","password":"","tls":false,"tls_ca": "","tls_client_key":"","tls_client_cert":""}
+MQTT_PROXY_BROKER={"address":"localhost","port":1883,"username":"","password":"","tls":false,"tls_ca": "","tls_client_key":"","tls_client_cert":""}
 ```
 The upstream broker information encoded in JSON. you can connect to a TLS broker with username and password and provide a Certificate Authority and client certificates
 
 <a name="HTTP"></a>
 ## HTTP Proxy
 ```
-HTTP_PROXY_BIND_ADDRESS=0.0.0.0
+HTTP_PROXY_BIND_ADDRESS=127.0.0.1
 ```
 The default bind address for HTTP Proxy is `0.0.0.0`. If external interface is enabled you may want to change it to `127.0.0.1`
 ```
-HTTP_PROXY_BIND_PORT=443
+HTTP_PROXY_BIND_PORT=5050
 ```
 The usual bind port for HTTP Proxy is `80`. If external interface is enabled set it to `5050` or any other available port.
 ```

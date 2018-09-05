@@ -3,9 +3,11 @@ const jsonFile = "./config/config.json";
 let config_file = JSON.parse(fs.readFileSync(jsonFile));
 
 let config = {
-    single_core: config_file.single_core || false,
-    bind_addresses: config_file.http_proxy_bind_addresses,
-    bind_port: config_file.http_proxy_bind_port,
+    single_core: config_file.single_core || true,
+    bind_addresses: config_file.http_proxy_bind_addresses || [
+        "127.0.0.1"
+    ],
+    bind_port: config_file.http_proxy_bind_port || 5050,
     enable_ei: process.env.ENABLE_EI,
     external_domain: config_file.external_domain,
     tls_key: config_file.tls_key,
@@ -20,8 +22,7 @@ let config = {
     },
     redirect_to_original_address_on_proxy_error: false,
     redirect_on_invalid_external_domain: false,
-    aliases: {
-    },
+    aliases: {},
     aaa_client: {
         name: "http-proxy",
         log_level: 'info',

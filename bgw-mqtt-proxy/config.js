@@ -3,9 +3,11 @@ const jsonFile = "./config/config.json";
 let config_file = JSON.parse(fs.readFileSync(jsonFile));
 
 let config = {
-    single_core: config_file.single_core || false,
-    bind_addresses: config_file.mqtt_proxy_bind_addresses,
-    bind_port: config_file.mqtt_proxy_bind_port,
+    single_core: config_file.single_core || true,
+    bind_addresses: config_file.mqtt_proxy_bind_addresses || [
+        "127.0.0.1"
+    ],
+    bind_port: config_file.mqtt_proxy_bind_port || 5051,
     tls_key: config_file.tls_key,
     tls_cert: config_file.tls_cert,
     disconnect_on_unauthorized_publish: false,
@@ -13,7 +15,7 @@ let config = {
     authorize_response: false,
     disconnect_on_unauthorized_response: false,
     broker: {
-        address: "iot.eclipse.org",
+        address: "localhost",
         port: 1883,
         username: false,
         password: false,

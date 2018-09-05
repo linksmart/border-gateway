@@ -10,8 +10,6 @@ const config = require('./config');
 const {mqttAuth, AAA, CAT, isDebugOn, debug} = require('../bgw-aaa-client');
 const validate = require('./validate');
 
-//debug('mgtt proxy configs am Beginn von index.js', JSON.stringify(config, null, 4));
-
 if (!config.single_core && cluster.isMaster) {
     AAA.log(CAT.PROCESS_START, `Master PID ${process.pid} is running: CPU has ${numCPUs} cores`);
     for (let i = 0; i < numCPUs; i++)
@@ -19,14 +17,8 @@ if (!config.single_core && cluster.isMaster) {
     cluster.on('exit', (worker, code, signal) => AAA.log(CAT.PROCESS_END, `worker ${worker.process.pid} died`));
 
 } else {
-//    const createServer = config.disable_bind_tls ? net.createServer : tls.createServer;
-//    const serverOptions = config.disable_bind_tls ? {} : {
-      const serverOptions = {};        
-//        key: fs.readFileSync(config.tls_key),
-//        cert: fs.readFileSync(config.tls_cert)
-//    };
+      const serverOptions = {};
     const broker = config.broker;
-    // debug('index.js, broker =',broker)
     const clientOptions = {
         host: broker.address,
         port: broker.port,
@@ -37,9 +29,6 @@ if (!config.single_core && cluster.isMaster) {
 
     AAA.log(CAT.PROCESS_START, "Creating mqtt-proxy server...");
     const server = net.createServer(serverOptions, (srcClient) => {
-
-        // debug('index.js, srcClient =',srcClient)
-        // debug('index.js, serverOptions =',serverOptions)
 
         const socketConnect = broker.tls ? tls.connect : net.connect;
         const dstClient = socketConnect(clientOptions, () => {
@@ -61,12 +50,9 @@ if (!config.single_core && cluster.isMaster) {
             });
 
             const clientAddress = `${srcClient.remoteAddress}:${srcClient.remotePort}`;
-            //debug('index.js, clientAddress =', clientAddress);
             let credentials = {};
 
-            // debug('index.js, packet =',packet)
-            srcParser.on('packet', async (packet) => {
-                // debug('index.js, message from client (packet.cmd) = ', packet.cmd);
+            srcParser.on('packet', (packet) => {
 
                 // get the client key and store it
                 if (packet.cmd === 'connect') {
@@ -78,13 +64,12 @@ if (!config.single_core && cluster.isMaster) {
                     broker.password && (packet.password = broker.password);
                 }
                 // validate the packet
-                let valid = await validate(clientAddress, packet, credentials);
+                let valid = validate(clientAddress, packet, credentials);
 
                 valid.packet = valid.packet && mqtt.generate(valid.packet);
 
                 if (valid.status) {
-                    dstClient.write(valid.packet); // replaced mqtt.generate with
-                    // mqtt.writeToStream
+                    dstClient.write(valid.packet);
                 } else {
                     // if the packet is invlaid in the case of publish or sub and
                     // configs for diconnectin on unauthorized is set to tru, then
@@ -95,29 +80,23 @@ if (!config.single_core && cluster.isMaster) {
                         srcClient.destroy();
                         dstClient.destroy();
                     } else {
-                        valid.packet && srcClient.write(valid.packet);  // replaced
-                        // mqtt.generate
-                        // with
-                        // mqtt.writeToStream
+                        valid.packet && srcClient.write(valid.packet);
                     }
                 }
 
-
             });
-            dstParser.on('index.js, packet', async (packet) => {
+            dstParser.on('packet',(packet) => {
                 debug('index, js, message from broker (packet.cmd) =', packet.cmd);
                 // only when autherize responce config is set true, i validate each
                 // responce to subscriptions
-                if (packet.cmd === 'publish' && !(await mqttAuth(clientAddress, credentials, 'SUB', packet.topic))) {
+                if (packet.cmd === 'publish' && !(mqttAuth(clientAddress, credentials, 'SUB', packet.topic))) {
                     if (config.disconnect_on_unauthorized_response) {
                         AAA.log(CAT.CON_TERMINATE, 'disconnecting client for unauthorize subscription due to change user auth profile');
                         srcClient.destroy();
                         dstClient.destroy();
                     }
                 } else {
-                    srcClient.write(mqtt.generate(packet)); // replaced mqtt.generate
-                    // with
-                    // mqtt.writeToStream
+                    srcClient.write(mqtt.generate(packet));
                 }
             });
         });
@@ -127,11 +106,4 @@ if (!config.single_core && cluster.isMaster) {
         server.listen(config.bind_port, addr, () =>
             AAA.log(CAT.PROCESS_START, `PID ${process.pid} listening on ${addr}:${config.bind_port}`));
     });
-
-
-    //debug('validate.js, server =', server);
-    //debug('validate.js, NODE_DEBUG =', process.env.NODE_DEBUG);
-    // debug('validate.js, HOSTNAME =',process.env.HOSTNAME)
-    // debug('validate.js, EXTERNAL_DOMAIN =',process.env.EXTERNAL_DOMAIN)
-
 }

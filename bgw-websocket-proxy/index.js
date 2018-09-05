@@ -42,8 +42,8 @@ function waitForSocketConnection(socket, callback) {
 function createSocketToBroker(serverSocket) {
 
     const clientOptions = {
-        host: config.mqtt_proxy_bind_addresses[0],
-        port: config.mqtt_proxy_bind_port
+        host: config.mqtt_proxy_bind_addresses[0] || "127.0.0.1",
+        port: config.mqtt_proxy_bind_port || "5051"
     };
 
     const socket = net.connect(clientOptions);
