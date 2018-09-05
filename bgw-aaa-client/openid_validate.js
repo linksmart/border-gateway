@@ -60,7 +60,7 @@ module.exports = async (path, source, username = anonymous_user, password = anon
 
         try {
             let result = await fetch(`${config.aaa_client.host}/protocol/openid-connect/token`, options); // see https://www.keycloak.org/docs/3.0/securing_apps/topics/oidc/oidc-generic.html
-            profile = result.json();
+            profile = await result.json();
             isDebugOn && debug('open id server result ', JSON.stringify(profile));
         } catch (e) {
             AAA.log(CAT.WRONG_AUTH_SERVER_RES, "DENIED This could be due to auth server being offline or failing", path, source);

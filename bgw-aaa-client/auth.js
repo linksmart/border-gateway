@@ -8,9 +8,9 @@ const decode64 = (b64) => new Buffer(b64, 'base64').toString('ascii');
 let validate = {openid, none};
 validate = validate[config.aaa_client.auth_provider];
 
-const mqttAuth = (port, credentials, method, path = '') => {
+const mqttAuth = async (port, credentials, method, path = '') => {
     const payload = `MQTT/${method}/${config.broker.address}/${config.broker.port}/${path}`;
-    return (validate(payload, `[source:${port}]`, credentials.username, credentials.password)).status;
+    return (await validate(payload, `[source:${port}]`, credentials.username, credentials.password)).status;
 
 };
 

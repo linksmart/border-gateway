@@ -1,4 +1,4 @@
-module.exports = ()=> {
+module.exports = async ()=> {
 
   return {status: true};
 
