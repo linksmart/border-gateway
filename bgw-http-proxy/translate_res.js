@@ -33,7 +33,6 @@ const transformURI = (data, req, res)=>
       return e;
     }
     // end checking whitlist
-    AAA.log(CAT.DEBUG,(typeof config.enable_ei));
     const protocol = (i.includes('http') && config.enable_ei.toUpperCase()==="TRUE")?  "https://":i+"://";
     const local_address = aliases[e]?aliases[e]:encode(e);
     const external_address = config.external_domain;

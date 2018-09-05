@@ -87,19 +87,8 @@ if (!config.single_core && cluster.isMaster) {
         }
 
     });
-//    if (config.enable_ei) {
     config.bind_addresses.forEach((addr) => {
-        AAA.log(CAT.DEBUG,(typeof addr));
         app.listen(config.bind_port, addr, () =>
             AAA.log(CAT.PROCESS_START, `PID ${process.pid} listening on ${addr}:${config.bind_port}`));
     });
-//    } else {
-//        const options = {
-//            key: fs.readFileSync(config.tls_key),
-//            cert: fs.readFileSync(config.tls_cert)
-//        };
-//        AAA.log(CAT.PROCESS_START, "Creating http-proxy server...");
-//        https.createServer(options, app).listen(config.bind_port, config.bind_address, () =>
-//            AAA.log(CAT.PROCESS_START, `PID ${process.pid} listening on ${config.bind_address}:${config.bind_port}`));
-//    }
 }
