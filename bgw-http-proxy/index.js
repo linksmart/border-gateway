@@ -24,7 +24,7 @@ if (!config.single_core && cluster.isMaster) {
 } else {
 
     app.use(cors());
-    app.use(async(req, res) => {
+    app.use((req, res) => {
         if (req.query.bgw_key && config.disable_bgw_key_as_url_query) {
             res.status(404).json({error: 'this gateway does not allow you to pass the API key  as a query string in the url, you must use the authorization header'});
             return;
@@ -49,7 +49,7 @@ if (!config.single_core && cluster.isMaster) {
             return;
         }
 
-        const allowed = await httpAuth(req);
+        const allowed = httpAuth(req);
         if (allowed.status) {
 
             const is_https = req.bgw.forward_address.includes('https://');
