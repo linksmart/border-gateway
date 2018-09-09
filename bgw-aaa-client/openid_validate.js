@@ -4,6 +4,7 @@ const matchRules = require('./rules');
 const config = require('./config_mgr')();
 const jwt = require('jsonwebtoken');
 var getPem = require('rsa-pem-from-mod-exp');
+
 const {AAA, CAT, isDebugOn, debug} = require('./log');
 
 let parse_credentials = {
@@ -29,7 +30,11 @@ module.exports = async (path, source, username = anonymous_user, password = anon
 
         let pem = getPem(realm_public_key_modulus, realm_public_key_exponent);
 
-        jwt.verify(req_credentials.access_token, pem, {audience:config.aaa_client.openid_clientid, issuer: config.aaa_client.host, ignoreExpiration: false }, function (err, decoded) {
+        jwt.verify(req_credentials.access_token, pem, {
+            audience: config.aaa_client.openid_clientid,
+            issuer: config.aaa_client.host,
+            ignoreExpiration: false
+        }, function (err, decoded) {
 
             if (err) {
                 AAA.log(CAT.INVALID_ACCESS_TOKEN, "Access token is invalid", err.name, err.message);
@@ -57,8 +62,8 @@ module.exports = async (path, source, username = anonymous_user, password = anon
         Object.assign(options.body, req_credentials);
         options.body = qs.stringify(options.body);
 
-
         try {
+
             let result = await fetch(`${config.aaa_client.host}/protocol/openid-connect/token`, options); // see https://www.keycloak.org/docs/3.0/securing_apps/topics/oidc/oidc-generic.html
             profile = await result.json();
             isDebugOn && debug('open id server result ', JSON.stringify(profile));
@@ -78,7 +83,6 @@ module.exports = async (path, source, username = anonymous_user, password = anon
         profile.at_body = JSON.parse(new Buffer(profile.access_token.split(".")[1], 'base64').toString('ascii'));
     }
     ;
-
 
     if (!profile.at_body || !profile.at_body.preferred_username || !(profile.at_body.bgw_rules || profile.at_body.group_bgw_rules)) {
         const res = {

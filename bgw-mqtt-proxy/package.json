@@ -14,6 +14,7 @@
     }
   },
   "dependencies": {
-    "mqtt-packet": "^5.4.0"
+    "mqtt-packet": "^5.4.0",
+    "shortid": "latest"
   }
 }
