@@ -13,7 +13,7 @@ const validate = require('./validate');
 
 let packetSet = new Set([]);
 
-function waitUntilEmpty(packetSet, callback) {
+function waitUntilEmpty(packetSet, callback, counter) {
     setTimeout(
         function () {
             if (packetSet.size === 0) {
@@ -24,8 +24,11 @@ function waitUntilEmpty(packetSet, callback) {
                 return;
 
             } else {
-                AAA.log(CAT.DEBUG, "waiting before disconnect can be forwarded");
-                waitUntilEmpty(packetSet, callback);
+                counter++;
+                if ((counter % 1000) === 0) {
+                    AAA.log(CAT.DEBUG, "waiting for %d seconds before disconnect can be forwarded: ",counter/1000);
+                }
+                waitUntilEmpty(packetSet, callback,counter);
             }
 
         }, 5); // wait 5 miliseconds
@@ -113,7 +116,7 @@ if (!config.single_core && cluster.isMaster) {
                             if (packet.cmd === 'disconnect') {
                                 waitUntilEmpty(packetSet, function () {
                                     dstClient.write(valid.packet);
-                                });
+                                },0);
                             }
                             else {
                                 dstClient.write(valid.packet);
