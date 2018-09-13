@@ -26,9 +26,9 @@ function waitUntilEmpty(packetSet, callback, counter) {
             } else {
                 counter++;
                 if ((counter % 1000) === 0) {
-                    AAA.log(CAT.DEBUG, "waiting for %d seconds before disconnect can be forwarded: ",counter/1000);
+                    AAA.log(CAT.DEBUG, "waiting for %d seconds before disconnect can be forwarded: ", counter / 1000);
                 }
-                waitUntilEmpty(packetSet, callback,counter);
+                waitUntilEmpty(packetSet, callback, counter);
             }
 
         }, 5); // wait 5 miliseconds
@@ -116,7 +116,7 @@ if (!config.single_core && cluster.isMaster) {
                             if (packet.cmd === 'disconnect') {
                                 waitUntilEmpty(packetSet, function () {
                                     dstClient.write(valid.packet);
-                                },0);
+                                }, 0);
                             }
                             else {
                                 dstClient.write(valid.packet);
@@ -137,6 +137,7 @@ if (!config.single_core && cluster.isMaster) {
                         }
                         if (packet.cmd != 'disconnect') {
                             packetSet.delete(packetID);
+
                         }
                     }).catch(err => {
                         AAA.log(CAT.ERROR, "error when validating", err);
