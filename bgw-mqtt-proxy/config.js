@@ -26,9 +26,9 @@ let config = {
     },
     aaa_client: {
         name: "mqtt-proxy",
-        log_level: 'info',
+        log_level: 'warn',
         no_color: false,
-        timestamp: config_file.aaa_client_timestamp || false,
+        timestamp: !config_file.aaa_client_timestamp && true,
         disable_cat: [],
         cache_for: '10*60',
         purge_exp_cache_timer: '24*60*60',

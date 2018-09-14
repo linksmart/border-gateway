@@ -76,7 +76,9 @@ module.exports = async (path, source, username = anonymous_user, password = anon
         }
 
         if (!profile || !profile.access_token || !profile.refresh_token) {
-            const res = {status: false, error: 'Incorrect tokens from open id provider, double check your credentials'};
+            let err = 'Incorrect tokens from open id provider, double check your credentials';
+            const res = {status: false, error: err };
+            AAA.log(CAT.INVALID_USER_CREDENTIALS, err, path, source)
             return res;
         }
 

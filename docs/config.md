@@ -19,15 +19,15 @@
 ## Global Configuration
 
 ```
-EXTERNAL_DOMAIN=bgw.hareeqi.com
+EXTERNAL_DOMAIN=
 ```
-String to the external domain name, by default it is bgw.hareeqi.com which resolves to `127.0.0.1 (localhost)`
+String to the external domain name`
 ```
-TLS_CERT=./config/srv.pem
+TLS_CERT=
 ```
 File path to TLS certificate
 ```
-TLS_KEY=./config/key.pem
+TLS_KEY=
 ```
 File path to TLS key
 
@@ -42,13 +42,13 @@ By default the BGW runs multiple process for each CPU virtual core. It is import
 ## MQTT Proxy
 
 ```
-MQTT_PROXY_BIND_ADDRESS=0.0.0.0
+MQTT_PROXY_BIND_ADDRESSES=[127.0.0.1]
 ```
-The default bind address for MQTT Proxy is `0.0.0.0`. If external interface is enabled you may want to change it to `127.0.0.1`
+The default bind address for MQTT Proxy is `127.0.0.1` when external interface is enabled.
 ```
 MQTT_PROXY_BIND_PORT=5051
 ```
-The usual bind port for MQTT Proxy is `1883`. If external interface is enabled set it to `5051` or any other available port.
+The usual bind port for MQTT proxy is `5051` when external interface is enabled. Without external interface you probably should use MQTT standard port `1883`.
 ```
 MQTT_PROXY_DISCONNECT_ON_UNAUTHORIZED_PUBLISH=false
 ```
@@ -70,16 +70,27 @@ MQTT_PROXY_BROKER={"address":"localhost","port":1883,"username":"","password":""
 ```
 The upstream broker information encoded in JSON. you can connect to a TLS broker with username and password and provide a Certificate Authority and client certificates
 
+<a name="WebSocket"></a>
+## WebSocket Proxy
+
+```
+WEBSOCKET_PROXY_BIND_ADDRESSES=[127.0.0.1]
+```
+The default bind address for WebSocket proxy is `127.0.0.1` when external interface is enabled.
+```
+WEBSOCKET_PROXY_BIND_PORT=5052
+```
+
 <a name="HTTP"></a>
 ## HTTP Proxy
 ```
-HTTP_PROXY_BIND_ADDRESS=127.0.0.1
+HTTP_PROXY_BIND_ADDRESSES=[127.0.0.1]
 ```
-The default bind address for HTTP Proxy is `0.0.0.0`. If external interface is enabled you may want to change it to `127.0.0.1`
+The default bind address for WebSocket proxy is `127.0.0.1` when external interface is enabled.
 ```
 HTTP_PROXY_BIND_PORT=5050
 ```
-The usual bind port for HTTP Proxy is `80`. If external interface is enabled set it to `5050` or any other available port.
+The usual bind port for HTTP proxy is `5050` when external interface is enabled. Without external interface you probably should use HTTP standard port `80`.
 ```
 HTTP_PROXY_EXTERNAL_PORT=443
 ```
@@ -129,7 +140,9 @@ of translation allows you to exclude certain domains or translation. The insure 
 
 <a name="EI"></a>
 ## External Interface
-The BGW is an optional component to the BGW that enables extra features that can be used with HTTP or MQTT proxy and can be started with. `./bgw.sh start enable_ei`
+
+HTTP_EXTERNAL_INTERFACE_BIND_ADDRESSES=http_external_interface_bind_addresses
+
 
 ```
 EI_REQUEST_CLIENT_CERT=false
@@ -191,7 +204,7 @@ Your logging service doesn't provide a timestamps, this will generate one
 ```
 AAA_CLIENT_DISABLE_CAT=[]
 ```
-Disables a certain logging category from appearing, Possible values for the array `PROCESS_START, PROCESS_END, BUG, DEBUG, RULE_ALLOW, CON_TERMINATE, CON_START, CON_END, RULE_DENY, PROFILE, PASSWORD, SUSPENDED, EXPIRED, INVALID_KEY, MISSING_KEY, WRONG_AUTH_SERVER_RES, INVALID_ACCESS_TOKEN`
+Disables a certain logging category from appearing, Possible values for the array `PROCESS_START, PROCESS_END, BUG, DEBUG, RULE_ALLOW, CON_TERMINATE, CON_START, CON_END, RULE_DENY, PROFILE, PASSWORD, SUSPENDED, EXPIRED, INVALID_KEY, INVALID_USER_CREDENTIALS, MISSING_KEY, WRONG_AUTH_SERVER_RES, INVALID_ACCESS_TOKEN`
 ```
 AAA_CLIENT_CACHE_FOR='10*60'
 ```

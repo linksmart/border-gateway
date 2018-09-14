@@ -39,7 +39,7 @@ async function wrappedValidate(clientAddress, packet, credentials) {
         let valid = await validate(clientAddress, packet, credentials);
         return valid;
     } catch (err) {
-        AAA.log(CAT.ERROR, "err when validating", err);
+        AAA.log(CAT.BUG, "err when validating", err);
         throw err;
     }
 }
@@ -140,7 +140,7 @@ if (!config.single_core && cluster.isMaster) {
 
                         }
                     }).catch(err => {
-                        AAA.log(CAT.ERROR, "error when validating", err);
+                        AAA.log(CAT.BUG, "error when validating", err);
                         if (packet.cmd != 'disconnect') {
                             packetSet.delete(packetID);
                         }

@@ -1,7 +1,7 @@
 const config = require('./config')
 const {transformURI ,decode } = require("./translate_res");
 const url = require('url')
-
+const {AAA, CAT, debug} = require('../bgw-aaa-client');
 
 const TYPES = {
   FORWARD: 'FORWARD',
@@ -13,7 +13,21 @@ const TYPES = {
 
 const bgwIfy = (req) => {
   req.bgw = {}
-  const host =  req.headers.host.split(":")[0]
+
+    let host;
+
+    try {
+        host =  req.headers.host.split(":")[0];
+    } catch (e) {
+        if (e instanceof TypeError) {
+            AAA.log(CAT.BUG, "TypeError when splitting host", err, req.headers, req);
+            throw e;
+        } else {
+            AAA.log(CAT.BUG, "Error when splitting host", err, req.headers, req);
+            throw e;
+        }
+    }
+
   const public_domain = config.sub_domain_mode ?  host.includes(config.external_domain) : host == config.external_domain;
 
   if(!public_domain){

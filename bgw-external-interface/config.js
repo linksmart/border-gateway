@@ -19,7 +19,7 @@ let config = {
                 bind_addresses: config_file.http_external_interface_bind_addresses || ["0.0.0.0"],
                 bind_port: config_file.http_external_interface_bind_port || 443,
                 dest_port: config_file.http_proxy_bind_port || 5050,
-                dest_address: config_file.http_proxy_bind_addresses[0] || "127.0.0.1",
+                dest_address: (config_file.http_proxy_bind_addresses && config_file.http_proxy_bind_addresses[0]) || "127.0.0.1",
                 allowed_addresses: []
             },
             {
@@ -29,7 +29,7 @@ let config = {
                 ],
                 bind_port: config_file.mqtt_external_interface_bind_port || 8883,
                 dest_port: config_file.mqtt_proxy_bind_port || 5051,
-                dest_address: config_file.mqtt_proxy_bind_addresses[0] || "127.0.0.1",
+                dest_address: (config_file.mqtt_proxy_bind_addresses && config_file.mqtt_proxy_bind_addresses[0]) || "127.0.0.1",
                 allowed_addresses: []
             },
             {
@@ -39,16 +39,16 @@ let config = {
                 ],
                 bind_port: config_file.websocket_external_interface_bind_port || 9002,
                 dest_port: config_file.websocket_proxy_bind_port || 5052,
-                dest_address: config_file.websocket_proxy_bind_addresses[0] || "127.0.0.1",
+                dest_address: (config_file.websocket_proxy_bind_addresses && config_file.websocket_proxy_bind_addresses[0]) || "127.0.0.1",
                 allowed_addresses: []
             }
         ],
     //global_allowed_addresses: ["0.0.0.0/0"],
     aaa_client: {
         name: "external-interface",
-        log_level: 'info',
+        log_level: 'warn',
         no_color: false,
-        timestamp: config_file.aaa_client_timestamp || false,
+        timestamp: !config_file.aaa_client_timestamp && true,
         disable_cat: []
     }
 };
