@@ -2,7 +2,6 @@
 const cluster = require('cluster');
 const numCPUs = require('os').cpus().length;
 // end of cluster mode
-const fs = require('fs');
 const cors = require('cors');
 const app = require('express')();
 const https = require('https');
@@ -10,7 +9,7 @@ const http = require('http');
 const tranform = require('transformer-proxy');
 const agentHTTP = new http.Agent({keepAlive: true});
 const agentHTTPS = new https.Agent({keepAlive: true});
-const proxy = require('http-proxy').createProxyServer({});
+const proxy = require('http-proxy/lib/http-proxy').createProxyServer({});
 const config = require('./config');
 const {transformURI, bgwIfy, REQ_TYPES} = require('./utils');
 const {httpAuth, AAA, CAT, debug, isDebugOn} = require('../bgw-aaa-client');
@@ -25,10 +24,6 @@ if (!config.single_core && cluster.isMaster) {
 
     app.use(cors());
     app.use(async (req, res) => {
-        if (req.query.bgw_key && config.disable_bgw_key_as_url_query) {
-            res.status(404).json({error: 'this gateway does not allow you to pass the API key  as a query string in the url, you must use the authorization header'});
-            return;
-        }
 
         bgwIfy(req);
         if (req.bgw.type === REQ_TYPES.UNKNOWN_REQUEST) {

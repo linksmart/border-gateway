@@ -1,8 +1,6 @@
 const  config = require('./config');
 const url = require("url");
 const domainMatch = require('domain-match');
-const {AAA, CAT, debug, isDebugOn} = require('../bgw-aaa-client');
-
 
 const bs36 = require('base-x')('0123456789abcdefghijklmnopqrstuvwxyz');
 
@@ -36,12 +34,7 @@ const transformURI = (data, req, res)=>
     const protocol = (i.includes('http') && config.enable_ei.toUpperCase()==="TRUE")?  "https://":i+"://";
     const local_address = aliases[e]?aliases[e]:encode(e);
     const external_address = config.external_domain;
-    //const external_port = (i.includes('http') && config.external_port == 443)? "" : `:${config.external_port}`
 
-//    return config.sub_domain_mode ?
-//    protocol+local_address+"."+external_address+external_port
-//    :
-//    protocol+external_address+external_port+"/"+local_address
     return config.sub_domain_mode ?
     protocol+local_address+"."+external_address
     :
@@ -49,4 +42,4 @@ const transformURI = (data, req, res)=>
 });
 
 
-module.exports = {encode,decode,transformURI};
+module.exports = {decode,transformURI};

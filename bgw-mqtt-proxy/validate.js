@@ -1,9 +1,5 @@
+const mqttAuth = require("bgw-aaa-client/auth").mqttAuth;
 const {connack, suback, puback, pubrec} = require('./packet_template');
-const {mqttAuth, AAA, CAT, isDebugOn, debug} = require('../bgw-aaa-client');
-
-
-
-
 module.exports = async (port, packet, key) => {
 
     let result = true;

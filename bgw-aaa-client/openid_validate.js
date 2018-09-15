@@ -3,7 +3,7 @@ const qs = require("querystring");
 const matchRules = require('./rules');
 const config = require('./config_mgr')();
 const jwt = require('jsonwebtoken');
-var getPem = require('rsa-pem-from-mod-exp');
+const getPem = require('rsa-pem-from-mod-exp');
 
 const {AAA, CAT, isDebugOn, debug} = require('./log');
 
@@ -78,19 +78,19 @@ module.exports = async (path, source, username = anonymous_user, password = anon
         if (!profile || !profile.access_token || !profile.refresh_token) {
             let err = 'Incorrect tokens from open id provider, double check your credentials';
             const res = {status: false, error: err };
-            AAA.log(CAT.INVALID_USER_CREDENTIALS, err, path, source)
+            AAA.log(CAT.INVALID_USER_CREDENTIALS, err, path, source);
             return res;
         }
 
         profile.at_body = JSON.parse(new Buffer(profile.access_token.split(".")[1], 'base64').toString('ascii'));
     }
-    ;
-
     if (!profile.at_body || !profile.at_body.preferred_username || !(profile.at_body.bgw_rules || profile.at_body.group_bgw_rules)) {
+        let err = 'Incorrect username or bgw rules from open id provider, double check your credentials';
         const res = {
             status: false,
-            error: 'Incorrect username or bgw rules from open id provider, double check your credentials'
+            error: err
         };
+        AAA.log(CAT.INVALID_USER_CREDENTIALS, err, path, source);
         return res;
     }
 

@@ -21,7 +21,7 @@ function waitUntilEmpty(packetSet, callback, counter) {
                 if (callback != null) {
                     callback();
                 }
-                return;
+
 
             } else {
                 counter++;
@@ -36,8 +36,7 @@ function waitUntilEmpty(packetSet, callback, counter) {
 
 async function wrappedValidate(clientAddress, packet, credentials) {
     try {
-        let valid = await validate(clientAddress, packet, credentials);
-        return valid;
+        return await validate(clientAddress, packet, credentials);
     } catch (err) {
         AAA.log(CAT.BUG, "err when validating", err);
         throw err;
@@ -135,13 +134,13 @@ if (!config.single_core && cluster.isMaster) {
                                 valid.packet && srcClient.write(valid.packet);
                             }
                         }
-                        if (packet.cmd != 'disconnect') {
+                        if (packet.cmd !== 'disconnect') {
                             packetSet.delete(packetID);
 
                         }
                     }).catch(err => {
                         AAA.log(CAT.BUG, "error when validating", err);
-                        if (packet.cmd != 'disconnect') {
+                        if (packet.cmd !== 'disconnect') {
                             packetSet.delete(packetID);
                         }
                     });

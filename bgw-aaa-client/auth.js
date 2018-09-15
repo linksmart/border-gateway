@@ -20,12 +20,11 @@ const httpAuth = (req) => {
     let password = (req.bgw.alias && req.bgw.alias.password) || undefined;
 
      if (req.headers && req.headers.authorization) {
-         var parts = req.headers.authorization.split(' ');
+         let parts = req.headers.authorization.split(' ');
          if (parts.length === 2) {
              if (!req.bgw.alias.keep_authorization_header && (parts[0] === 'Bearer' || parts[0] === 'bearer') && (username = parts[1]))
               {
                   parts = username.split(":");
-                  username = parts[0];
                   password = parts[1];
               }
 
