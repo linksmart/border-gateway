@@ -89,6 +89,16 @@ if (!config.single_core && cluster.isMaster) {
                 srcParser.on('packet', (packet) => {
                     AAA.log(CAT.DEBUG, "packet event emitted", packet.cmd);
                     let packetID = shortid.generate();
+
+                    for (var key in packet) {
+                        if (packet.hasOwnProperty(key)) {
+                            if(key === 'cmd' || key === 'clientId' || key === 'topic')
+                            {
+                                packetID = packetID+"_"+packet[key];
+                            }
+                        }
+                    }
+
                     if (packet.cmd !== 'disconnect') {
                         packetSet.add(packetID);
                         AAA.log(CAT.DEBUG, "packetSet", packetSet);
@@ -123,8 +133,8 @@ if (!config.single_core && cluster.isMaster) {
                         }
                         else {
                             // if the packet is invalid in the case of publish or sub and
-                            // configs for diconnectin on unauthorized is set to tru, then
-                            // disocnnect
+                            // configs for diconnecting on unauthorized is set to true, then
+                            // disconnect
                             if ((packet.cmd === 'subscribe' && config.disconnect_on_unauthorized_subscribe) ||
                                 (packet.cmd === 'publish' && config.disconnect_on_unauthorized_publish)) {
                                 AAA.log(CAT.CON_TERMINATE, 'disconnecting client for unauthorized ', packet.cmd);
