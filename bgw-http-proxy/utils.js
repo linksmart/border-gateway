@@ -20,10 +20,14 @@ const bgwIfy = (req) => {
         host =  req.headers.host.split(":")[0];
     } catch (e) {
         if (e instanceof TypeError) {
-            AAA.log(CAT.BUG, "TypeError when splitting host", e, req.headers, req);
+            AAA.log(CAT.BUG, "TypeError when splitting host", e);
+            AAA.log(CAT.BUG, "req.headers = ", req.headers);
+            AAA.log(CAT.BUG, "req = ", req);
             throw e;
         } else {
             AAA.log(CAT.BUG, "Error when splitting host", e, req.headers, req);
+            AAA.log(CAT.BUG, "req.headers = ", req.headers);
+            AAA.log(CAT.BUG, "req = ", req);
             throw e;
         }
     }

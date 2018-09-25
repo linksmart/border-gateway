@@ -3,7 +3,7 @@ const jsonFile = "./config/config.json";
 let config_file = JSON.parse(fs.readFileSync(jsonFile));
 
 let config = {
-    single_core: config_file.single_core || true,
+    multiple_cores: config_file.multiple_cores || false,
     bind_addresses: config_file.http_proxy_bind_addresses || [
         "127.0.0.1"
     ],
@@ -27,7 +27,7 @@ let config = {
         name: "http-proxy",
         log_level: 'warn',
         no_color: false,
-        timestamp: !config_file.aaa_client_timestamp && true,
+        no_timestamp: config_file.aaa_client_no_timestamp || false,
         disable_cat: [],
         cache_for: '10*60',
         purge_exp_cache_timer: '24*60*60',

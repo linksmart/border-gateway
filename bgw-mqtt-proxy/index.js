@@ -43,7 +43,7 @@ async function wrappedValidate(clientAddress, packet, credentials) {
     }
 }
 
-if (!config.single_core && cluster.isMaster) {
+if (config.multiple_cores && cluster.isMaster) {
     AAA.log(CAT.PROCESS_START, `Master PID ${process.pid} is running: CPU has ${numCPUs} cores`);
     for (let i = 0; i < numCPUs; i++)
         cluster.fork();

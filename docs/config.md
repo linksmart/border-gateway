@@ -34,7 +34,7 @@ File path to TLS key
 note: These configs can be set for a a single component by perpending the prefix (i.e `HTTP_PROXY_TLS_KEY`)
 
 ```
-SINGLE_CORE=true
+MULTIPLE_CORES=false
 ```
 By default the BGW runs multiple process for each CPU virtual core. It is important for scalability. Setting this to true will hinder scalability/performance and run the BGW on a single CPU virtual core only (it is used in `./bgw.sh dev`)
 
@@ -141,8 +141,30 @@ of translation allows you to exclude certain domains or translation. The insure 
 <a name="EI"></a>
 ## External Interface
 
-HTTP_EXTERNAL_INTERFACE_BIND_ADDRESSES=http_external_interface_bind_addresses
-
+```
+HTTP_EXTERNAL_INTERFACE_BIND_ADDRESSES=["0.0.0.0"]
+```
+The default bind address for the External Interface for http connections is `0.0.0.0`.
+```
+HTTP_EXTERNAL_INTERFACE_BIND_PORT=443
+```
+The default bind port for the External Interface for http connections is 443.
+```
+MQTT_EXTERNAL_INTERFACE_BIND_ADDRESSES=["0.0.0.0"]
+```
+The default bind address for the External Interface for mqtt connections is `0.0.0.0`.
+```
+MQTT_EXTERNAL_INTERFACE_BIND_PORT=8883
+```
+The default bind port for the External Interface for mqtt connections is 8883.
+```
+WEBSOCKET_EXTERNAL_INTERFACE_BIND_ADDRESSES=["0.0.0.0"]
+```
+The default bind address for the External Interface for mqtt connections is `0.0.0.0`.
+```
+WEBSOCKET_EXTERNAL_INTERFACE_BIND_PORT=9002
+```
+The default bind port for the External Interface for Websocket connections is 9002.
 
 ```
 EI_REQUEST_CLIENT_CERT=false
@@ -198,7 +220,7 @@ AAA_CLIENT_NO_COLOR= false
 ```
 Setting this to true will disable colors from appearing in the console
 ```
-AAA_CLIENT_TIMESTAMP=false
+AAA_CLIENT_NO_TIMESTAMP=false
 ```
 Your logging service doesn't provide a timestamps, this will generate one
 ```

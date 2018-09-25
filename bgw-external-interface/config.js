@@ -3,7 +3,7 @@ const jsonFile = "./config/config.json";
 let config_file = JSON.parse(fs.readFileSync(jsonFile));
 
 let config = {
-    single_core: config_file.single_core || true,
+    multiple_cores: config_file.multiple_cores || false,
     private_bgw: false,
     tls_key: config_file.tls_key,
     tls_cert: config_file.tls_cert,
@@ -48,7 +48,7 @@ let config = {
         name: "external-interface",
         log_level: 'warn',
         no_color: false,
-        timestamp: !config_file.aaa_client_timestamp && true,
+        no_timestamp: config_file.aaa_client_no_timestamp || false,
         disable_cat: []
     }
 };

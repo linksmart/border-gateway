@@ -32,7 +32,7 @@ const logFunction = {
     logTS: (cat, ...arg) => can_log(cat) && console.log(timestamp(), config.aaa_client.name, "AAA", cat, ...arg)//,
 };
 
-const isTS = (config.aaa_client.timestamp) ? "TS" : "";
+const isTS = (!config.aaa_client.no_timestamp) ? "TS" : "";
 const log = logFunction[`log${isTS}`];
 const debug = (...arg) => log(CAT.DEBUG, ...arg);
 const isDebugOn = can_log("D");

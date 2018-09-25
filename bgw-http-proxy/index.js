@@ -14,7 +14,7 @@ const config = require('./config');
 const {transformURI, bgwIfy, REQ_TYPES} = require('./utils');
 const {httpAuth, AAA, CAT, debug, isDebugOn} = require('../bgw-aaa-client');
 
-if (!config.single_core && cluster.isMaster) {
+if (config.multiple_cores && cluster.isMaster) {
     AAA.log(CAT.PROCESS_START, `Master PID ${process.pid} is running: CPU has ${numCPUs} cores`);
     for (let i = 0; i < numCPUs; i++)
         cluster.fork();

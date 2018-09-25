@@ -11,7 +11,7 @@ const {AAA, CAT, debug} = require('../bgw-aaa-client');
 
 debug('external interface configs am Beginn von index.js', JSON.stringify(config, null, 4));
 
-if (!config.single_core && cluster.isMaster) {
+if (config.multiple_cores && cluster.isMaster) {
     AAA.log(CAT.PROCESS_START, `Master PID ${process.pid} is running: CPU has ${numCPUs} cores`);
     for (let i = 0; i < numCPUs; i++)
         cluster.fork();
