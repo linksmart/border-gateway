@@ -56,7 +56,7 @@ module.exports = async (path, source, username = anonymous_user, password = anon
             body: {
                 'grant_type': grant_type,
                 'client_id': config.aaa_client.openid_clientid,
-                'client_secret': config.aaa_client.openid_clientsecret
+                'client_secret': config.aaa_client.openid_clientsecret || ""
             }
         };
         Object.assign(options.body, req_credentials);

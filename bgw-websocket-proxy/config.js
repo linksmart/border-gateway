@@ -13,11 +13,8 @@ let config = {
     aaa_client: {
         name: "websocket-proxy",
         log_level: 'info',
-        no_color: false,
         no_timestamp: config_file.aaa_client_no_timestamp || false,
         disable_cat: [],
-        cache_for: '10*60',
-        purge_exp_cache_timer: '24*60*60',
         secret: config_file.tls_key,
         host: "http://localhost:5055",
         auth_provider: "openid",

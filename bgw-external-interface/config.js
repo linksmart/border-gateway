@@ -4,7 +4,6 @@ let config_file = JSON.parse(fs.readFileSync(jsonFile));
 
 let config = {
     multiple_cores: config_file.multiple_cores || false,
-    private_bgw: false,
     tls_key: config_file.tls_key,
     tls_cert: config_file.tls_cert,
     request_client_cert: false,
@@ -43,11 +42,9 @@ let config = {
                 allowed_addresses: []
             }
         ],
-    //global_allowed_addresses: ["0.0.0.0/0"],
     aaa_client: {
         name: "external-interface",
         log_level: 'warn',
-        no_color: false,
         no_timestamp: config_file.aaa_client_no_timestamp || false,
         disable_cat: []
     }

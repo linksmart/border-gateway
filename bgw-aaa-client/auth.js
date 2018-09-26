@@ -15,7 +15,6 @@ const mqttAuth = async (port, credentials, method, path = '') => {
 };
 
 const httpAuth = (req) => {
-    // in case of not open id then the username = bgw_key
     let username = (req.bgw.alias && req.bgw.alias.username) || undefined;
     let password = (req.bgw.alias && req.bgw.alias.password) || undefined;
 

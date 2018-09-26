@@ -15,7 +15,6 @@ let config = {
     sub_domain_mode: false,
     only_forward_aliases: false,
     override_authorization_header: "",
-    disable_bgw_key_as_url_query: false,
     change_origin_on: {
         https_req: false,
         http_req: false
@@ -26,11 +25,8 @@ let config = {
     aaa_client: {
         name: "http-proxy",
         log_level: 'warn',
-        no_color: false,
-        no_timestamp: config_file.aaa_client_no_timestamp || false,
+         no_timestamp: config_file.aaa_client_no_timestamp || false,
         disable_cat: [],
-        cache_for: '10*60',
-        purge_exp_cache_timer: '24*60*60',
         secret: config_file.tls_key,
         host: "http://localhost:5055",
         auth_provider: "openid",
