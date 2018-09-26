@@ -14,10 +14,12 @@ const TYPES = {
 const bgwIfy = (req) => {
   req.bgw = {};
 
-    let host;
+    let host='';
 
     try {
-        host =  req.headers.host.split(":")[0];
+        if(req.headers.host) {
+            host = req.headers.host.split(":")[0];
+        }
     } catch (e) {
         if (e instanceof TypeError) {
             AAA.log(CAT.BUG, "TypeError when splitting host", e);
