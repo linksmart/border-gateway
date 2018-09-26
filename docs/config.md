@@ -1,13 +1,12 @@
 # IoT-BGW Configuration
-* All configs for the bgw are passed as environment variables
-* You can supply environment variables from a file by providing config.env or config.json or both
+* All configuration parameters for the Border Gateway are passed as environment variables
+* You can supply environment variables from a file config.json
 * Each bgw component has a config prefix (**EI_, HTTP_PROXY_, MQTT_PROXY_, AUTH_SERVER_, AAA_CLIENT_**)
 * Shared config like the aaa client, can be used globally like AAA_CLIENT_ or selectively like EI_AAA_CLIENT_
 * note: configs in config.json will be converted to environment variables and passed to all components
 
 # Table of Contents
-* [Required Configuration](#Required)
-* [Global Configuration](#Global)
+* [Global Configuration](#global)
 * [MQTT Proxy](#MQTT)
 * [HTTP Proxy](#HTTP)
 * [External Interface](#EI)
@@ -15,19 +14,19 @@
 * [Open ID](#OpenID)
 * [User Access Rules](#rules)
 
-<a name="Global"></a>
+<a name="global"></a>
 ## Global Configuration
 
 ```
-EXTERNAL_DOMAIN=
+EXTERNAL_DOMAIN=linksmart-dev.fit.fraunhofer.de
 ```
 String to the external domain name`
 ```
-TLS_CERT=
+TLS_CERT=/certs/linksmart-dev.fit.fraunhofer.de_cert_with_chain.pem
 ```
 File path to TLS certificate
 ```
-TLS_KEY=
+TLS_KEY=/certs/linksmart-dev.fit.fraunhofer.de_sec_key.pem
 ```
 File path to TLS key
 
