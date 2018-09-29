@@ -26,10 +26,6 @@ const bgwIfy = (req) => {
     req.bgw = {type:TYPES.INVALID_EXTERNAL_DOMAIN};
     return
   }
-    if(req.hostname) {
-        AAA.log(CAT.DEBUG, 'hostname = ',req.hostname);
-    }
-
   // check if subdomain mode e.g. https://rc.gateway.com or https://gateway.com/rc
   //let local_dest =  config.sub_domain_mode ? host.split(config.external_domain).filter((e)=>e!=="")[0]:req.url.split(/\/|\?|\#/)[1];
    let urlArray = req.url.split(/\/|\?|\#/);

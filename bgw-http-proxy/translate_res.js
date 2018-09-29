@@ -23,7 +23,7 @@ const transformURI = (data, req, res) =>
 
         for (let property in config.domains) {
             if (config.domains.hasOwnProperty(property)) {
-                if (e.includes(property.name) || (whitelist && whitelist.find(d => domainMatch(d, e)))) {
+                if (e.includes(property) || (whitelist && whitelist.find(d => domainMatch(d, e)))) {
                     return e;
                 }
             }
