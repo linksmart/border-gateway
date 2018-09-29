@@ -90,7 +90,7 @@ if (config.multiple_cores && cluster.isMaster) {
                     AAA.log(CAT.DEBUG, "packet event emitted", packet.cmd);
                     let packetID = shortid.generate();
 
-                    for (var key in packet) {
+                    for (let key in packet) {
                         if (packet.hasOwnProperty(key)) {
                             if(key === 'cmd' || key === 'clientId' || key === 'topic')
                             {
