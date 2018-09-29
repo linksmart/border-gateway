@@ -23,39 +23,39 @@ elif [ "$1" = "start" ]; then
     #run_service http2https &
     #run_service bgw-auth-server &
 
-    if [ "$2" = "enable_ei" ]; then
+    if [ "$2" = "disable_ei" ]; then
+
+      #run_service bgw-http-proxy &
+      run_inspect_service bgw-http-proxy 9228 &
+
+      #run_service bgw-mqtt-proxy &
+      run_inspect_service bgw-mqtt-proxy 9229 &
+
+      #run_service bgw-mqtt-proxy &
+      run_inspect_service bgw-websocket-proxy 9230 &
+
+    else
 
       run_inspect_service bgw-external-interface 9227 &
       #run_service bgw-external-interface &
 
-      #ENABLE_EI=true run_service bgw-http-proxy &
-      ENABLE_EI=true run_inspect_service bgw-http-proxy 9228 &
-      
-      #ENABLE_EI=true run_service bgw-mqtt-proxy &
-      ENABLE_EI=true run_inspect_service bgw-mqtt-proxy 9229 &
+      #run_service bgw-http-proxy &
+      run_inspect_service bgw-http-proxy 9228 &
 
-      #ENABLE_EI=true run_service bgw-mqtt-proxy &
-      ENABLE_EI=true run_inspect_service bgw-websocket-proxy 9230 &
+      #run_service bgw-mqtt-proxy &
+      run_inspect_service bgw-mqtt-proxy 9229 &
 
-    else
-
-      #ENABLE_EI=false run_service bgw-http-proxy &
-      ENABLE_EI=false run_inspect_service bgw-http-proxy 9228 &
-      
-      #ENABLE_EI=false run_service bgw-mqtt-proxy &
-      ENABLE_EI=false run_inspect_service bgw-mqtt-proxy 9229 &
-
-      #ENABLE_EI=false run_service bgw-mqtt-proxy &
-      ENABLE_EI=false run_inspect_service bgw-websocket-proxy 9230 &
+      #run_service bgw-mqtt-proxy &
+      run_inspect_service bgw-websocket-proxy 9230 &
     fi
 
 else
   echo
   echo choose the correct bgw option
   echo
-  echo -e  '\t'     bgw start            '\t\t\t\t' Start the bgw in default mode \(no ei\)
+  echo -e  '\t'     bgw start            '\t\t\t\t' Start the bgw in default mode with external interface
   echo
-  echo -e  '\t'     bgw start enable_ei  '\t\t\t' Start the bgw with the external interface \(ei\) features
+  echo -e  '\t'     bgw start disable_ei  '\t\t\t' Start the bgw without external interface
   echo
   echo -e  '\t'     bgw start benchmark  '\t\t\t' Start all bgw components plus duplicates http and mqtt proxy
   echo

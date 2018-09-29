@@ -27,12 +27,12 @@ if (config.multiple_cores && cluster.isMaster) {
 
         bgwIfy(req);
         if (req.bgw.type === REQ_TYPES.UNKNOWN_REQUEST) {
-            res.status(404).json({error: 'unknow request type please make sure to use the full address https://' + config.external_domain});
+            res.status(404).json({error: 'unknow request type'});
             return;
         }
         if (req.bgw.type === REQ_TYPES.INVALID_EXTERNAL_DOMAIN) {
-            config.redirect_on_invalid_external_domain ? res.redirect('https://' + config.external_domain + req.originalUrl) :
-                    res.status(404).json({error: 'Invalid external domain, use the full address https://' + config.external_domain});           
+            //config.redirect_on_invalid_external_domain ? res.redirect('https://' + config.external_domain + req.originalUrl) :
+                    res.status(404).json({error: 'Invalid external domain'});
             return;
         }
         if (req.bgw.type === REQ_TYPES.PROMPT_BASIC_AUTH) {

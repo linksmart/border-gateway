@@ -9,8 +9,8 @@ let config = {
     request_client_cert: false,
     client_ca_path: false,
     enable_ALPN_mode: false,
-    enable_SNI_mode: false,
-    external_domain: config_file.external_domain,
+    //enable_SNI_mode: false,
+    external_domains: config_file.external_domains,
     servers:
         [
             {

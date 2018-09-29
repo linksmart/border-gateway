@@ -9,4 +9,4 @@ EXPOSE 443 8883
 
 ENTRYPOINT ["./bgw.sh"]
 #CMD ["start"]
-CMD ["start","enable_ei"]
+CMD ["start"]

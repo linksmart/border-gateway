@@ -8,11 +8,11 @@ let config = {
         "127.0.0.1"
     ],
     bind_port: config_file.http_proxy_bind_port || 5050,
-    enable_ei: process.env.ENABLE_EI,
-    external_domain: config_file.external_domain,
+    disable_ei: config_file.disable_ei||false,
+    external_domains: config_file.external_domains,
     tls_key: config_file.tls_key,
     tls_cert: config_file.tls_cert,
-    sub_domain_mode: false,
+    //sub_domain_mode: config_file.http_proxy_sub_domain_mode || false,
     only_forward_aliases: false,
     override_authorization_header: "",
     change_origin_on: {
@@ -20,8 +20,9 @@ let config = {
         http_req: false
     },
     redirect_to_original_address_on_proxy_error: false,
-    redirect_on_invalid_external_domain: false,
+   // redirect_on_invalid_external_domain: false,
     aliases: {},
+    domains: {},
     aaa_client: {
         name: "http-proxy",
         log_level: 'warn',

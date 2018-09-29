@@ -14,41 +14,34 @@ const TYPES = {
 const bgwIfy = (req) => {
   req.bgw = {};
 
-    let host='';
+  //const public_domain = config.sub_domain_mode ?  host.includes(config.external_domain) : host === config.external_domain;
 
-    try {
-        if(req.headers.host) {
-            host = req.headers.host.split(":")[0];
-        }
-    } catch (e) {
-        if (e instanceof TypeError) {
-            AAA.log(CAT.BUG, "TypeError when splitting host", e);
-            AAA.log(CAT.BUG, "req.headers = ", req.headers);
-            AAA.log(CAT.BUG, "req = ", req);
-            throw e;
-        } else {
-            AAA.log(CAT.BUG, "Error when splitting host", e, req.headers, req);
-            AAA.log(CAT.BUG, "req.headers = ", req.headers);
-            AAA.log(CAT.BUG, "req = ", req);
-            throw e;
-        }
+    let public_domain = false;
+    if(config.domains[req.hostname])
+    {
+        public_domain = true;
     }
 
-  const public_domain = config.sub_domain_mode ?  host.includes(config.external_domain) : host === config.external_domain;
-
-  if(!public_domain){
+    if(!public_domain){
     req.bgw = {type:TYPES.INVALID_EXTERNAL_DOMAIN};
     return
   }
-  // check if subdomain mode e.g. https://rc.gateway.com or https://gateway.com/rc
-  let local_dest =  config.sub_domain_mode ? host.split(config.external_domain).filter((e)=>e!=="")[0]:req.url.split(/\/|\?|\#/)[1];
-  local_dest = local_dest && local_dest.replace(".","");
-  req.url =  config.sub_domain_mode ? req.url : req.url.replace(`/${local_dest}`,"");
+    if(req.hostname) {
+        AAA.log(CAT.DEBUG, 'hostname = ',req.hostname);
+    }
 
-  if(config.aliases[local_dest]) {
+  // check if subdomain mode e.g. https://rc.gateway.com or https://gateway.com/rc
+  //let local_dest =  config.sub_domain_mode ? host.split(config.external_domain).filter((e)=>e!=="")[0]:req.url.split(/\/|\?|\#/)[1];
+   let urlArray = req.url.split(/\/|\?|\#/);
+    let local_dest = urlArray[1];
+    local_dest = local_dest && local_dest.replace(".","");
+  //req.url =  config.sub_domain_mode ? req.url : req.url.replace(`/${local_dest}`,"");
+    req.url =  req.url.replace(`/${local_dest}`,"");
+
+    if(config.domains[req.hostname][local_dest]) {
     req.bgw = {
-      forward_address: config.aliases[local_dest].local_address,
-      alias:config.aliases[local_dest]
+      forward_address: config.domains[req.hostname][local_dest].local_address,
+      alias:config.domains[req.hostname][local_dest]
     };
     if(req.bgw.alias.use_basic_auth && !req.headers.authorization){
       req.bgw.type = TYPES.PROMPT_BASIC_AUTH;

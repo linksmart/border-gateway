@@ -18,7 +18,6 @@ const setConfig = (prefix, c) => {
     parseConfig(prefix, c);
 
     setupAdminKey(c);
-    setupBgwAuthAlias(c);
     config = c;
 };
 
@@ -44,15 +43,6 @@ const setupAdminKey = (c) => {
         return;
     }
     c.aaa_client.secret = hash("" + fs.readFileSync(c.aaa_client.secret));
-};
-
-const setupBgwAuthAlias = (c) => {
-    // if this config belongs to http proxy set alias for bgw-auth
-    c.aaa_client && c.aaa_client.secret && c.aaa_client.host && c.aliases && (c.aliases['bgw-auth'] = {
-        local_address: c.aaa_client.host,
-        override_authorization_header: c.aaa_client.secret,
-        change_origin_on: {https_req: true, http_req: true}
-    });
 };
 
 module.exports = getConfig;

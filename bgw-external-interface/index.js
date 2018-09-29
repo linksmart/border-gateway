@@ -39,11 +39,12 @@ if (config.multiple_cores && cluster.isMaster) {
                 dstClient && dstClient.destroy();
             });
 
-            const subdomain = srcClient.servername && srcClient.servername.includes(config.external_domain) && srcClient.servername.replace(new RegExp('.?' + config.external_domain), '');
-            const SNI_srv = config.enable_SNI_mode && subdomain && config.servers.find((e) => e.name === subdomain);
+            //const subdomain = srcClient.servername && srcClient.servername.includes(config.external_domain) && srcClient.servername.replace(new RegExp('.?' + config.external_domain), '');
+            //const SNI_srv = config.enable_SNI_mode && subdomain && config.servers.find((e) => e.name === subdomain);
             const ALPN_srv = config.enable_ALPN_mode && srcClient.alpnProtocol && config.servers.find((e) => e.name === srcClient.alpnProtocol);
 
-            const {dest_address, dest_port, name, allowed_addresses} = ALPN_srv || SNI_srv || srv;
+            //const {dest_address, dest_port, name, allowed_addresses} = ALPN_srv || SNI_srv || srv;
+            const {dest_address, dest_port, name, allowed_addresses} = ALPN_srv || srv;
 
             if (config.enable_ALPN_mode && srcClient.alpnProtocol === 'bgw_info') {
                 srcClient.end(config.servers.reduce((a, c) => a + ',' + c.name, ''));
