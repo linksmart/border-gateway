@@ -9,7 +9,6 @@ let config = {
     ],
     bind_port: config_file.http_proxy_bind_port || 5050,
     disable_ei: config_file.disable_ei||false,
-    external_domains: config_file.external_domains,
     tls_key: config_file.tls_key,
     tls_cert: config_file.tls_cert,
     //sub_domain_mode: config_file.http_proxy_sub_domain_mode || false,

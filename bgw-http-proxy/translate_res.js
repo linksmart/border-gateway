@@ -21,9 +21,11 @@ const transformURI = (data, req, res) =>
         Object.keys(config.domains[req.hostname]).forEach((key) => aliases[config.domains[req.hostname][key].local_address] = key);
         const whitelist = req.bgw.alias.translate_local_addresses.whitelist;
 
-        for (let k = 0; k < config.external_domains.length; k++) {
-            if (e.includes(config.external_domains[k]) || (whitelist && whitelist.find(d => domainMatch(d, e)))) {
-                return e;
+        for (let property in config.domains) {
+            if (config.domains.hasOwnProperty(property)) {
+                if (e.includes(property.name) || (whitelist && whitelist.find(d => domainMatch(d, e)))) {
+                    return e;
+                }
             }
         }
 

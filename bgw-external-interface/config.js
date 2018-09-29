@@ -10,7 +10,6 @@ let config = {
     client_ca_path: false,
     enable_ALPN_mode: false,
     //enable_SNI_mode: false,
-    external_domains: config_file.external_domains,
     servers:
         [
             {
