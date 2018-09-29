@@ -28,7 +28,7 @@ const transformURI = (data, req, res) =>
             }
         });
 
-        const protocol = (i.includes('http') && config.disable_ei) ? "https://" : i + "://";
+        const protocol = (i.includes('http') && !config.disable_ei) ? "https://" : i + "://";
         const local_address = aliases[e] ? aliases[e] : encode(e);
         const external_address = req.bgw.alias.target_domain || req.hostname;
         return protocol + external_address + "/" + local_address;
