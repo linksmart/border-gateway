@@ -27,7 +27,7 @@ if (config.multiple_cores && cluster.isMaster) {
 
         bgwIfy(req);
         if (req.bgw.type === REQ_TYPES.UNKNOWN_REQUEST) {
-            res.status(404).json({error: 'unknow request type'});
+            res.status(404).json({error: 'unknown request type'});
             return;
         }
         if (req.bgw.type === REQ_TYPES.INVALID_EXTERNAL_DOMAIN) {
