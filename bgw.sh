@@ -13,7 +13,8 @@ function json2env {
 if [ "$1" = "part" ]; then
 
     json2env
-    run_service $2
+    #run_service $2
+    run_inspect_service $2 9228 &
 
 elif [ "$1" = "start" ]; then
 

@@ -9,7 +9,7 @@ const net = require('net');
 const config = require('./config');
 const {AAA, CAT, debug} = require('../bgw-aaa-client');
 
-debug('external interface configs am Beginn von index.js', JSON.stringify(config, null, 4));
+debug('external interface configs', JSON.stringify(config, null, 4));
 
 if (config.multiple_cores && cluster.isMaster) {
     AAA.log(CAT.PROCESS_START, `Master PID ${process.pid} is running: CPU has ${numCPUs} cores`);
@@ -63,10 +63,13 @@ if (config.multiple_cores && cluster.isMaster) {
             }
             srcClient.on('end', () => {
                 srcClient.remoteAddress && srcClient.remotePort &&
-                        AAA.log(CAT.CON_END, `${srcClient.remoteAddress}:${srcClient.remotePort} > ${srv.bind_port}  > ${name}`);
+                AAA.log(CAT.CON_END, `${srcClient.remoteAddress}:${srcClient.remotePort} > ${srv.bind_port}  > ${name}`);
             });
         });
         external_interface.on('tlsClientError', (e) => debug('tls error,this could be a none tls connection, make sure to establish a proper tls connection, details...', e.stack || e));
+//        external_interface.on('secureConnection', function (socket) {
+//            debug('secureConnection, details...', socket)
+        });
 
         srv.bind_addresses.forEach((addr) => {
             external_interface.listen(srv.bind_port, addr, () =>
