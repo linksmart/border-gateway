@@ -37,7 +37,7 @@ if (config.multiple_cores && cluster.isMaster) {
         }
         if (req.bgw.type === REQ_TYPES.PROMPT_BASIC_AUTH) {
             res.set('WWW-Authenticate', 'Basic realm="User Visible Realm"');
-            res.status(401).json({error: 'enter a valid token as a username'});
+            res.status(401).json({error: 'Unauthorized'});
             return;
         }
 
@@ -64,7 +64,7 @@ if (config.multiple_cores && cluster.isMaster) {
             if (req.bgw.alias && req.bgw.alias.use_basic_auth) {
                 res.set('WWW-Authenticate', 'Basic realm="User Visible Realm"');
             }
-            res.status(401).json({error: allowed.error || 'unauthorized request'});
+            res.status(401).json({error: allowed.error || 'Unauthorized'});
         }
 
 
