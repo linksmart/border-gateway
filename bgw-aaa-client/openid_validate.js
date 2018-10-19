@@ -76,7 +76,7 @@ module.exports = async (path, source, username = anonymous_user, password = anon
         }
 
         if (!profile || !profile.access_token || !profile.refresh_token) {
-            let err = 'Incorrect tokens from open id provider, double check your credentials';
+            let err = 'Unauthorized';
             const res = {status: false, error: err };
             AAA.log(CAT.INVALID_USER_CREDENTIALS, err, path, source);
             return res;
@@ -85,7 +85,7 @@ module.exports = async (path, source, username = anonymous_user, password = anon
         profile.at_body = JSON.parse(new Buffer(profile.access_token.split(".")[1], 'base64').toString('ascii'));
     }
     if (!profile.at_body || !profile.at_body.preferred_username || !(profile.at_body.bgw_rules || profile.at_body.group_bgw_rules)) {
-        let err = 'Incorrect username or bgw rules from open id provider, double check your credentials';
+        let err = 'Unauthorized';
         const res = {
             status: false,
             error: err
