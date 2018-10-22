@@ -12,6 +12,9 @@ const agent = new https.Agent({
     rejectUnauthorized: false
 });
 
+const anonymous_user = config.aaa_client.openid_anonymous_user;
+const anonymous_pass = config.aaa_client.openid_anonymous_pass;
+
 let parse_credentials = {
     password: (username, password, aaa_client_host) => ({username, password}),
     refresh_token: (refresh_token, password, aaa_client_host) => ({refresh_token}),
@@ -21,8 +24,8 @@ let parse_credentials = {
 
 module.exports = async (path, source, username = anonymous_user, password = anonymous_pass, override_aaa_client_config) => {
 
-    const anonymous_user = (override_aaa_client_config && override_aaa_client_config.openid_anonymous_user) || config.aaa_client.openid_anonymous_user;
-    const anonymous_pass = (override_aaa_client_config && override_aaa_client_config.openid_anonymous_pass) || config.aaa_client.openid_anonymous_pass;
+    //const anonymous_user = (override_aaa_client_config && override_aaa_client_config.openid_anonymous_user) || config.aaa_client.openid_anonymous_user;
+    //const anonymous_pass = (override_aaa_client_config && override_aaa_client_config.openid_anonymous_pass) || config.aaa_client.openid_anonymous_pass;
     const config_grant = (override_aaa_client_config && override_aaa_client_config.openid_grant_type) || config.aaa_client.openid_grant_type;
     const client_id = (override_aaa_client_config && override_aaa_client_config.openid_clientid) || config.aaa_client.openid_clientid;
     const client_secret = (override_aaa_client_config && override_aaa_client_config.openid_clientsecret)  || config.aaa_client.openid_clientid;
