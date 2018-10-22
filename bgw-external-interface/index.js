@@ -69,7 +69,7 @@ if (config.multiple_cores && cluster.isMaster) {
         external_interface.on('tlsClientError', (e) => debug('tls error,this could be a none tls connection, make sure to establish a proper tls connection, details...', e.stack || e));
 //        external_interface.on('secureConnection', function (socket) {
 //            debug('secureConnection, details...', socket)
-        });
+//        });
 
         srv.bind_addresses.forEach((addr) => {
             external_interface.listen(srv.bind_port, addr, () =>
