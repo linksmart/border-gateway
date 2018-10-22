@@ -22,9 +22,7 @@ const CAT = {
 };
 const log_levels = {"A": 0, "D": 1, "I": 2, "W": 3, "E": 4, "F": 5, "O": 6};
 const ps_log_level = log_levels[config.aaa_client.log_level[0].toUpperCase()] - 1;
-const disabled_cat = {};
-config.aaa_client.disable_cat.forEach((cat) => disabled_cat[cat] = true);
-const can_log = (cat) => log_levels[cat[0]] > ps_log_level && !disabled_cat[cat.slice(2)];
+const can_log = (cat) => log_levels[cat[0]] > ps_log_level;
 const timestamp = () => `[${new Date().toLocaleString()}]`;
 
 const logFunction = {

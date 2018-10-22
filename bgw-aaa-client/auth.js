@@ -53,7 +53,7 @@ const httpAuth = (req) => {
     const payload = `HTTP/${req.method}/${host}/${port}${path}`;
 
 
-    return validate(payload, `[source:${req.connection.remoteAddress}:${req.connection.remotePort}]`, username, password);
+    return validate(payload, `[source:${req.connection.remoteAddress}:${req.connection.remotePort}]`, username, password, req.bgw.alias.override_aaa_client_config);
 
 };
 

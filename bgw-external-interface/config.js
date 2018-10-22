@@ -43,9 +43,8 @@ let config = {
         ],
     aaa_client: {
         name: "external-interface",
-        log_level: 'warn',
-        no_timestamp: config_file.aaa_client_no_timestamp || false,
-        disable_cat: []
+        log_level: "",
+        no_timestamp: false
     }
 };
 

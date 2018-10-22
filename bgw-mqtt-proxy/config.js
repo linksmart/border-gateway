@@ -26,17 +26,17 @@ let config = {
     },
     aaa_client: {
         name: "mqtt-proxy",
-        log_level: 'warn',
-        no_timestamp: config_file.aaa_client_no_timestamp || false,
-        disable_cat: [],
-        secret: config_file.tls_key,
-        host: "http://localhost:5055",
-        auth_provider: "openid",
-        openid_clientid: config_file.aaa_client_openid_clientid,
+        log_level: "",
+        no_timestamp: false,
+        auth_provider: "",
+        host: "",
+        openid_clientid: "",
         openid_clientsecret: "",
-        openid_grant_type: "password",
-        openid_anonymous_user: "anonymous",
-        openid_anonymous_pass: "anonymous"
+        openid_grant_type: "",
+        openid_realm_public_key_modulus: "",
+        openid_realm_public_key_exponent: "",
+        openid_anonymous_user: "",
+        openid_anonymous_pass: "",
     }
 };
 require('../bgw-aaa-client').init("MQTT_PROXY", config);
