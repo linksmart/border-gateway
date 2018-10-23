@@ -42,9 +42,10 @@ module.exports = async (path, source, username, password, override_aaa_client_co
     let req_credentials = parse_credentials[grant_type](username, password, host);
 
     let profile = {};
+    let pem = getPem(realm_public_key_modulus, realm_public_key_exponent);
     if (grant_type === 'access_token') {
 
-        let pem = getPem(realm_public_key_modulus, realm_public_key_exponent);
+
 
         jwt.verify(req_credentials.access_token, pem, {
             audience: client_id,
@@ -83,7 +84,7 @@ module.exports = async (path, source, username, password, override_aaa_client_co
 
             let result = await fetch(`${host}/protocol/openid-connect/token`, options); // see https://www.keycloak.org/docs/3.0/securing_apps/topics/oidc/oidc-generic.html
             profile = await result.json();
-            isDebugOn && debug('open id server result ', JSON.stringify(profile));
+            //isDebugOn && debug('open id server result ', JSON.stringify(profile));
         } catch (e) {
             AAA.log(CAT.WRONG_AUTH_SERVER_RES, "DENIED This could be due to auth server being offline or failing", path, source);
             return {
@@ -98,6 +99,24 @@ module.exports = async (path, source, username, password, override_aaa_client_co
             AAA.log(CAT.INVALID_USER_CREDENTIALS, err, path, source);
             return res;
         }
+
+        jwt.verify(profile.access_token, pem, {
+            audience: client_id,
+            issuer: host,
+            ignoreExpiration: false
+        }, function (err, decoded) {
+
+            if (err) {
+                AAA.log(CAT.INVALID_ACCESS_TOKEN, "Access token is invalid", err.name, err.message);
+                return {
+                    status: false,
+                    error: "Access token is invalid, error = " + err.name
+                };
+            }
+
+            AAA.log(CAT.DEBUG, "Decoded access token:\n", decoded);
+        });
+
 
         profile.at_body = JSON.parse(new Buffer(profile.access_token.split(".")[1], 'base64').toString('ascii'));
     }
