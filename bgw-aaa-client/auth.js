@@ -1,12 +1,7 @@
 const url = require('url');
 const config = require('./config_mgr')();
-//const internal = require('./validate')
-const none = require('./no_auth');
-const openid = require("./openid_validate");
+const validate = require("./validate");
 const decode64 = (b64) => new Buffer(b64, 'base64').toString('ascii');
-
-let validate = {openid, none};
-validate = validate[config.aaa_client.auth_provider];
 
 const mqttAuth = async (port, credentials, method, path = '') => {
     const payload = `MQTT/${method}/${config.broker.address}/${config.broker.port}/${path}`;

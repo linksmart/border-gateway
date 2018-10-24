@@ -30,20 +30,25 @@ module.exports = async (path, source, username, password, override_aaa_client_co
     }
 
     const anonymous_user = (override_aaa_client_config && override_aaa_client_config.openid_anonymous_user) || config.aaa_client.openid_anonymous_user;
-    const config_grant = (override_aaa_client_config && override_aaa_client_config.openid_grant_type) || config.aaa_client.openid_grant_type;
+    const config_authentication_type = (override_aaa_client_config && override_aaa_client_config.openid_authentication_type) || config.aaa_client.openid_authentication_type;
     const client_id = (override_aaa_client_config && override_aaa_client_config.openid_clientid) || config.aaa_client.openid_clientid;
     const client_secret = (override_aaa_client_config && override_aaa_client_config.openid_clientsecret)  || config.aaa_client.openid_clientid;
     const host = (override_aaa_client_config && override_aaa_client_config.host || config.aaa_client.host);
     const realm_public_key_modulus = (override_aaa_client_config && override_aaa_client_config.openid_realm_public_key_modulus || config.aaa_client.openid_realm_public_key_modulus);
     const realm_public_key_exponent = (override_aaa_client_config && override_aaa_client_config.openid_realm_public_key_exponent || config.aaa_client.openid_realm_public_key_exponent);
 
+    if(config_authentication_type === 'none')
+    {
+        return {status: true};
+    }
+
     const key = username + (password || "");
-    let grant_type = username === anonymous_user ? 'password' : config_grant;
-    let req_credentials = parse_credentials[grant_type](username, password, host);
+    let authentication_type = username === anonymous_user ? 'password' : config_authentication_type;
+    let req_credentials = parse_credentials[authentication_type](username, password, host);
 
     let profile = {};
     let pem = getPem(realm_public_key_modulus, realm_public_key_exponent);
-    if (grant_type === 'access_token') {
+    if (authentication_type === 'access_token') {
 
 
 
@@ -71,7 +76,7 @@ module.exports = async (path, source, username, password, override_aaa_client_co
             method: "POST",
             headers: {'content-type': 'application/x-www-form-urlencoded'},
             body: {
-                'grant_type': grant_type,
+                'grant_type': authentication_type,
                 'client_id': client_id,
                 'client_secret': client_secret
             },
