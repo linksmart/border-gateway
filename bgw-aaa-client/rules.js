@@ -9,6 +9,6 @@ module.exports = (profile, path, port) => {
         return {status: true};
     } else {
         AAA.log(CAT.RULE_DENY, "DENIED", profile.user_id, path, port);
-        return {status: false, error: 'Supplied api key has no rule matching the requested resource'};
+        return {status: false, error: 'Forbidden'};
     }
 };

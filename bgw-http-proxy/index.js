@@ -27,12 +27,12 @@ if (config.multiple_cores && cluster.isMaster) {
 
         bgwIfy(req);
         if (req.bgw.type === REQ_TYPES.UNKNOWN_REQUEST) {
-            res.status(404).json({error: 'unknown request type'});
+            res.status(404).json({error: 'Unknown location'});
             return;
         }
         if (req.bgw.type === REQ_TYPES.INVALID_EXTERNAL_DOMAIN) {
             //config.redirect_on_invalid_external_domain ? res.redirect('https://' + config.external_domain + req.originalUrl) :
-                    res.status(404).json({error: 'Invalid external domain'});
+            res.status(404).json({error: 'Invalid external domain'});
             return;
         }
         if (req.bgw.type === REQ_TYPES.PROMPT_BASIC_AUTH) {
@@ -52,19 +52,29 @@ if (config.multiple_cores && cluster.isMaster) {
                 secure: !insecure,
                 agent: is_https ? agentHTTPS : agentHTTP,
                 changeOrigin: (http_req && https_req) ||
-                        (is_https && https_req) ||
-                        (!is_https && http_req)
+                    (is_https && https_req) ||
+                    (!is_https && http_req)
             };
             const proxyied_request = () => proxy.web(req, res, proxyied_options);
 
             req.bgw.type === REQ_TYPES.FORWARD_W_T ?
-                    tranform(transformURI)(req, res, () => proxyied_request()) : proxyied_request();
+                tranform(transformURI)(req, res, () => proxyied_request()) : proxyied_request();
 
         } else {
             if (req.bgw.alias && req.bgw.alias.use_basic_auth) {
                 res.set('WWW-Authenticate', 'Basic realm="User Visible Realm"');
             }
-            res.status(401).json({error: allowed.error || 'Unauthorized'});
+            if (allowed.error) {
+                if (allowed.error === 'Forbidden') {
+                    res.status(403).json({error: allowed.error});
+                }
+                else {
+                    res.status(401).json({error: allowed.error});
+                }
+            }
+            else {
+                res.status(401).json({error: 'Unauthorized'});
+            }
         }
 
 
@@ -73,9 +83,9 @@ if (config.multiple_cores && cluster.isMaster) {
         isDebugOn && err && debug(err.stack || err);
         if (req.bgw && req.bgw.forward_address) {
             config.redirect_to_original_address_on_proxy_error ? res.redirect(req.bgw.forward_address + req.originalUrl) :
-                    res && res.status(500).json({error: `border gateway could not forward your request to ${req.bgw.forward_address}`});
+                res && res.status(500).json({error: `Border Gateway could not forward your request to ${req.bgw.forward_address}`});
         } else {
-            res && res.status(500).json({error: `There is a problem with the internal forward address, make suer the internal address exist and working: `});
+            res && res.status(500).json({error: `There is a problem with the internal forward address, make sure the internal address exists and is working: `});
         }
 
     });
