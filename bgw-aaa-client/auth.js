@@ -2,6 +2,7 @@ const url = require('url');
 const config = require('./config_mgr')();
 const validate = require("./validate");
 const decode64 = (b64) => new Buffer(b64, 'base64').toString('ascii');
+const {AAA, CAT, isDebugOn, debug} = require('./log');
 
 const mqttAuth = async (port, credentials, method, path = '') => {
     const payload = `MQTT/${method}/${config.broker.address}/${config.broker.port}/${path}`;
@@ -47,8 +48,17 @@ const httpAuth = (req) => {
     const path = `${parse_fa.pathname}${url.parse(req.url).pathname}`.replace('//', '/');
     const payload = `HTTP/${req.method}/${host}/${port}${path}`;
 
+    let override_conf;
+    if(req.bgw.alias && req.bgw.alias.override_aaa_client_config)
+    {
+        override_conf = req.bgw.alias.override_aaa_client_config
+    }
+    else
+    {
+        AAA.log(CAT.DEBUG, "Http request has no alias", req);
+    }
 
-    return validate(payload, `[source:${req.connection.remoteAddress}:${req.connection.remotePort}]`, username, password, req.bgw.alias.override_aaa_client_config);
+    return validate(payload, `[source:${req.connection.remoteAddress}:${req.connection.remotePort}]`, username, password, override_conf);
 
 };
 
