@@ -12,7 +12,6 @@ function json2env {
 }
 if [ "$1" = "part" ]; then
 
-    # test bamboo
     json2env
     #run_service $2
     run_inspect_service $2 9228 &
