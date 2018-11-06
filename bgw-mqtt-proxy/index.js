@@ -172,9 +172,10 @@ if (config.multiple_cores && cluster.isMaster) {
     });
 
 
-    server.on('connection', function (socket) {
-        debug('mqtt proxy connection, details...', socket)
-    });
+    // server.on('connection', function (socket) {
+    //     debug('mqtt proxy connection, details...', socket)
+    //     debug("socket.address()",socket.address());
+    // });
 
     config.bind_addresses.forEach((addr) => {
         server.listen(config.bind_port, addr, () =>
