@@ -14,9 +14,7 @@ const agent = new https.Agent({
 
 let parse_credentials = {
     password: (username, password, aaa_client_host) => ({username, password}),
-    refresh_token: (refresh_token, password, aaa_client_host) => ({refresh_token}),
     access_token: (access_token, password, aaa_client_host) => ({access_token}),
-    authorization_code: (code, password, aaa_client_host) => ({code, redirect_uri: aaa_client_host})
 };
 
 module.exports = async (path, source, username, password, override_aaa_client_config) => {
@@ -32,13 +30,12 @@ module.exports = async (path, source, username, password, override_aaa_client_co
     const anonymous_user = (override_aaa_client_config && override_aaa_client_config.openid_anonymous_user) || config.aaa_client.openid_anonymous_user;
     const config_authentication_type = (override_aaa_client_config && override_aaa_client_config.openid_authentication_type) || config.aaa_client.openid_authentication_type;
     const client_id = (override_aaa_client_config && override_aaa_client_config.openid_clientid) || config.aaa_client.openid_clientid;
-    const client_secret = (override_aaa_client_config && override_aaa_client_config.openid_clientsecret)  || config.aaa_client.openid_clientid;
+    const client_secret = (override_aaa_client_config && override_aaa_client_config.openid_clientsecret) || config.aaa_client.openid_clientid;
     const host = (override_aaa_client_config && override_aaa_client_config.host || config.aaa_client.host);
     const realm_public_key_modulus = (override_aaa_client_config && override_aaa_client_config.openid_realm_public_key_modulus || config.aaa_client.openid_realm_public_key_modulus);
     const realm_public_key_exponent = (override_aaa_client_config && override_aaa_client_config.openid_realm_public_key_exponent || config.aaa_client.openid_realm_public_key_exponent);
 
-    if(config_authentication_type === 'none')
-    {
+    if (config_authentication_type === 'none') {
         return {status: true};
     }
 
@@ -49,7 +46,6 @@ module.exports = async (path, source, username, password, override_aaa_client_co
     let profile = {};
     let pem = getPem(realm_public_key_modulus, realm_public_key_exponent);
     if (authentication_type === 'access_token') {
-
 
 
         jwt.verify(req_credentials.access_token, pem, {
@@ -98,9 +94,9 @@ module.exports = async (path, source, username, password, override_aaa_client_co
             };
         }
 
-        if (!profile || !profile.access_token || !profile.refresh_token) {
+        if (!profile || !profile.access_token) {
             let err = 'Unauthorized';
-            const res = {status: false, error: err };
+            const res = {status: false, error: err};
             AAA.log(CAT.INVALID_USER_CREDENTIALS, err, path, source);
             return res;
         }
