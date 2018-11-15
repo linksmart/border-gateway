@@ -112,7 +112,7 @@ Aliases are the most critical config in the HTTP Proxy. Its value is a JSON enco
   * **local_address:** "http://saar:8081"
   * **override_authorization_header:** ""
   * **change_origin_on:** {"https_req":false,"http_req":false}
-  * **translate_local_addresses:** {"enabled":false, "whitelist":["\*.ietf.org"]}
+  * **translate_local_addresses:** {"whitelist":["\*.ietf.org"]}
   * **insecure:** false
   * **use_basic_auth:** false
 Translation allows you to encode all URLs in the HTTP response of this alias to base64 and enables it to be accessible from outside. White-listing of translation allows you to exclude certain domains from the translation. The insecure flag disables the checking of a TLS validity of an internal address. Basic auth allows you enable user name and password prompts on any internal website.

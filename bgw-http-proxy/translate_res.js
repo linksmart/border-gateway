@@ -23,8 +23,25 @@ const transformURI = (data, req, res) =>
 
         for (let property in config.domains) {
             if (config.domains.hasOwnProperty(property)) {
-                if (e.includes(property) || (whitelist && whitelist.find(d => domainMatch(d, e)))) {
-                    return e;
+
+                if (e.includes(property)) {
+                    return e
+                }
+
+                if (i.includes('http')) {
+
+                    if ((whitelist && whitelist.find(d => domainMatch(d, e)))) {
+                        return e;
+                    }
+                }
+                else {
+                    if (whitelist) {
+                        for (var k = 0; k < whitelist.length; k++) {
+                            if (e.includes(whitelist[k])) {
+                                return e;
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -33,6 +50,7 @@ const transformURI = (data, req, res) =>
         const local_address = aliases[e] ? aliases[e] : encode(e);
         const external_address = req.bgw.alias.target_domain || req.hostname;
         return protocol + external_address + "/" + local_address;
-    });
+    })
+;
 
 module.exports = {decode, transformURI};

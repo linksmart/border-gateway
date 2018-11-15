@@ -8,6 +8,7 @@ const https = require("https");
 
 const {AAA, CAT, isDebugOn, debug} = require('./log');
 
+//temporary workaround because of ATOS´ self-signed certificate for Keycloak
 const agent = new https.Agent({
     rejectUnauthorized: false
 });
