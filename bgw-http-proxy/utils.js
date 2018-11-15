@@ -44,7 +44,7 @@ const bgwIfy = (req) => {
       return
     }
     const translate = req.bgw.alias.translate_local_addresses;
-    req.bgw.type = (translate && translate.enabled) ? TYPES.FORWARD_W_T:TYPES.FORWARD;
+    req.bgw.type = (translate) ? TYPES.FORWARD_W_T:TYPES.FORWARD;
     return
   }
 
