@@ -9,6 +9,36 @@ const mqttAuth = async (port, credentials, method, path = '') => {
     return (await validate(payload, `[source:${port}]`, credentials.username, credentials.password)).status;
 };
 
+const requestAuth = (req) => {
+
+        let auth_type = "password";
+        let username = "anonymous";
+        let password = "anonymous";
+
+        if (req.headers && req.headers.authorization) {
+            let parts = req.headers.authorization.split(' ');
+            if (parts.length === 2) {
+                if ((parts[0] === 'Bearer' || parts[0] === 'bearer') && (username = parts[1])) {
+                    parts = username.split(":");
+                    password = parts[1];
+                    auth_type = 'access_token';
+                }
+
+                else if (parts[0] === 'Basic' && (username = decode64(parts[1]))) {
+                    parts = username.split(":");
+                    username = parts[0];
+                    password = parts[1];
+                    auth_type = 'password';
+                }
+            }
+        }
+
+        let override_conf = {};
+        override_conf.openid_authentication_type = auth_type;
+        let result = validate(req.body.input, `[source:${req.connection.remoteAddress}:${req.connection.remotePort}]`, username, password, override_conf);
+        return result;
+}
+
 const httpAuth = (req) => {
     let username = (req.bgw.alias && req.bgw.alias.username) || undefined;
     let password = (req.bgw.alias && req.bgw.alias.password) || undefined;
@@ -60,4 +90,4 @@ const httpAuth = (req) => {
 
 };
 
-module.exports = {mqttAuth, httpAuth};
+module.exports = {mqttAuth, httpAuth, requestAuth};
