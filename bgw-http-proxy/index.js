@@ -37,7 +37,7 @@ if (config.multiple_cores && cluster.isMaster) {
                 }
                 else {
 
-                    res.status(403).json({output: 'Unauthorized'});
+                    res.status(403).json({output: 'Forbidden'});
                 }
                 return;
             }
