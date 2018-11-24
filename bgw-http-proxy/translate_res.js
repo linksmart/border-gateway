@@ -1,7 +1,6 @@
 const config = require('./config');
 const url = require("url");
 const domainMatch = require('domain-match');
-const {httpAuth, AAA, CAT, debug} = require('../bgw-aaa-client');
 const bs36 = require('base-x')('0123456789abcdefghijklmnopqrstuvwxyz');
 
 const check_domain = /(https?|tcp|ssl|mqtt):\/\/([\-\:\_\.\w\d]*)/g;
@@ -36,7 +35,7 @@ const transformURI = (data, req, res) =>
                 }
                 else {
                     if (whitelist) {
-                        for (var k = 0; k < whitelist.length; k++) {
+                        for (let k = 0; k < whitelist.length; k++) {
                             if (e.includes(whitelist[k])) {
                                 return e;
                             }

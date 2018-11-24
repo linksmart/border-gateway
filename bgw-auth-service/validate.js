@@ -6,7 +6,7 @@ const jwt = require('jsonwebtoken');
 const getPem = require('rsa-pem-from-mod-exp');
 const https = require("https");
 
-const {AAA, CAT, isDebugOn, debug} = require('../bgw-aaa-client');
+const {AAA, CAT} = require('../bgw-aaa-client');
 
 //temporary workaround because of ATOS´ self-signed certificate for Keycloak
 const agent = new https.Agent({
@@ -40,7 +40,6 @@ module.exports = async (path, source, username, password, override_aaa_client_co
         return {status: true};
     }
 
-    const key = username + (password || "");
     let authentication_type = username === anonymous_user ? 'password' : config_authentication_type;
     let req_credentials = parse_credentials[authentication_type](username, password, host);
 

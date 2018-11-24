@@ -1,4 +1,3 @@
-const config = require('./config');
 const validate = require("./validate");
 const decode64 = (b64) => new Buffer(b64, 'base64').toString('ascii');
 
@@ -29,7 +28,7 @@ const requestAuth = async (req) => {
         let override_conf = {};
         override_conf.openid_authentication_type = auth_type;
         return await validate(req.body.input, `[source:${req.connection.remoteAddress}:${req.connection.remotePort}]`, username, password, override_conf);
-}
+};
 
 
 module.exports = {requestAuth};

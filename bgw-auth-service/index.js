@@ -1,5 +1,5 @@
 const config = require('./config');
-const {AAA, CAT, debug, isDebugOn} = require('../bgw-aaa-client');
+const {AAA, CAT} = require('../bgw-aaa-client');
 const app = require('express')();
 const {requestAuth} = require('./request_auth');
 const bodyParser = require('body-parser');
@@ -8,7 +8,7 @@ app.use(bodyParser.json());
 
 app.use(async (req, res) => {
 
-    AAA.log(CAT.DEBUG, 'body',req.body)
+    AAA.log(CAT.DEBUG, 'body',req.body);
         if (req.body && req.body.input) {
             const result = await requestAuth(req);
 

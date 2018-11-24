@@ -1,14 +1,14 @@
 const WebSocket = require('ws');
-var mqttPacket = require('mqtt-packet');
-var opts = {protocolVersion: 4}
-var net = require('net');
-var parser = mqttPacket.parser(opts)
+let mqttPacket = require('mqtt-packet');
+let opts = {protocolVersion: 4};
+let net = require('net');
+let parser = mqttPacket.parser(opts);
 const config = require('./config');
-const {AAA, CAT, isDebugOn, debug} = require('../bgw-aaa-client');
+const {AAA, CAT} = require('../bgw-aaa-client');
 
  parser.on('packet', function (packet) {
      AAA.log(CAT.DEBUG,packet);
- })
+ });
 
 function sendMessage(ws, msg) {
     waitForSocketConnection(ws, function () {
@@ -100,7 +100,7 @@ wss.on('connection', function connection(socket, request) {
 
     socket.on('message', function incoming(data) {
         AAA.log(CAT.DEBUG,'WebSocket from client message = %s', data);
-        parsed = parser.parse(data);
+        parser.parse(data);
         sendNetMessage(clientSocket, data);
     });
 

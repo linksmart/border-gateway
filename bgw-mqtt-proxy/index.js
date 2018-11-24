@@ -9,7 +9,7 @@ const tls = require('tls');
 const shortid = require('shortid');
 const mqtt = require('mqtt-packet');
 
-const {AAA, CAT, isDebugOn, debug} = require('../bgw-aaa-client');
+const {AAA, CAT, debug} = require('../bgw-aaa-client');
 const validate = require('./validate');
 
 let packetSet = new Set([]);
@@ -37,7 +37,7 @@ function waitUntilEmpty(packetSet, callback, counter) {
 
 async function wrappedValidate(clientAddress, packet, credentials) {
     try {
-        return await validate(clientAddress, packet, credentials);
+        return await validate.validate(clientAddress, packet, credentials);
     } catch (err) {
         AAA.log(CAT.BUG, "err when validating", err);
         throw err;
@@ -159,7 +159,7 @@ if (config.multiple_cores && cluster.isMaster) {
                 debug('index, js, message from broker (packet.cmd) =', packet.cmd);
                 // only when autherize responce config is set true, i validate each
                 // responce to subscriptions
-                if (packet.cmd === 'publish' && !(mqttAuth(clientAddress, credentials, 'SUB', packet.topic))) {
+                if (packet.cmd === 'publish' && !(validate.mqttAuth(clientAddress, credentials, 'SUB', packet.topic))) {
                     if (config.disconnect_on_unauthorized_response) {
                         AAA.log(CAT.CON_TERMINATE, 'disconnecting client for unauthorize subscription due to change user auth profile');
                         srcClient.destroy();

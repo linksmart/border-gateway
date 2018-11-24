@@ -14,7 +14,6 @@ const proxy = require('http-proxy/lib/http-proxy').createProxyServer({});
 const config = require('./config');
 const {transformURI, bgwIfy, REQ_TYPES} = require('./utils');
 const {AAA, CAT, debug, isDebugOn} = require('../bgw-aaa-client');
-const bodyParser = require('body-parser');
 const url = require('url');
 const axios = require("axios");
 
@@ -66,28 +65,6 @@ if (config.multiple_cores && cluster.isMaster) {
 } else {
 
     app.use(cors());
-    //app.use(bodyParser.json());
-
-    // app.use('/authorize-request', async (req, res) => {
-    //
-    //         if (req.body && req.body.input) {
-    //             const result = await requestAuth(req);
-    //
-    //             if (result.status) {
-    //
-    //                 res.status(200).json({output: 'Allowed'});
-    //             }
-    //             else {
-    //
-    //                 res.status(403).json({output: 'Forbidden'});
-    //             }
-    //             return;
-    //         }
-    //         res.status(400).json({error: "no input field"});
-    //
-    //         return;
-    //     }
-    // );
 
     app.use(async (req, res) => {
 

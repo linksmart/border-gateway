@@ -1,7 +1,5 @@
 const config = require('./config');
 const {transformURI ,decode } = require("./translate_res");
-const url = require('url');
-const {AAA, CAT, debug} = require('../bgw-aaa-client');
 
 const TYPES = {
   FORWARD: 'FORWARD',

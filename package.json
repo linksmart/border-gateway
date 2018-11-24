@@ -20,11 +20,9 @@
     "bgw-http-proxy": "file:./bgw-http-proxy",
     "bgw-mqtt-proxy": "file:./bgw-mqtt-proxy",
     "bgw-websocket-proxy": "file:./bgw-websocket-proxy",
-    "express": "^4.16.3",
-    "http-proxy": "^1.17.0"
+    "dotenv": "latest"
   },
   "devDependencies": {
-    "dotenv": "latest",
-    "eslint": "^4.19.1"
+    "eslint": "latest"
   }
 }

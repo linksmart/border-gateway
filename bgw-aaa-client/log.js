@@ -27,7 +27,7 @@ const timestamp = () => `[${new Date().toLocaleString()}]`;
 
 const logFunction = {
     log: (cat, ...arg) => can_log(cat) && console.log(config.aaa_client.name, "AAA", cat, ...arg),
-    logTS: (cat, ...arg) => can_log(cat) && console.log(timestamp(), config.aaa_client.name, "AAA", cat, ...arg)//,
+    logTS: (cat, ...arg) => can_log(cat) && console.log(timestamp(), config.aaa_client.name, "AAA", cat, ...arg)
 };
 
 const isTS = (!config.aaa_client.no_timestamp) ? "TS" : "";
