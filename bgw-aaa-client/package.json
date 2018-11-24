@@ -16,6 +16,7 @@
   "dependencies": {
     "mqtt-match": "latest",
     "node-fetch": "latest",
+    "axios": "latest",
     "jsonwebtoken": "latest",
     "rsa-pem-from-mod-exp": "latest"
   }

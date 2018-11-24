@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "mqtt-packet": "latest",
-    "shortid": "latest"
+    "shortid": "latest",
+    "axios": "latest"
   }
 }

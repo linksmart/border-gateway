@@ -1,4 +1,5 @@
 // for cluster mode
+const config = require('./config');
 const cluster = require('cluster');
 const numCPUs = require('os').cpus().length;
 // end of cluster mode
@@ -7,8 +8,8 @@ const net = require('net');
 const tls = require('tls');
 const shortid = require('shortid');
 const mqtt = require('mqtt-packet');
-const config = require('./config');
-const {mqttAuth, AAA, CAT, isDebugOn, debug} = require('../bgw-aaa-client');
+
+const {AAA, CAT, isDebugOn, debug} = require('../bgw-aaa-client');
 const validate = require('./validate');
 
 let packetSet = new Set([]);

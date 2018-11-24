@@ -24,31 +24,17 @@ elif [ "$1" = "start" ]; then
     #run_service http2https &
     #run_service bgw-auth-server &
 
-    if [ "$2" = "disable_ei" ]; then
+    #run_service bgw-auth-service &
+    run_inspect_service bgw-auth-service 9231 &
 
-      #run_service bgw-http-proxy &
-      run_inspect_service bgw-http-proxy 9228 &
+    #run_service bgw-http-proxy &
+    run_inspect_service bgw-http-proxy 9228 &
 
-      #run_service bgw-mqtt-proxy &
-      run_inspect_service bgw-mqtt-proxy 9229 &
+    #run_service bgw-mqtt-proxy &
+    run_inspect_service bgw-mqtt-proxy 9229 &
 
-      #run_service bgw-mqtt-proxy &
-      run_inspect_service bgw-websocket-proxy 9230 &
-
-    else
-
-      run_inspect_service bgw-external-interface 9227 &
-      #run_service bgw-external-interface &
-
-      #run_service bgw-http-proxy &
-      run_inspect_service bgw-http-proxy 9228 &
-
-      #run_service bgw-mqtt-proxy &
-      run_inspect_service bgw-mqtt-proxy 9229 &
-
-      #run_service bgw-mqtt-proxy &
-      run_inspect_service bgw-websocket-proxy 9230 &
-    fi
+    #run_service bgw-mqtt-proxy &
+    run_inspect_service bgw-websocket-proxy 9230 &
 
 else
   echo

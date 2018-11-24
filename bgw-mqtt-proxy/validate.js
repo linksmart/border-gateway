@@ -1,5 +1,45 @@
-const mqttAuth = require("bgw-aaa-client/auth").mqttAuth;
 const {connack, suback, puback, pubrec} = require('./packet_template');
+const config = require('./config');
+const axios = require('axios');
+
+const mqttAuth = async (port, credentials, method, path = '') => {
+    const payload = `MQTT/${method}/${config.broker.address}/${config.broker.port}/${path}`;
+
+    let authUrl = 'http://localhost:5059';
+
+    let authorization;
+    if(credentials.password && credentials.password !== '')
+    {
+        authorization = 'Basic '+Buffer.from(credentials.username+':'+credentials.password).toString('base64');
+    }
+    else
+    {
+        if(credentials.username && credentials.username !== '') {
+            authorization = 'Bearer ' + credentials.username;
+        }
+    }
+
+    let response;
+    try {
+        response = await axios({
+            method: 'post',
+            headers: {authorization: authorization || ""},
+            url: authUrl,
+            data: {
+                input: payload
+            }
+        });
+    }
+    catch(error)
+    {
+        return error.response.data.output;
+
+    }
+
+    return response.data.output;
+    //return (await validate(payload, `[source:${port}]`, credentials.username, credentials.password)).status;
+};
+
 module.exports = async (port, packet, key) => {
 
     let result = true;

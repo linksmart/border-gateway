@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "bgw-aaa-client": "file:./bgw-aaa-client",
+    "bgw-auth-service": "file:./bgw-auth-service",
     "bgw-external-interface": "file:./bgw-external-interface",
     "bgw-http-proxy": "file:./bgw-http-proxy",
     "bgw-mqtt-proxy": "file:./bgw-mqtt-proxy",

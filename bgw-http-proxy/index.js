@@ -1,6 +1,7 @@
 // for cluster mode
 const cluster = require('cluster');
 const numCPUs = require('os').cpus().length;
+
 // end of cluster mode
 const cors = require('cors');
 const app = require('express')();
@@ -12,8 +13,49 @@ const agentHTTPS = new https.Agent({keepAlive: true});
 const proxy = require('http-proxy/lib/http-proxy').createProxyServer({});
 const config = require('./config');
 const {transformURI, bgwIfy, REQ_TYPES} = require('./utils');
-const {requestAuth, httpAuth, AAA, CAT, debug, isDebugOn} = require('../bgw-aaa-client');
+const {AAA, CAT, debug, isDebugOn} = require('../bgw-aaa-client');
 const bodyParser = require('body-parser');
+const url = require('url');
+const axios = require("axios");
+
+const httpAuth = async (req) => {
+
+
+
+
+    const parse_fa = url.parse(req.bgw.forward_address);
+    let host = parse_fa.hostname;
+    let port = parse_fa.port || (parse_fa.protocol === 'https:' ? 443 : 80);
+    const path = `${parse_fa.pathname}${url.parse(req.url).pathname}`.replace('//', '/');
+    const payload = `HTTP/${req.method}/${host}/${port}${path}`;
+
+    let authUrl = 'http://localhost:5059';
+
+    let response;
+    try {
+        response = await axios({
+            method: 'post',
+            headers: {authorization: req.headers.authorization || ""},
+            url: authUrl,
+            data: {
+                input: payload
+            }
+        });
+    }
+    catch(error)
+    {
+        return error.response.data;
+
+    }
+
+
+    req.headers.authorization = (req.bgw.alias && req.bgw.alias.keep_authorization_header && req.headers.authorization) || (req.bgw.alias && req.bgw.alias.override_authorization_header)
+        || config.override_authorization_header || "";
+
+    return response.data;
+
+};
+
 
 if (config.multiple_cores && cluster.isMaster) {
     AAA.log(CAT.PROCESS_START, `Master PID ${process.pid} is running: CPU has ${numCPUs} cores`);
@@ -24,28 +66,28 @@ if (config.multiple_cores && cluster.isMaster) {
 } else {
 
     app.use(cors());
-    app.use(bodyParser.json());
+    //app.use(bodyParser.json());
 
-    app.use('/authorize-request', async (req, res) => {
-
-            if (req.body && req.body.input) {
-                const result = await requestAuth(req);
-
-                if (result.status) {
-
-                    res.status(200).json({output: 'Allowed'});
-                }
-                else {
-
-                    res.status(403).json({output: 'Forbidden'});
-                }
-                return;
-            }
-            res.status(400).json({error: "no input field"});
-
-            return;
-        }
-    );
+    // app.use('/authorize-request', async (req, res) => {
+    //
+    //         if (req.body && req.body.input) {
+    //             const result = await requestAuth(req);
+    //
+    //             if (result.status) {
+    //
+    //                 res.status(200).json({output: 'Allowed'});
+    //             }
+    //             else {
+    //
+    //                 res.status(403).json({output: 'Forbidden'});
+    //             }
+    //             return;
+    //         }
+    //         res.status(400).json({error: "no input field"});
+    //
+    //         return;
+    //     }
+    // );
 
     app.use(async (req, res) => {
 
@@ -65,8 +107,8 @@ if (config.multiple_cores && cluster.isMaster) {
             return;
         }
 
-        const allowed = await httpAuth(req);
-        if (allowed.status) {
+        const response = await httpAuth(req);
+        if (response.output) {
 
             const is_https = req.bgw.forward_address.includes('https://');
             const {http_req, https_req} = (req.bgw.alias && req.bgw.alias.change_origin_on) || config.change_origin_on;
@@ -88,12 +130,12 @@ if (config.multiple_cores && cluster.isMaster) {
             if (req.bgw.alias && req.bgw.alias.use_basic_auth) {
                 res.set('WWW-Authenticate', 'Basic realm="User Visible Realm"');
             }
-            if (allowed.error) {
-                if (allowed.error === 'Forbidden') {
-                    res.status(403).json({error: allowed.error});
+            if (response.error) {
+                if (response.error === 'Forbidden') {
+                    res.status(403).json({error: response.error});
                 }
                 else {
-                    res.status(401).json({error: allowed.error});
+                    res.status(401).json({error: response.error});
                 }
             }
             else {
