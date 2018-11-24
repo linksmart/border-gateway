@@ -36,6 +36,7 @@ const httpAuth = async (req) => {
             method: 'post',
             headers: {authorization: req.headers.authorization || ""},
             url: authUrl,
+            bgw: req.bgw,
             data: {
                 input: payload
             }
