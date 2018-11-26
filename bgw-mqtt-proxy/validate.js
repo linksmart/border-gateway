@@ -29,7 +29,15 @@ const mqttAuth = async (port, credentials, method, path = '') => {
         });
     }
     catch (error) {
-        return error.response.data.output;
+        if (error.response && error.response.data) {
+            return error.response.data.output;
+        }else
+        {
+            return {
+                status: false,
+                error: "Error in auth-service, " + error.name + ": "+error.message
+            };
+        }
 
     }
 
