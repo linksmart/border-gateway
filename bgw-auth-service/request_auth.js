@@ -6,9 +6,9 @@ const requestAuth = async (req) => {
 
     let override_conf = {};
 
-    if (req.bgw.alias && req.bgw.alias.override_aaa_client_config) {
-        override_conf = req.bgw.alias.override_aaa_client_config
-    }
+    // if (req.bgw.alias && req.bgw.alias.override_aaa_client_config) {
+    //     override_conf = req.bgw.alias.override_aaa_client_config
+    // }
 
     let auth_type = override_conf.openid_authentication_type || config.aaa_client.openid_authentication_type || 'password';
 
