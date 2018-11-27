@@ -110,8 +110,8 @@ if (config.multiple_cores && cluster.isMaster) {
             if (req.bgw.alias && req.bgw.alias.use_basic_auth) {
                 res.set('WWW-Authenticate', 'Basic realm="User Visible Realm"');
             }
-            if (response.reason) {
-                if (response.reason === 'Forbidden') {
+            if (response.error) {
+                if (response.error === 'Forbidden') {
                     res.status(403).json({error: response.error});
                 }
                 else {

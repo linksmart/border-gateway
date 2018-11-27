@@ -18,11 +18,11 @@ app.use(async (req, res) => {
             }
             else {
 
-                res.status(200).json({output: false, reason: result.error});
+                res.status(200).json({output: false, error: result.error});
             }
             return;
         }
-        res.status(400).json({error: "no input field"});
+        res.status(400).json({output: false, error: "no input field"});
     }
 );
 
