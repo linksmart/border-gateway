@@ -4,18 +4,13 @@ const decode64 = (b64) => new Buffer(b64, 'base64').toString('ascii');
 
 const requestAuth = async (req) => {
 
-    let override_conf = {};
 
-    // if (req.bgw.alias && req.bgw.alias.override_aaa_client_config) {
-    //     override_conf = req.bgw.alias.override_aaa_client_config
-    // }
+    let openid_connect_provider = config.openid_connect_providers[req.body.openid_connect_provider_name] || config.openid_connect_providers['default'];
+    let auth_type = 'password';
+    let username = openid_connect_provider.anonymous_user;
+    let password = openid_connect_provider.anonymous_user;
 
-    let auth_type = override_conf.openid_authentication_type || config.aaa_client.openid_authentication_type || 'password';
-
-    let username = "anonymous";
-    let password = "anonymous";
-
-    if (!(auth_type === 'none') && req.headers && req.headers.authorization) {
+    if (req.headers && req.headers.authorization) {
         let parts = req.headers.authorization.split(' ');
         if (parts.length === 2) {
             if ((parts[0] === 'Bearer' || parts[0] === 'bearer') && (username = parts[1])) {
@@ -33,9 +28,7 @@ const requestAuth = async (req) => {
         }
     }
 
-    override_conf.openid_authentication_type = auth_type;
-    return await validate(req.body.input, `[source:${req.connection.remoteAddress}:${req.connection.remotePort}]`, username, password, override_conf);
+    return await validate(req.body.input, openid_connect_provider, `[source:${req.connection.remoteAddress}:${req.connection.remotePort}]`, username, password, auth_type);
 };
-
 
 module.exports = {requestAuth};

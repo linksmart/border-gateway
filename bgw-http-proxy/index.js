@@ -19,8 +19,12 @@ const axios = require("axios");
 
 const httpAuth = async (req) => {
 
+    if (config.no_auth || req.bgw.alias.no_auth) {
 
-
+        return {
+            output: true
+        }
+    }
 
     const parse_fa = url.parse(req.bgw.forward_address);
     let host = parse_fa.hostname;
@@ -28,25 +32,25 @@ const httpAuth = async (req) => {
     const path = `${parse_fa.pathname}${url.parse(req.url).pathname}`.replace('//', '/');
     const payload = `HTTP/${req.method}/${host}/${port}${path}`;
 
-    let authUrl = 'http://localhost:5059';
-
     let response;
     try {
         response = await axios({
             method: 'post',
             headers: {authorization: req.headers.authorization || ""},
-            url: authUrl,
+            url: config.auth_service,
             data: {
-                input: payload
+                input: payload,
+                openid_connect_provider_name: config.openid_connect_provider_name || req.bgw.alias.openid_connect_provider_name || 'default'
             }
         });
     }
-    catch(error)
-    {
-        return error.response.data;
-
+    catch (error) {
+        AAA.log(CAT.DEBUG, 'auth-service returned an error message:', error.name, error.message);
+        return {
+            output: false,
+            error: "Error in auth-service, " + error.name + ": " + error.message
+        };
     }
-
 
     req.headers.authorization = (req.bgw.alias && req.bgw.alias.keep_authorization_header && req.headers.authorization) || (req.bgw.alias && req.bgw.alias.override_authorization_header)
         || config.override_authorization_header || "";
@@ -54,7 +58,6 @@ const httpAuth = async (req) => {
     return response.data;
 
 };
-
 
 if (config.multiple_cores && cluster.isMaster) {
     AAA.log(CAT.PROCESS_START, `Master PID ${process.pid} is running: CPU has ${numCPUs} cores`);
@@ -107,8 +110,8 @@ if (config.multiple_cores && cluster.isMaster) {
             if (req.bgw.alias && req.bgw.alias.use_basic_auth) {
                 res.set('WWW-Authenticate', 'Basic realm="User Visible Realm"');
             }
-            if (response.error) {
-                if (response.error === 'Forbidden') {
+            if (response.reason) {
+                if (response.reason === 'Forbidden') {
                     res.status(403).json({error: response.error});
                 }
                 else {

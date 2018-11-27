@@ -155,28 +155,8 @@ if (config.multiple_cores && cluster.isMaster) {
                     }
                 });
             });
-            dstParser.on('packet', (packet) => {
-                debug('index, js, message from broker (packet.cmd) =', packet.cmd);
-                // only when autherize responce config is set true, i validate each
-                // responce to subscriptions
-                if (packet.cmd === 'publish' && !(validate.mqttAuth(clientAddress, credentials, 'SUB', packet.topic))) {
-                    if (config.disconnect_on_unauthorized_response) {
-                        AAA.log(CAT.CON_TERMINATE, 'disconnecting client for unauthorize subscription due to change user auth profile');
-                        srcClient.destroy();
-                        dstClient.destroy();
-                    }
-                } else {
-                    srcClient.write(mqtt.generate(packet));
-                }
-            });
         });
     });
-
-
-    // server.on('connection', function (socket) {
-    //     debug('mqtt proxy connection, details...', socket)
-    //     debug("socket.address()",socket.address());
-    // });
 
     config.bind_addresses.forEach((addr) => {
         server.listen(config.bind_port, addr, () =>

@@ -1,4 +1,3 @@
-const config = require('./config');
 const fetch = require('node-fetch');
 const qs = require("querystring");
 const matchRules = require('./rules');
@@ -14,56 +13,50 @@ const agent = new https.Agent({
 });
 
 let parse_credentials = {
-    password: (username, password, aaa_client_host) => ({username, password}),
-    access_token: (access_token, password, aaa_client_host) => ({access_token}),
+    password: (username, password) => ({username, password}),
+    access_token: (access_token) => ({access_token}),
 };
 
-module.exports = async (path, source, username, password, override_aaa_client_config) => {
+module.exports = async (path, openid_connect_provider, source, username, password, auth_type) => {
 
-    if (!username) {
-        username = (override_aaa_client_config && override_aaa_client_config.openid_anonymous_user) || config.aaa_client.openid_anonymous_user;
-    }
+    const anonymous_user = openid_connect_provider.anonymous_user;
+    const client_id = openid_connect_provider.client_id;
+    const client_secret = openid_connect_provider.client_secret;
+    const issuer = openid_connect_provider.issuer;
+    const token_endpoint = openid_connect_provider.token_endpoint;
+    const realm_public_key_modulus = openid_connect_provider.realm_public_key_modulus;
+    const realm_public_key_exponent = openid_connect_provider.realm_public_key_exponent;
 
-    if (!password) {
-        password = (override_aaa_client_config && override_aaa_client_config.openid_anonymous_pass) || config.aaa_client.openid_anonymous_pass
-    }
-
-    const anonymous_user = (override_aaa_client_config && override_aaa_client_config.openid_anonymous_user) || config.aaa_client.openid_anonymous_user;
-    const config_authentication_type = (override_aaa_client_config && override_aaa_client_config.openid_authentication_type) || config.aaa_client.openid_authentication_type;
-    const client_id = (override_aaa_client_config && override_aaa_client_config.openid_clientid) || config.aaa_client.openid_clientid;
-    const client_secret = (override_aaa_client_config && override_aaa_client_config.openid_clientsecret) || config.aaa_client.openid_clientid;
-    const host = (override_aaa_client_config && override_aaa_client_config.host || config.aaa_client.host);
-    const realm_public_key_modulus = (override_aaa_client_config && override_aaa_client_config.openid_realm_public_key_modulus || config.aaa_client.openid_realm_public_key_modulus);
-    const realm_public_key_exponent = (override_aaa_client_config && override_aaa_client_config.openid_realm_public_key_exponent || config.aaa_client.openid_realm_public_key_exponent);
-
-    if (config_authentication_type === 'none') {
-        return {status: true};
-    }
-
-    let authentication_type = username === anonymous_user ? 'password' : config_authentication_type;
-    let req_credentials = parse_credentials[authentication_type](username, password, host);
+    let authentication_type = username === anonymous_user ? 'password' : auth_type;
+    let req_credentials = parse_credentials[authentication_type](username, password);
 
     let profile = {};
     let pem = getPem(realm_public_key_modulus, realm_public_key_exponent);
     if (authentication_type === 'access_token') {
 
-
+        let verifyError;
         jwt.verify(req_credentials.access_token, pem, {
             audience: client_id,
-            issuer: host,
+            issuer: issuer,
             ignoreExpiration: false
         }, function (err, decoded) {
 
             if (err) {
                 AAA.log(CAT.INVALID_ACCESS_TOKEN, "Access token is invalid", err.name, err.message);
-                return {
+                verifyError = {
                     status: false,
-                    error: "Access token is invalid, error = " + err.name
+                    error: "Access token is invalid, error = " + err.name + ", "+ err.message
                 };
             }
 
+            AAA.log(CAT.DEBUG, "Decoded access token:\n", decoded);
             profile.at_body = decoded;
         });
+
+        if(verifyError)
+        {
+            return verifyError;
+        }
     }
 
     else { // code before introducing access token functionality
@@ -83,7 +76,7 @@ module.exports = async (path, source, username, password, override_aaa_client_co
 
         try {
 
-            let result = await fetch(`${host}/protocol/openid-connect/token`, options); // see https://www.keycloak.org/docs/3.0/securing_apps/topics/oidc/oidc-generic.html
+            let result = await fetch(`${token_endpoint}`, options); // see https://www.keycloak.org/docs/3.0/securing_apps/topics/oidc/oidc-generic.html
             profile = await result.json();
             //isDebugOn && debug('open id server result ', JSON.stringify(profile));
         } catch (e) {
@@ -101,23 +94,27 @@ module.exports = async (path, source, username, password, override_aaa_client_co
             return res;
         }
 
+        let verifyError;
         jwt.verify(profile.access_token, pem, {
             audience: client_id,
-            issuer: host,
+            issuer: issuer,
             ignoreExpiration: false
         }, function (err, decoded) {
 
             if (err) {
                 AAA.log(CAT.INVALID_ACCESS_TOKEN, "Access token is invalid", err.name, err.message);
-                return {
+                verifyError = {
                     status: false,
-                    error: "Access token is invalid, error = " + err.name
+                    error: "Access token is invalid, error " + err.name + ", " + err.message
                 };
             }
 
             AAA.log(CAT.DEBUG, "Decoded access token:\n", decoded);
         });
-
+        if(verifyError)
+        {
+            return verifyError;
+        }
 
         profile.at_body = JSON.parse(new Buffer(profile.access_token.split(".")[1], 'base64').toString('ascii'));
     }

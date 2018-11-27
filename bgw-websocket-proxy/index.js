@@ -42,8 +42,8 @@ function waitForSocketConnection(socket, callback) {
 function createSocketToBroker(serverSocket) {
 
     const clientOptions = {
-        host: config.mqtt_proxy_bind_addresses[0] || "127.0.0.1",
-        port: config.mqtt_proxy_bind_port || "5051"
+        host: config.mqtt_proxy_ip,
+        port: config.mqtt_proxy_port
     };
 
     const socket = net.connect(clientOptions);
@@ -71,7 +71,7 @@ function createSocketToBroker(serverSocket) {
     return socket;
 }
 
-const wss = new WebSocket.Server({port: config.websocket_proxy_bind_port});
+const wss = new WebSocket.Server({port: config.bind_port});
 
 wss.on('connection', function connection(socket, request) {
     AAA.log(CAT.DEBUG,"WebSocket from client connection");

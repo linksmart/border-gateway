@@ -1,11 +1,16 @@
 const {connack, suback, puback, pubrec} = require('./packet_template');
 const config = require('./config');
 const axios = require('axios');
+const {AAA, CAT} = require('../bgw-aaa-client');
 
 const mqttAuth = async (port, credentials, method, path = '') => {
-    const payload = `MQTT/${method}/${config.broker.address}/${config.broker.port}/${path}`;
 
-    let authUrl = 'http://localhost:5059';
+    if (config.no_auth) {
+
+        return true
+    }
+
+    const payload = `MQTT/${method}/${config.broker.address}/${config.broker.port}/${path}`;
 
     let authorization;
     if (credentials.password && credentials.password !== '') {
@@ -22,27 +27,19 @@ const mqttAuth = async (port, credentials, method, path = '') => {
         response = await axios({
             method: 'post',
             headers: {authorization: authorization || ""},
-            url: authUrl,
+            url: config.auth_service,
             data: {
-                input: payload
+                input: payload,
+                openid_connect_provider_name: config.openid_connect_provider_name || 'default'
             }
         });
     }
     catch (error) {
-        if (error.response && error.response.data) {
-            return error.response.data.output;
-        }else
-        {
-            return {
-                status: false,
-                error: "Error in auth-service, " + error.name + ": "+error.message
-            };
-        }
-
+        AAA.log(CAT.DEBUG, 'auth-service returned an error message:', error.name, error.message);
+        return false
     }
 
     return response.data.output;
-    //return (await validate(payload, `[source:${port}]`, credentials.username, credentials.password)).status;
 };
 
 module.exports = {

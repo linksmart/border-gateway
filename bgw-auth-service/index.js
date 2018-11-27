@@ -18,15 +18,15 @@ app.use(async (req, res) => {
             }
             else {
 
-                res.status(401).json({output: false, error: result.error});
+                res.status(200).json({output: false, reason: result.error});
             }
             return;
         }
-        res.status(401).json({error: "no input field"});
+        res.status(400).json({error: "no input field"});
     }
 );
 
 app.listen(config.bind_port, () =>
-    AAA.log(CAT.PROCESS_START, `Listening on port ${config.bind_port}`));
+    AAA.log(CAT.PROCESS_START, `auth-service listening on port ${config.bind_port}`));
 
 
