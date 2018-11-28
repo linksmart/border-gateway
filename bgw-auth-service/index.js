@@ -6,7 +6,7 @@ const bodyParser = require('body-parser');
 
 app.use(bodyParser.json());
 
-app.use(async (req, res) => {
+app.post('/',async (req, res) => {
 
     AAA.log(CAT.DEBUG, 'body',req.body);
         if (req.body && req.body.input) {
