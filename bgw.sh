@@ -10,11 +10,19 @@ function run_inspect_service {
 function json2env {
   node json2env.js || exit 1
 }
-if [ "$1" = "part" ]; then
+if [ "$1" = "parts" ]; then
 
-    json2env
-    #run_service $2
-    run_inspect_service $2 9228 &
+     json2env
+     debugPort=9227
+     for var in "$@"
+     do
+        if [ "$var" != "parts" ]; then
+            echo "$var"
+            #run_service "$var" &
+            run_inspect_service "$var" $debugPort &
+            debugPort=$((debugPort + 1))
+        fi
+     done
 
 elif [ "$1" = "start" ]; then
 
