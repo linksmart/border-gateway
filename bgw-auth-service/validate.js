@@ -19,7 +19,7 @@ let parse_credentials = {
 
 module.exports = async (path, openid_connect_provider, source, username, password, auth_type) => {
 
-    const anonymous_user = openid_connect_provider.anonymous_user;
+    const anonymous_user = openid_connect_provider.anonymous_user || 'anonymous';
     const client_id = openid_connect_provider.client_id;
     const client_secret = openid_connect_provider.client_secret;
     const issuer = openid_connect_provider.issuer;

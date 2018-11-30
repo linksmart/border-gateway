@@ -7,8 +7,8 @@ const requestAuth = async (req) => {
 
     let openid_connect_provider = config.openid_connect_providers[req.body.openid_connect_provider_name] || config.openid_connect_providers['default'];
     let auth_type = 'password';
-    let username = openid_connect_provider.anonymous_user;
-    let password = openid_connect_provider.anonymous_user;
+    let username = openid_connect_provider.anonymous_user || 'anonymous';
+    let password = openid_connect_provider.anonymous_user || 'anonymous';
 
     if (req.headers && req.headers.authorization) {
         let parts = req.headers.authorization.split(' ');
