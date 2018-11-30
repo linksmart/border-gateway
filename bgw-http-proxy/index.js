@@ -126,7 +126,7 @@ if (config.multiple_cores && cluster.isMaster) {
 
     });
     proxy.on('error', function (err, req, res) {
-        isDebugOn && err && debug(err.stack || err);
+        AAA.log(CAT.DEBUG, 'Error in proxy: ',err, err.stack, err.message);
         if (req.bgw && req.bgw.forward_address) {
             config.redirect_to_original_address_on_proxy_error ? res.redirect(req.bgw.forward_address + req.originalUrl) :
                 res && res.status(500).json({error: `Border Gateway could not forward your request to ${req.bgw.forward_address}`});
