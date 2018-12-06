@@ -11,7 +11,8 @@ paths:
   /auth-service:
     post:
       summary: Post request if rule is allowed for provided credentials (Basic or Bearer)
-
+      tags:
+      - auth-service
       requestBody:
         description: Provide rule and OpenID Connect provider name (defined in config) to check against
         required: true

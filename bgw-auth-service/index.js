@@ -6,7 +6,7 @@ const bodyParser = require('body-parser');
 
 app.use(bodyParser.json());
 
-app.post('/',async (req, res) => {
+app.post('/auth-service',async (req, res) => {
 
     AAA.log(CAT.DEBUG, 'body',req.body);
         if (req.body && req.body.rule) {
