@@ -9,20 +9,20 @@ app.use(bodyParser.json());
 app.post('/',async (req, res) => {
 
     AAA.log(CAT.DEBUG, 'body',req.body);
-        if (req.body && req.body.input) {
+        if (req.body && req.body.rule) {
             const result = await requestAuth(req);
 
             if (result.status) {
 
-                res.status(200).json({output: true});
+                res.status(200).json({isAllowed: true});
             }
             else {
 
-                res.status(200).json({output: false, error: result.error});
+                res.status(200).json({isAllowed: false, error: result.error});
             }
             return;
         }
-        res.status(400).json({output: false, error: "no input field"});
+        res.status(400).json({isAllowed: false, error: "no rule given"});
     }
 );
 

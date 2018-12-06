@@ -1,0 +1,73 @@
+openapi: "3.0.0"
+info:
+  version: 1.0.0
+  title: Border Gateway Auth Service
+servers:
+- url: https://demo.linksmart.eu
+security:
+- BasicAuth: []
+- BearerAuth: []
+paths:
+  /auth-service:
+    post:
+      summary: Post request if rule is allowed for provided credentials (Basic or Bearer)
+
+      requestBody:
+        description: Provide rule and OpenID Connect provider name (defined in config) to check against
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/request'
+
+      responses:
+        '200':
+          description: Answer
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: "#/components/schemas/answerTrue"
+                - $ref: "#/components/schemas/answerFalse"
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/answerFalse"
+        default:
+          description: Unexpected error
+components:
+  securitySchemes:
+    BasicAuth:
+      type: http
+      scheme: basic
+    BearerAuth:
+      type: http
+      scheme: bearer
+
+  schemas:
+    request:
+      required:
+      - rule
+      properties:
+        rule:
+          type: string
+        openidConnectProviderName:
+          type: string
+          default: default
+    answerFalse:
+      required:
+      - isAllowed
+      - error
+      properties:
+        isAllowed:
+          type: boolean
+        error:
+          type: string
+    answerTrue:
+      required:
+      - isAllowed
+      properties:
+        isAllowed:
+          type: boolean

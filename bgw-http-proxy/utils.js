@@ -47,7 +47,7 @@ const bgwIfy = (req) => {
   }
 
   const decoded_local_dest = local_dest && decode(local_dest);
-  if(!config.only_forward_aliases &&local_dest && decoded_local_dest ){
+  if(local_dest && decoded_local_dest ){
     req.bgw = {type:TYPES.FORWARD, forward_address:decoded_local_dest};
     return
   }

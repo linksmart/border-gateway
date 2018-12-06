@@ -132,8 +132,8 @@ if (config.multiple_cores && cluster.isMaster) {
                         }
                     }
                     else {
-                        // if the packet is invalid in the case of publish or sub and
-                        // configs for diconnecting on unauthorized is set to true, then
+                        // if the packet is invalid in the case of publish or subscribe and
+                        // configs for disconnecting on unauthorized is set to true, then
                         // disconnect
                         if ((packet.cmd === 'subscribe' && config.disconnect_on_unauthorized_subscribe) ||
                             (packet.cmd === 'publish' && config.disconnect_on_unauthorized_publish)) {

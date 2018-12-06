@@ -7,7 +7,6 @@ let config = {
     disconnect_on_unauthorized_publish: false,
     disconnect_on_unauthorized_subscribe: false,
     authorize_response: false,
-    disconnect_on_unauthorized_response: false,
     broker: {
         address: "localhost",
         port: 1883,
@@ -25,7 +24,7 @@ let config = {
     },
     no_auth: false,
     auth_service: "http://localhost:5053",
-    openid_connect_provider_name: undefined
+    openidConnectProviderName: undefined
 };
 require('../bgw-aaa-client').init("MQTT_PROXY", config);
 module.exports = config;

@@ -29,8 +29,8 @@ const mqttAuth = async (port, credentials, method, path = '') => {
             headers: {authorization: authorization || ""},
             url: config.auth_service,
             data: {
-                input: payload,
-                openid_connect_provider_name: config.openid_connect_provider_name || 'default'
+                rule: payload,
+                openidConnectProviderName: config.openidConnectProviderName || 'default'
             }
         });
     }
@@ -39,7 +39,7 @@ const mqttAuth = async (port, credentials, method, path = '') => {
         return false
     }
 
-    return response.data.output;
+    return response.data.isAllowed;
 };
 
 module.exports = {

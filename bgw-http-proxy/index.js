@@ -22,7 +22,7 @@ const httpAuth = async (req) => {
     if (config.no_auth || req.bgw.alias.no_auth) {
 
         return {
-            output: true
+            isAllowed: true
         }
     }
 
@@ -39,21 +39,20 @@ const httpAuth = async (req) => {
             headers: {authorization: req.headers.authorization || ""},
             url: config.auth_service,
             data: {
-                input: payload,
-                openid_connect_provider_name: config.openid_connect_provider_name || req.bgw.alias.openid_connect_provider_name || 'default'
+                rule: payload,
+                openidConnectProviderName: config.openidConnectProviderName || req.bgw.alias.openidConnectProviderName || 'default'
             }
         });
     }
     catch (error) {
         AAA.log(CAT.DEBUG, 'auth-service returned an error message:', error.name, error.message);
         return {
-            output: false,
+            isAllowed: false,
             error: "Error in auth-service, " + error.name + ": " + error.message
         };
     }
 
-    req.headers.authorization = (req.bgw.alias && req.bgw.alias.keep_authorization_header && req.headers.authorization) || (req.bgw.alias && req.bgw.alias.override_authorization_header)
-        || config.override_authorization_header || "";
+    req.headers.authorization = (req.bgw.alias && req.bgw.alias.keep_authorization_header && req.headers.authorization) || "";
 
     return response.data;
 
@@ -77,7 +76,6 @@ if (config.multiple_cores && cluster.isMaster) {
             return;
         }
         if (req.bgw.type === REQ_TYPES.INVALID_EXTERNAL_DOMAIN) {
-            //config.redirect_on_invalid_external_domain ? res.redirect('https://' + config.external_domain + req.originalUrl) :
             res.status(404).json({error: 'Invalid external domain'});
             return;
         }
@@ -88,7 +86,7 @@ if (config.multiple_cores && cluster.isMaster) {
         }
 
         const response = await httpAuth(req);
-        if (response.output) {
+        if (response.isAllowed) {
 
             const is_https = req.bgw.forward_address.includes('https://');
             const {http_req, https_req} = (req.bgw.alias && req.bgw.alias.change_origin_on) || config.change_origin_on;
@@ -126,10 +124,9 @@ if (config.multiple_cores && cluster.isMaster) {
 
     });
     proxy.on('error', function (err, req, res) {
-        AAA.log(CAT.DEBUG, 'Error in proxy: ',err, err.stack, err.message);
+        AAA.log(CAT.DEBUG, 'Error in proxy: ', err, err.stack, err.message);
         if (req.bgw && req.bgw.forward_address) {
-            config.redirect_to_original_address_on_proxy_error ? res.redirect(req.bgw.forward_address + req.originalUrl) :
-                res && res.status(500).json({error: `Border Gateway could not forward your request to ${req.bgw.forward_address}`});
+            res && res.status(500).json({error: `Border Gateway could not forward your request to ${req.bgw.forward_address}`});
         } else {
             res && res.status(500).json({error: `There is a problem with the internal forward address, make sure the internal address exists and is working: `});
         }
