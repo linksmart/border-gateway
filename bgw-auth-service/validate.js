@@ -17,7 +17,7 @@ let parse_credentials = {
     access_token: (access_token) => ({access_token}),
 };
 
-module.exports = async (path, openid_connect_provider, source, username, password, auth_type) => {
+module.exports = async (rule, openid_connect_provider, source, username, password, auth_type) => {
 
     const anonymous_user = openid_connect_provider.anonymous_user || 'anonymous';
     const client_id = openid_connect_provider.client_id;
@@ -80,7 +80,7 @@ module.exports = async (path, openid_connect_provider, source, username, passwor
             profile = await result.json();
             //isDebugOn && debug('open id server result ', JSON.stringify(profile));
         } catch (e) {
-            AAA.log(CAT.WRONG_AUTH_SERVER_RES, "DENIED This could be due to auth server being offline or failing", path, source);
+            AAA.log(CAT.WRONG_AUTH_SERVER_RES, "DENIED This could be due to auth server being offline or failing", rule, source);
             return {
                 status: false,
                 error: `Error in contacting the openid provider, ensure the openid provider is running and your bgw aaa_client host is correct`
@@ -90,7 +90,7 @@ module.exports = async (path, openid_connect_provider, source, username, passwor
         if (!profile || !profile.access_token) {
             let err = 'Unauthorized';
             const res = {status: false, error: err};
-            AAA.log(CAT.INVALID_USER_CREDENTIALS, err, path, source);
+            AAA.log(CAT.INVALID_USER_CREDENTIALS, err, rule, source);
             return res;
         }
 
@@ -124,12 +124,12 @@ module.exports = async (path, openid_connect_provider, source, username, passwor
             status: false,
             error: err
         };
-        AAA.log(CAT.INVALID_USER_CREDENTIALS, err, path, source);
+        AAA.log(CAT.INVALID_USER_CREDENTIALS, err, rule, source);
         return res;
     }
 
     profile.user_id = profile.at_body.preferred_username;
     profile.rules = profile.at_body.bgw_rules ? profile.at_body.bgw_rules.split(" ") : [];
     profile.rules = profile.rules.concat(profile.at_body.group_bgw_rules ? profile.at_body.group_bgw_rules.split(" ") : []);
-    return matchRules(profile, path, source);
+    return matchRules(profile, rule, source);
 };

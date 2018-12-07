@@ -4,8 +4,19 @@ const decode64 = (b64) => new Buffer(b64, 'base64').toString('ascii');
 
 const requestAuth = async (req) => {
 
+    let openidConnectProviderName;
 
-    let openid_connect_provider = config.openid_connect_providers[req.body.openidConnectProviderName] || config.openid_connect_providers['default'];
+    if(config.openid_connect_providers[req.body.openidConnectProviderName])
+    {
+        openidConnectProviderName = req.body.openidConnectProviderName;
+
+    }
+    else
+    {
+        openidConnectProviderName = 'default';
+
+    }
+    let openid_connect_provider = config.openid_connect_providers[openidConnectProviderName];
     let auth_type = 'password';
     let username = openid_connect_provider.anonymous_user || 'anonymous';
     let password = openid_connect_provider.anonymous_user || 'anonymous';
@@ -28,7 +39,9 @@ const requestAuth = async (req) => {
         }
     }
 
-    return await validate(req.body.rule, openid_connect_provider, `[source:${req.connection.remoteAddress}:${req.connection.remotePort}]`, username, password, auth_type);
+    let validateReturn = await validate(req.body.rule, openid_connect_provider, `[source:${req.connection.remoteAddress}:${req.connection.remotePort}]`, username, password, auth_type);
+    validateReturn.openidConnectProviderName = openidConnectProviderName;
+    return validateReturn;
 };
 
 module.exports = {requestAuth};

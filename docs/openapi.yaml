@@ -64,11 +64,16 @@ components:
       properties:
         isAllowed:
           type: boolean
+        openidConnectProviderName:
+          type: string
         error:
           type: string
     answerTrue:
       required:
       - isAllowed
+      - openidConnectProviderName
       properties:
         isAllowed:
           type: boolean
+        openidConnectProviderName:
+          type: string
