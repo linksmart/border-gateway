@@ -1,11 +1,38 @@
+const config = require("./config");
 const fetch = require('node-fetch');
 const qs = require("querystring");
 const matchRules = require('./rules');
 const jwt = require('jsonwebtoken');
 const getPem = require('rsa-pem-from-mod-exp');
 const https = require("https");
-
 const {AAA, CAT} = require('../bgw-aaa-client');
+const redis = require("redis");
+const asyncRedis = require("async-redis");
+let redisClient;
+let asyncRedisClient;
+const crypto = require('crypto');
+const algorithm = 'aes256';
+const inputEncoding = 'utf8';
+const outputEncoding = 'hex';
+if (config.redis_expiration > 0) {
+
+    redisClient = redis.createClient({port: config.redis_port, host: config.redis_host});
+    asyncRedisClient = asyncRedis.decorate(redisClient);
+}
+
+function encrypt(value, key) {
+    var cipher = crypto.createCipher(algorithm, key);
+    var encrypted = cipher.update(value, inputEncoding, outputEncoding);
+    encrypted += cipher.final(outputEncoding)
+    return encrypted
+}
+
+function decrypt(encrypted, key) {
+    var decipher = crypto.createDecipher(algorithm, key);
+    var decrypted = decipher.update(encrypted, outputEncoding, inputEncoding)
+    decrypted += decipher.final(inputEncoding)
+    return decrypted
+}
 
 //temporary workaround because of ATOS´ self-signed certificate for Keycloak
 const agent = new https.Agent({
@@ -34,86 +61,105 @@ module.exports = async (rule, openid_connect_provider, source, username, passwor
     let pem = getPem(realm_public_key_modulus, realm_public_key_exponent);
     if (authentication_type === 'access_token') {
 
-        let verifyError;
-        jwt.verify(req_credentials.access_token, pem, {
-            audience: client_id,
-            issuer: issuer,
-            ignoreExpiration: false
-        }, function (err, decoded) {
-
-            if (err) {
-                AAA.log(CAT.INVALID_ACCESS_TOKEN, "Access token is invalid", err.name, err.message);
-                verifyError = {
-                    status: false,
-                    error: "Access token is invalid, error = " + err.name + ", "+ err.message
-                };
-            }
-
-            AAA.log(CAT.DEBUG, "Decoded access token:\n", decoded);
-            profile.at_body = decoded;
-        });
-
-        if(verifyError)
-        {
-            return verifyError;
+        let decoded;
+        try {
+            decoded = jwt.verify(req_credentials.access_token, pem, {
+                audience: client_id,
+                issuer: issuer,
+                ignoreExpiration: false
+            });
         }
+        catch (err) {
+            AAA.log(CAT.INVALID_ACCESS_TOKEN, "Access token is invalid", err.name, err.message);
+            return {
+                status: false,
+                error: "Access token is invalid, error = " + err.name + ", " + err.message
+            };
+        }
+        AAA.log(CAT.DEBUG, "Decoded access token:\n", decoded);
+        profile.at_body = decoded;
     }
 
     else { // code before introducing access token functionality
 
-        const options = {
-            method: "POST",
-            headers: {'content-type': 'application/x-www-form-urlencoded'},
-            body: {
-                'grant_type': authentication_type,
-                'client_id': client_id,
-                'client_secret': client_secret
-            },
-            agent: agent
-        };
-        Object.assign(options.body, req_credentials);
-        options.body = qs.stringify(options.body);
+        if (config.redis_expiration > 0) {
 
-        try {
+            try {
+                const hash = crypto.createHash('sha256');
+                hash.update(token_endpoint+username+password);
+                const redisKey = hash.digest('utf8');
+                AAA.log(CAT.DEBUG, "redisKey = "+redisKey)
 
-            let result = await fetch(`${token_endpoint}`, options); // see https://www.keycloak.org/docs/3.0/securing_apps/topics/oidc/oidc-generic.html
-            profile = await result.json();
-            //isDebugOn && debug('open id server result ', JSON.stringify(profile));
-        } catch (e) {
-            AAA.log(CAT.WRONG_AUTH_SERVER_RES, "DENIED This could be due to auth server being offline or failing", rule, source);
-            return {
-                status: false,
-                error: `Error in contacting the openid provider, ensure the openid provider is running and your bgw aaa_client host is correct`
+                const encryptedToken = await redisClient.get(redisKey);
+                if(encryptedToken)
+                {
+                    AAA.log(CAT.DEBUG, "encryptedToken = " + encryptedToken);
+                    profile.access_token = decrypt(encryptedToken, password);
+                    AAA.log(CAT.DEBUG, "Retrieved access token from redis.");
+                }
+
+            }
+            catch (err) {
+                AAA.log(CAT.DEBUG, "Could not retrieve access token from Redis: ", err);
+            }
+        }
+
+        if (!profile.access_token) {
+            const options = {
+                method: "POST",
+                headers: {'content-type': 'application/x-www-form-urlencoded'},
+                body: {
+                    'grant_type': authentication_type,
+                    'client_id': client_id,
+                    'client_secret': client_secret
+                },
+                agent: agent
             };
-        }
+            Object.assign(options.body, req_credentials);
+            options.body = qs.stringify(options.body);
 
-        if (!profile || !profile.access_token) {
-            let err = 'Unauthorized';
-            const res = {status: false, error: err};
-            AAA.log(CAT.INVALID_USER_CREDENTIALS, err, rule, source);
-            return res;
-        }
+            try {
 
-        let verifyError;
-        jwt.verify(profile.access_token, pem, {
-            audience: client_id,
-            issuer: issuer,
-            ignoreExpiration: false
-        }, function (err, decoded) {
-
-            if (err) {
-                AAA.log(CAT.INVALID_ACCESS_TOKEN, "Access token is invalid", err.name, err.message);
-                verifyError = {
+                let result = await fetch(`${token_endpoint}`, options); // see https://www.keycloak.org/docs/3.0/securing_apps/topics/oidc/oidc-generic.html
+                profile = await result.json();
+                //isDebugOn && debug('open id server result ', JSON.stringify(profile));
+            } catch (e) {
+                AAA.log(CAT.WRONG_AUTH_SERVER_RES, "DENIED This could be due to auth server being offline or failing", rule, source);
+                return {
                     status: false,
-                    error: "Access token is invalid, error " + err.name + ", " + err.message
+                    error: `Error in contacting the openid provider, ensure the openid provider is running and your bgw aaa_client host is correct`
                 };
             }
 
-            AAA.log(CAT.DEBUG, "Decoded access token:\n", decoded);
-        });
-        if(verifyError)
-        {
-            return verifyError;
+            if (!profile || !profile.access_token) {
+                let err = 'Unauthorized';
+                const res = {status: false, error: err};
+                AAA.log(CAT.INVALID_USER_CREDENTIALS, err, rule, source);
+                return res;
+            }
+        }
+        let decoded;
+        try {
+            decoded = jwt.verify(profile.access_token, pem, {
+                audience: client_id,
+                issuer: issuer,
+                ignoreExpiration: false
+            });
+        }
+        catch (err) {
+            AAA.log(CAT.INVALID_ACCESS_TOKEN, "Access token is invalid", err.name, err.message);
+            return {
+                status: false,
+                error: "Access token is invalid, error " + err.name + ", " + err.message
+            };
+        }
+        AAA.log(CAT.DEBUG, "Successfully decoded access token:\n", decoded);
+        if (config.redis_expiration > 0) {
+            const hash = crypto.createHash('sha256');
+            hash.update(token_endpoint+username+password);
+            const redisKey = hash.digest('utf8');
+            AAA.log(CAT.DEBUG, "redisKey = "+redisKey)
+            redisClient.set(redisKey, encrypt(profile.access_token, password), 'EX', config.redis_expiration);
         }
 
         profile.at_body = JSON.parse(new Buffer(profile.access_token.split(".")[1], 'base64').toString('ascii'));
@@ -133,3 +179,4 @@ module.exports = async (rule, openid_connect_provider, source, username, passwor
     profile.rules = profile.rules.concat(profile.at_body.group_bgw_rules ? profile.at_body.group_bgw_rules.split(" ") : []);
     return matchRules(profile, rule, source);
 };
+

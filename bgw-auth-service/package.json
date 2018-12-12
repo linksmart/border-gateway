@@ -18,6 +18,8 @@
     "mqtt-match": "latest",
     "node-fetch": "latest",
     "jsonwebtoken": "latest",
-    "rsa-pem-from-mod-exp": "latest"
+    "rsa-pem-from-mod-exp": "latest",
+    "redis": "latest",
+    "async-redis": "latest"
   }
 }
