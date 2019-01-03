@@ -13,7 +13,7 @@ COPY ./package.json /bgw
 WORKDIR /bgw
 RUN npm install
 
-EXPOSE 443 8883
+EXPOSE 443 8883 9002
 
 ENTRYPOINT ["./bgw.sh"]
 CMD ["start"]
