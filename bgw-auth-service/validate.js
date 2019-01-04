@@ -164,7 +164,22 @@ module.exports = async (rule, openid_connect_provider, source, username, passwor
 
         profile.at_body = JSON.parse(new Buffer(profile.access_token.split(".")[1], 'base64').toString('ascii'));
     }
-    if (!profile.at_body || !profile.at_body.preferred_username || !(profile.at_body.bgw_rules || profile.at_body.group_bgw_rules)) {
+
+    let hasRules = false;
+    let rules = [];
+    for (let property in profile.at_body) {
+        if (profile.at_body.hasOwnProperty(property)) {
+
+            if (property.includes("bgw_rules"))
+            {
+                hasRules = true;
+                rules = rules.concat(profile.at_body[property].split(" "));
+            }
+
+        }
+    }
+
+    if (!profile.at_body || !profile.at_body.preferred_username || !hasRules) {
         let err = 'Unauthorized';
         const res = {
             status: false,
@@ -175,8 +190,7 @@ module.exports = async (rule, openid_connect_provider, source, username, passwor
     }
 
     profile.user_id = profile.at_body.preferred_username;
-    profile.rules = profile.at_body.bgw_rules ? profile.at_body.bgw_rules.split(" ") : [];
-    profile.rules = profile.rules.concat(profile.at_body.group_bgw_rules ? profile.at_body.group_bgw_rules.split(" ") : []);
+    profile.rules = rules;
     return matchRules(profile, rule, source);
 };
 
