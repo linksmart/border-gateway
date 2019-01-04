@@ -15,7 +15,9 @@ const bgwIfy = (req) => {
   //const public_domain = config.sub_domain_mode ?  host.includes(config.external_domain) : host === config.external_domain;
 
     let public_domain = false;
-    if(config.domains[req.hostname])
+    const splitHost = req.headers.host.split(":");
+    let host = splitHost[0];
+    if(config.domains[host])
     {
         public_domain = true;
     }

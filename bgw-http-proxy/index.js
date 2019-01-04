@@ -26,11 +26,21 @@ const httpAuth = async (req) => {
         }
     }
 
-    const parse_fa = url.parse(req.bgw.forward_address);
-    let host = parse_fa.hostname;
-    let port = parse_fa.port || (parse_fa.protocol === 'https:' ? 443 : 80);
-    const path = `${parse_fa.pathname}${url.parse(req.url).pathname}`.replace('//', '/');
-    const payload = `HTTP/${req.method}/${host}/${port}${path}`;
+    AAA.log(CAT.DEBUG, 'req.headers.host:', req.headers.host);
+    const splitHost = req.headers.host.split(":");
+    let host = splitHost[0];
+    let port = splitHost[1] || 80;
+    let protocol = 'HTTP';
+    if(req.headers['x-forwarded-proto'])
+    {
+        protocol = req.headers['x-forwarded-proto'].toUpperCase();
+    }
+    if(req.headers['x-forwarded-port'])
+    {
+        port = req.headers['x-forwarded-port'];
+    }
+    const path = req.originalUrl.replace('//', '/');
+    const payload = `${protocol}/${req.method}/${host}/${port}${path}`;
 
     let response;
     try {
