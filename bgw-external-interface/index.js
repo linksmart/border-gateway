@@ -1,36 +1,42 @@
-// for cluster mode
-const cluster = require('cluster');
-const numCPUs = require('os').cpus().length;
-// end of cluster mode
 const fs = require('fs');
 const tls = require('tls');
 const net = require('net');
-//const insubnet = require('insubnet');
+const httpProxy = require('http-proxy');
 const config = require('./config');
 const {AAA, CAT, debug} = require('../bgw-aaa-client');
 
 debug('external interface configs', JSON.stringify(config, null, 4));
 
-if (config.multiple_cores && cluster.isMaster) {
-    AAA.log(CAT.PROCESS_START, `Master PID ${process.pid} is running: CPU has ${numCPUs} cores`);
-    for (let i = 0; i < numCPUs; i++)
-        cluster.fork();
-    cluster.on('exit', (worker, code, signal) => AAA.log(CAT.PROCESS_END, `worker ${worker.process.pid} died`));
+const options = {
+    key: fs.readFileSync(config.tls_key),
+    cert: fs.readFileSync(config.tls_cert),
+    requestCert: config.request_client_cert,
+    rejectUnauthorized: config.request_client_cert,
+    ca: config.request_client_cert && config.client_ca_path && fs.readFileSync(config.client_ca_path),
+    ALPNProtocols: config.enable_ALPN_mode && ['bgw_info'].concat(config.servers.map(e => e.name))
+};
 
-} else {
+config.servers.forEach((srv) => {
+    AAA.log(CAT.PROCESS_START, `Creating server ${srv.name} for external interface...`);
 
-    const options = {
-        key: fs.readFileSync(config.tls_key),
-        cert: fs.readFileSync(config.tls_cert),
-        requestCert: config.request_client_cert,
-        rejectUnauthorized: config.request_client_cert,
-        ca: config.request_client_cert && config.client_ca_path && fs.readFileSync(config.client_ca_path),
-        ALPNProtocols: config.enable_ALPN_mode && ['bgw_info'].concat(config.servers.map(e => e.name))
-    };
+    let external_interface;
 
-    config.servers.forEach((srv) => {
-        AAA.log(CAT.PROCESS_START, `Creating server ${srv.name} for external interface...`);
-        const external_interface = tls.createServer(options, function (srcClient) {
+    if (srv.name === 'http_proxy') {
+        external_interface = httpProxy.createProxyServer({
+            target: {
+                host: srv.dest_address,
+                port: srv.dest_port
+            },
+            ssl: options
+        });
+
+        external_interface.on('proxyReq', function (proxyReq, req, res, options) {
+            proxyReq.setHeader('x-forwarded-proto', 'https');
+            proxyReq.setHeader('x-forwarded-port', srv.bind_port);
+        });
+    }
+    else {
+        external_interface = tls.createServer(options, function (srcClient) {
 
             let dstClient = false;
 
@@ -63,16 +69,13 @@ if (config.multiple_cores && cluster.isMaster) {
             });
         });
         external_interface.on('tlsClientError', (e) => debug('tls error,this could be a none tls connection, make sure to establish a proper tls connection, details...', e.stack || e));
-//        external_interface.on('secureConnection', function (socket) {
-//            debug('secureConnection, details...', socket)
-//        });
 
-        srv.bind_addresses.forEach((addr) => {
-            external_interface.listen(srv.bind_port, addr, () =>
-                AAA.log(CAT.PROCESS_START, `PID ${process.pid} Forwarding ${srv.name} ${addr}:${srv.bind_port} ===> ${srv.dest_address}:${srv.dest_port}`));
-        });
-
-
+    }
+    srv.bind_addresses.forEach((addr) => {
+        external_interface.listen(srv.bind_port, addr, () =>
+            AAA.log(CAT.PROCESS_START, `PID ${process.pid} Forwarding ${srv.name} ${addr}:${srv.bind_port} ===> ${srv.dest_address}:${srv.dest_port}`));
     });
 
-}
+})
+;
+

@@ -31,12 +31,10 @@ const httpAuth = async (req) => {
     let host = splitHost[0];
     let port = splitHost[1] || 80;
     let protocol = 'HTTP';
-    if(req.headers['x-forwarded-proto'])
-    {
+    if (req.headers['x-forwarded-proto']) {
         protocol = req.headers['x-forwarded-proto'].toUpperCase();
     }
-    if(req.headers['x-forwarded-port'])
-    {
+    if (req.headers['x-forwarded-port']) {
         port = req.headers['x-forwarded-port'];
     }
     const path = req.originalUrl.replace('//', '/');
@@ -68,82 +66,72 @@ const httpAuth = async (req) => {
 
 };
 
-if (config.multiple_cores && cluster.isMaster) {
-    AAA.log(CAT.PROCESS_START, `Master PID ${process.pid} is running: CPU has ${numCPUs} cores`);
-    for (let i = 0; i < numCPUs; i++)
-        cluster.fork();
-    cluster.on('exit', (worker, code, signal) => AAA.log(CAT.PROCESS_END, `worker ${worker.process.pid} died`));
+app.use(cors());
 
-} else {
+app.use(async (req, res) => {
 
-    app.use(cors());
+    bgwIfy(req);
+    if (req.bgw.type === REQ_TYPES.UNKNOWN_REQUEST) {
+        res.status(404).json({error: 'Unknown location'});
+        return;
+    }
+    if (req.bgw.type === REQ_TYPES.INVALID_EXTERNAL_DOMAIN) {
+        res.status(404).json({error: 'Invalid external domain'});
+        return;
+    }
+    if (req.bgw.type === REQ_TYPES.PROMPT_BASIC_AUTH) {
+        res.set('WWW-Authenticate', 'Basic realm="User Visible Realm"');
+        res.status(401).json({error: 'Unauthorized'});
+        return;
+    }
 
-    app.use(async (req, res) => {
+    const response = await httpAuth(req);
+    if (response.isAllowed) {
 
-        bgwIfy(req);
-        if (req.bgw.type === REQ_TYPES.UNKNOWN_REQUEST) {
-            res.status(404).json({error: 'Unknown location'});
-            return;
-        }
-        if (req.bgw.type === REQ_TYPES.INVALID_EXTERNAL_DOMAIN) {
-            res.status(404).json({error: 'Invalid external domain'});
-            return;
-        }
-        if (req.bgw.type === REQ_TYPES.PROMPT_BASIC_AUTH) {
+        const is_https = req.bgw.forward_address.includes('https://');
+        const {http_req, https_req} = (req.bgw.alias && req.bgw.alias.change_origin_on) || config.change_origin_on;
+        const insecure = (req.bgw.alias && req.bgw.alias.insecure) || false;
+        const proxyied_options = {
+            target: req.bgw.forward_address || 'error',
+            secure: !insecure,
+            agent: is_https ? agentHTTPS : agentHTTP,
+            changeOrigin: (http_req && https_req) ||
+                (is_https && https_req) ||
+                (!is_https && http_req)
+        };
+        const proxyied_request = () => proxy.web(req, res, proxyied_options);
+
+        req.bgw.type === REQ_TYPES.FORWARD_W_T ?
+            tranform(transformURI)(req, res, () => proxyied_request()) : proxyied_request();
+
+    } else {
+        if (req.bgw.alias && req.bgw.alias.use_basic_auth) {
             res.set('WWW-Authenticate', 'Basic realm="User Visible Realm"');
-            res.status(401).json({error: 'Unauthorized'});
-            return;
         }
-
-        const response = await httpAuth(req);
-        if (response.isAllowed) {
-
-            const is_https = req.bgw.forward_address.includes('https://');
-            const {http_req, https_req} = (req.bgw.alias && req.bgw.alias.change_origin_on) || config.change_origin_on;
-            const insecure = (req.bgw.alias && req.bgw.alias.insecure) || false;
-            const proxyied_options = {
-                target: req.bgw.forward_address || 'error',
-                secure: !insecure,
-                agent: is_https ? agentHTTPS : agentHTTP,
-                changeOrigin: (http_req && https_req) ||
-                    (is_https && https_req) ||
-                    (!is_https && http_req)
-            };
-            const proxyied_request = () => proxy.web(req, res, proxyied_options);
-
-            req.bgw.type === REQ_TYPES.FORWARD_W_T ?
-                tranform(transformURI)(req, res, () => proxyied_request()) : proxyied_request();
-
-        } else {
-            if (req.bgw.alias && req.bgw.alias.use_basic_auth) {
-                res.set('WWW-Authenticate', 'Basic realm="User Visible Realm"');
-            }
-            if (response.error) {
-                if (response.error === 'Forbidden') {
-                    res.status(403).json({error: response.error});
-                }
-                else {
-                    res.status(401).json({error: response.error});
-                }
+        if (response.error) {
+            if (response.error === 'Forbidden') {
+                res.status(403).json({error: response.error});
             }
             else {
-                res.status(401).json({error: 'Unauthorized'});
+                res.status(401).json({error: response.error});
             }
         }
-
-
-    });
-    proxy.on('error', function (err, req, res) {
-        AAA.log(CAT.DEBUG, 'Error in proxy: ', err, err.stack, err.message);
-        if (req.bgw && req.bgw.forward_address) {
-            res && res.status(500).json({error: `Border Gateway could not forward your request to ${req.bgw.forward_address}`});
-        } else {
-            res && res.status(500).json({error: `There is a problem with the internal forward address, make sure the internal address exists and is working: `});
+        else {
+            res.status(401).json({error: 'Unauthorized'});
         }
+    }
+});
+proxy.on('error', function (err, req, res) {
+    AAA.log(CAT.DEBUG, 'Error in proxy: ', err, err.stack, err.message);
+    if (req.bgw && req.bgw.forward_address) {
+        res && res.status(500).json({error: `Border Gateway could not forward your request to ${req.bgw.forward_address}`});
+    } else {
+        res && res.status(500).json({error: `There is a problem with the internal forward address, make sure the internal address exists and is working: `});
+    }
 
-    });
-    config.bind_addresses.forEach((addr) => {
-        app.listen(config.bind_port, addr, () =>
-            AAA.log(CAT.PROCESS_START, `PID ${process.pid} listening on ${addr}:${config.bind_port}`));
-    });
-}
+});
+config.bind_addresses.forEach((addr) => {
+    app.listen(config.bind_port, addr, () =>
+        AAA.log(CAT.PROCESS_START, `PID ${process.pid} listening on ${addr}:${config.bind_port}`));
+});
+

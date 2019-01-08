@@ -16,5 +16,7 @@
       "ecmaVersion": 2017
     }
   },
-  "dependencies": {}
+  "dependencies": {
+    "http-proxy": "latest"
+  }
 }

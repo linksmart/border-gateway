@@ -44,122 +44,114 @@ async function wrappedValidate(clientAddress, packet, credentials) {
     }
 }
 
-if (config.multiple_cores && cluster.isMaster) {
-    AAA.log(CAT.PROCESS_START, `Master PID ${process.pid} is running: CPU has ${numCPUs} cores`);
-    for (let i = 0; i < numCPUs; i++)
-        cluster.fork();
-    cluster.on('exit', (worker, code, signal) => AAA.log(CAT.PROCESS_END, `worker ${worker.process.pid} died`));
+const serverOptions = {};
+const broker = config.broker;
+const clientOptions = {
+    host: broker.address,
+    port: broker.port,
+    ca: broker.tls && broker.tls_ca && [fs.readFileSync(broker.tls_ca)],
+    key: broker.tls && broker.tls_client_key && fs.readFileSync(broker.tls_client_key),
+    cert: broker.tls && broker.tls_client_cert && fs.readFileSync(broker.tls_client_cert)
+};
 
-} else {
-    const serverOptions = {};
-    const broker = config.broker;
-    const clientOptions = {
-        host: broker.address,
-        port: broker.port,
-        ca: broker.tls && broker.tls_ca && [fs.readFileSync(broker.tls_ca)],
-        key: broker.tls && broker.tls_client_key && fs.readFileSync(broker.tls_client_key),
-        cert: broker.tls && broker.tls_client_cert && fs.readFileSync(broker.tls_client_cert)
-    };
+AAA.log(CAT.PROCESS_START, "Creating mqtt-proxy server...");
+const server = net.createServer(serverOptions, (srcClient) => {
 
-    AAA.log(CAT.PROCESS_START, "Creating mqtt-proxy server...");
-    const server = net.createServer(serverOptions, (srcClient) => {
+    const socketConnect = broker.tls ? tls.connect : net.connect;
+    const dstClient = socketConnect(clientOptions, () => {
+        const srcParser = mqtt.parser();
+        const dstParser = mqtt.parser();
 
-        const socketConnect = broker.tls ? tls.connect : net.connect;
-        const dstClient = socketConnect(clientOptions, () => {
-            const srcParser = mqtt.parser();
-            const dstParser = mqtt.parser();
+        srcClient.on('data', (data) =>
+            srcParser.parse(data));
+        config.authorize_response ? dstClient.on('data', (data) => dstParser.parse(data)) : dstClient.pipe(srcClient);
 
-            srcClient.on('data', (data) =>
-                srcParser.parse(data));
-            config.authorize_response ? dstClient.on('data', (data) => dstParser.parse(data)) : dstClient.pipe(srcClient);
+        dstClient.on('error', (err) => {
+            debug('err in dstClient', err);
+            srcClient && srcClient.end && srcClient.end();
+            dstClient.destroy();
+        });
+        srcClient.on('error', (err) => {
+            debug('err in srcClient', err);
+            dstClient && dstClient.end && dstClient.end();
+            srcClient.destroy();
+        });
 
-            dstClient.on('error', (err) => {
-                debug('err in dstClient', err);
-                srcClient && srcClient.end && srcClient.end();
-                dstClient.destroy();
-            });
-            srcClient.on('error', (err) => {
-                debug('err in srcClient', err);
-                dstClient && dstClient.end && dstClient.end();
-                srcClient.destroy();
-            });
+        const clientAddress = `${srcClient.remoteAddress}:${srcClient.remotePort}`;
+        let credentials = {};
 
-            const clientAddress = `${srcClient.remoteAddress}:${srcClient.remotePort}`;
-            let credentials = {};
+        srcParser.on('packet', (packet) => {
+            AAA.log(CAT.DEBUG, "packet event emitted", packet.cmd);
+            let packetID = shortid.generate();
 
-            srcParser.on('packet', (packet) => {
-                AAA.log(CAT.DEBUG, "packet event emitted", packet.cmd);
-                let packetID = shortid.generate();
-
-                for (let key in packet) {
-                    if (packet.hasOwnProperty(key)) {
-                        if (key === 'cmd' || key === 'clientId' || key === 'topic') {
-                            packetID = packetID + "_" + packet[key];
-                        }
+            for (let key in packet) {
+                if (packet.hasOwnProperty(key)) {
+                    if (key === 'cmd' || key === 'clientId' || key === 'topic') {
+                        packetID = packetID + "_" + packet[key];
                     }
                 }
+            }
 
-                if (packet.cmd !== 'disconnect') {
-                    packetSet.add(packetID);
-                    AAA.log(CAT.DEBUG, "packetSet", packetSet);
-                }
-                // get the client key and store it
-                if (packet.cmd === 'connect') {
-                    credentials = {username: packet.username, password: packet.password && "" + packet.password};
+            if (packet.cmd !== 'disconnect') {
+                packetSet.add(packetID);
+                AAA.log(CAT.DEBUG, "packetSet", packetSet);
+            }
+            // get the client key and store it
+            if (packet.cmd === 'connect') {
+                credentials = {username: packet.username, password: packet.password && "" + packet.password};
 
-                    delete packet.username;
-                    delete packet.password;
-                    broker.username && (packet.username = broker.username);
-                    broker.password && (packet.password = broker.password);
-                }
+                delete packet.username;
+                delete packet.password;
+                broker.username && (packet.username = broker.username);
+                broker.password && (packet.password = broker.password);
+            }
 
-                wrappedValidate(clientAddress, packet, credentials).then(result => {
-                    let valid = result;
-                    // got final result
-                    AAA.log(CAT.DEBUG, 'packet validated', packet.cmd);
+            wrappedValidate(clientAddress, packet, credentials).then(result => {
+                let valid = result;
+                // got final result
+                AAA.log(CAT.DEBUG, 'packet validated', packet.cmd);
 
-                    valid.packet = valid.packet && mqtt.generate(valid.packet);
+                valid.packet = valid.packet && mqtt.generate(valid.packet);
 
-                    if (valid.status) {
+                if (valid.status) {
 
-                        if (packet.cmd === 'disconnect') {
-                            waitUntilEmpty(packetSet, function () {
-                                dstClient.write(valid.packet);
-                            }, 0);
-                        }
-                        else {
+                    if (packet.cmd === 'disconnect') {
+                        waitUntilEmpty(packetSet, function () {
                             dstClient.write(valid.packet);
-                        }
+                        }, 0);
                     }
                     else {
-                        // if the packet is invalid in the case of publish or subscribe and
-                        // configs for disconnecting on unauthorized is set to true, then
-                        // disconnect
-                        if ((packet.cmd === 'subscribe' && config.disconnect_on_unauthorized_subscribe) ||
-                            (packet.cmd === 'publish' && config.disconnect_on_unauthorized_publish)) {
-                            AAA.log(CAT.CON_TERMINATE, 'disconnecting client for unauthorized ', packet.cmd);
-                            srcClient.destroy();
-                            dstClient.destroy();
-                        } else {
-                            valid.packet && srcClient.write(valid.packet);
-                        }
+                        dstClient.write(valid.packet);
                     }
-                    if (packet.cmd !== 'disconnect') {
-                        packetSet.delete(packetID);
+                }
+                else {
+                    // if the packet is invalid in the case of publish or subscribe and
+                    // configs for disconnecting on unauthorized is set to true, then
+                    // disconnect
+                    if ((packet.cmd === 'subscribe' && config.disconnect_on_unauthorized_subscribe) ||
+                        (packet.cmd === 'publish' && config.disconnect_on_unauthorized_publish)) {
+                        AAA.log(CAT.CON_TERMINATE, 'disconnecting client for unauthorized ', packet.cmd);
+                        srcClient.destroy();
+                        dstClient.destroy();
+                    } else {
+                        valid.packet && srcClient.write(valid.packet);
+                    }
+                }
+                if (packet.cmd !== 'disconnect') {
+                    packetSet.delete(packetID);
 
-                    }
-                }).catch(err => {
-                    AAA.log(CAT.BUG, "error when validating", err);
-                    if (packet.cmd !== 'disconnect') {
-                        packetSet.delete(packetID);
-                    }
-                });
+                }
+            }).catch(err => {
+                AAA.log(CAT.BUG, "error when validating", err);
+                if (packet.cmd !== 'disconnect') {
+                    packetSet.delete(packetID);
+                }
             });
         });
     });
+});
 
-    config.bind_addresses.forEach((addr) => {
-        server.listen(config.bind_port, addr, () =>
-            AAA.log(CAT.PROCESS_START, `PID ${process.pid} listening on ${addr}:${config.bind_port}`));
-    });
-}
+config.bind_addresses.forEach((addr) => {
+    server.listen(config.bind_port, addr, () =>
+        AAA.log(CAT.PROCESS_START, `PID ${process.pid} listening on ${addr}:${config.bind_port}`));
+});

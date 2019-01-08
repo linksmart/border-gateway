@@ -1,5 +1,4 @@
 let config = {
-    multiple_cores: false,
     tls_key: "",
     tls_cert: "",
     request_client_cert: false,

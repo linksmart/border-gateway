@@ -1,6 +1,5 @@
 let config = {
-    multiple_cores: false,
-    bind_addresses: [
+     bind_addresses: [
         "127.0.0.1"
     ],
     bind_port: 5051,

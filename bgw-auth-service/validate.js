@@ -21,17 +21,17 @@ if (config.redis_expiration > 0) {
 }
 
 function encrypt(value, key) {
-    var cipher = crypto.createCipher(algorithm, key);
-    var encrypted = cipher.update(value, inputEncoding, outputEncoding);
-    encrypted += cipher.final(outputEncoding)
-    return encrypted
+    let cipher = crypto.createCipher(algorithm, key);
+    let encrypted = cipher.update(value, inputEncoding, outputEncoding);
+    encrypted += cipher.final(outputEncoding);
+    return encrypted;
 }
 
 function decrypt(encrypted, key) {
-    var decipher = crypto.createDecipher(algorithm, key);
-    var decrypted = decipher.update(encrypted, outputEncoding, inputEncoding)
-    decrypted += decipher.final(inputEncoding)
-    return decrypted
+    let decipher = crypto.createDecipher(algorithm, key);
+    let decrypted = decipher.update(encrypted, outputEncoding, inputEncoding);
+    decrypted += decipher.final(inputEncoding);
+    return decrypted;
 }
 
 //temporary workaround because of ATOS´ self-signed certificate for Keycloak
@@ -88,7 +88,7 @@ module.exports = async (rule, openid_connect_provider, source, username, passwor
                 const hash = crypto.createHash('sha256');
                 hash.update(token_endpoint+username+password);
                 const redisKey = hash.digest('utf8');
-                AAA.log(CAT.DEBUG, "redisKey = "+redisKey)
+                AAA.log(CAT.DEBUG, "redisKey = "+redisKey);
 
                 const encryptedToken = await redisClient.get(redisKey);
                 if(encryptedToken)
@@ -158,7 +158,7 @@ module.exports = async (rule, openid_connect_provider, source, username, passwor
             const hash = crypto.createHash('sha256');
             hash.update(token_endpoint+username+password);
             const redisKey = hash.digest('utf8');
-            AAA.log(CAT.DEBUG, "redisKey = "+redisKey)
+            AAA.log(CAT.DEBUG, "redisKey = "+redisKey);
             redisClient.set(redisKey, encrypt(profile.access_token, password), 'EX', config.redis_expiration);
         }
 
