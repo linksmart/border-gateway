@@ -161,7 +161,7 @@ module.exports = async (rule, openid_connect_provider, source, username, passwor
             redisClient.set(redisKey, encrypt(profile.access_token, password), 'EX', config.redis_expiration);
         }
 
-        let json = new Buffer(profile.access_token.split(".")[1], 'base64').toString('ascii');
+        let json = Buffer.from(profile.access_token.split(".")[1], 'base64').toString('utf8');
         try {
             profile.at_body = JSON.parse(json);
         } catch (error) {

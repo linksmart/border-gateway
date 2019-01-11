@@ -1,6 +1,6 @@
 const config = require("./config");
 const validate = require("./validate");
-const decode64 = (b64) => new Buffer(b64, 'base64').toString('ascii');
+const decode64 = (b64) => Buffer.from(b64, 'base64').toString('utf8');
 
 const requestAuth = async (req) => {
 

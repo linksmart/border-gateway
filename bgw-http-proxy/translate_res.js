@@ -5,9 +5,9 @@ const bs36 = require('base-x')('0123456789abcdefghijklmnopqrstuvwxyz');
 
 const check_domain = /(https?|tcp|ssl|mqtt):\/\/([\-\:\_\.\w\d]*)/g;
 
-const encode = (data) => config.sub_domain_mode ? bs36.encode(new Buffer(data)) : new Buffer(data).toString('base64').replace(/=/g, '');
+const encode = (data) => config.sub_domain_mode ? bs36.encode(Buffer.from(data)) : Buffer.from(data).toString('base64').replace(/=/g, '');
 const decode = (data) => {
-    const domain = config.sub_domain_mode ? bs36.decode(data).toString('ascii') : new Buffer(data, 'base64').toString('ascii');
+    const domain = config.sub_domain_mode ? bs36.decode(data).toString('utf8') : Buffer.from(data, 'base64').toString('utf8');
     let {protocol, host, port} = url.parse(domain);
     port = port ? port : (protocol === "https:" ? 443 : 80);
     return (protocol && host && port) ? domain : false;
