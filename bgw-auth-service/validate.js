@@ -86,13 +86,12 @@ module.exports = async (rule, openid_connect_provider, source, username, passwor
 
             try {
                 const hash = crypto.createHash('sha256');
-                hash.update(token_endpoint+username+password);
+                hash.update(token_endpoint + username + password);
                 const redisKey = hash.digest('utf8');
-                AAA.log(CAT.DEBUG, "redisKey = "+redisKey);
+                AAA.log(CAT.DEBUG, "redisKey = " + redisKey);
 
                 const encryptedToken = await redisClient.get(redisKey);
-                if(encryptedToken)
-                {
+                if (encryptedToken) {
                     AAA.log(CAT.DEBUG, "encryptedToken = " + encryptedToken);
                     profile.access_token = decrypt(encryptedToken, password);
                     AAA.log(CAT.DEBUG, "Retrieved access token from redis.");
@@ -156,13 +155,22 @@ module.exports = async (rule, openid_connect_provider, source, username, passwor
         AAA.log(CAT.DEBUG, "Successfully decoded access token:\n", decoded);
         if (config.redis_expiration > 0) {
             const hash = crypto.createHash('sha256');
-            hash.update(token_endpoint+username+password);
+            hash.update(token_endpoint + username + password);
             const redisKey = hash.digest('utf8');
-            AAA.log(CAT.DEBUG, "redisKey = "+redisKey);
+            AAA.log(CAT.DEBUG, "redisKey = " + redisKey);
             redisClient.set(redisKey, encrypt(profile.access_token, password), 'EX', config.redis_expiration);
         }
 
-        profile.at_body = JSON.parse(new Buffer(profile.access_token.split(".")[1], 'base64').toString('ascii'));
+        let json = new Buffer(profile.access_token.split(".")[1], 'base64').toString('ascii');
+        try {
+            profile.at_body = JSON.parse(json);
+        } catch (error) {
+            AAA.log(CAT.DEBUG, "Error in JSON.parse, error = ",error," json = ",json);
+            return {
+                status: false,
+                error: "Cannot parse json " + error.name + ", " + error.message
+            };
+        }
     }
 
     let hasRules = false;
@@ -170,8 +178,7 @@ module.exports = async (rule, openid_connect_provider, source, username, passwor
     for (let property in profile.at_body) {
         if (profile.at_body.hasOwnProperty(property)) {
 
-            if (property.includes("bgw_rules"))
-            {
+            if (property.includes("bgw_rules")) {
                 hasRules = true;
                 rules = rules.concat(profile.at_body[property].split(" "));
             }
