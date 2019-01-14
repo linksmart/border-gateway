@@ -70,7 +70,6 @@ The domains and locations are the most critical config in the HTTP Proxy. Its va
   * **change_origin_on:** {"https_req":false,"http_req":false}
   * **translate_local_addresses:** {"whitelist":["*.linksmart.eu","demo.linksmart.eu"]}
   * **insecure:** false
-  * **use_basic_auth:** false
 Translation allows you to encode all URLs in the HTTP response of this alias to base64 and enables it to be accessible from outside. White-listing of translation allows you to exclude certain domains from the translation. The insecure flag disables the checking of a TLS validity of an internal address. Basic auth allows you enable user name and password prompts on any internal website.
 <a name="MQTT"></a>
 ## MQTT Proxy

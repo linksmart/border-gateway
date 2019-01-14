@@ -1,8 +1,3 @@
-// for cluster mode
-const cluster = require('cluster');
-const numCPUs = require('os').cpus().length;
-
-// end of cluster mode
 const cors = require('cors');
 const app = require('express')();
 const https = require('https');
@@ -12,59 +7,8 @@ const agentHTTP = new http.Agent({});
 const agentHTTPS = new https.Agent({});
 const proxy = require('http-proxy/lib/http-proxy').createProxyServer({});
 const config = require('./config');
-const {transformURI, bgwIfy, REQ_TYPES} = require('./utils');
+const {httpAuth, transformURI, bgwIfy, REQ_TYPES} = require('./utils');
 const {AAA, CAT, debug, isDebugOn} = require('../bgw-aaa-client');
-const url = require('url');
-const axios = require("axios");
-
-const httpAuth = async (req) => {
-
-    if (config.no_auth || req.bgw.alias.no_auth) {
-
-        return {
-            isAllowed: true
-        }
-    }
-
-    AAA.log(CAT.DEBUG, 'req.headers.host:', req.headers.host);
-    const splitHost = req.headers.host.split(":");
-    let host = splitHost[0];
-    let port = splitHost[1] || 80;
-    let protocol = 'HTTP';
-    if (req.headers['x-forwarded-proto']) {
-        protocol = req.headers['x-forwarded-proto'].toUpperCase();
-    }
-    if (req.headers['x-forwarded-port']) {
-        port = req.headers['x-forwarded-port'];
-    }
-    const path = req.originalUrl.replace('//', '/');
-    const payload = `${protocol}/${req.method}/${host}/${port}${path}`;
-
-    let response;
-    try {
-        response = await axios({
-            method: 'post',
-            headers: {authorization: req.headers.authorization || ""},
-            url: config.auth_service,
-            data: {
-                rule: payload,
-                openidConnectProviderName: config.openidConnectProviderName || req.bgw.alias.openidConnectProviderName || 'default'
-            }
-        });
-    }
-    catch (error) {
-        AAA.log(CAT.DEBUG, 'auth-service returned an error message:', error.name, error.message);
-        return {
-            isAllowed: false,
-            error: "Error in auth-service, " + error.name + ": " + error.message
-        };
-    }
-
-    req.headers.authorization = (req.bgw.alias && req.bgw.alias.keep_authorization_header && req.headers.authorization) || "";
-
-    return response.data;
-
-};
 
 app.use(cors());
 
@@ -79,11 +23,8 @@ app.use(async (req, res) => {
         res.status(404).json({error: 'Invalid external domain'});
         return;
     }
-    if (req.bgw.type === REQ_TYPES.PROMPT_BASIC_AUTH) {
-        res.set('WWW-Authenticate', 'Basic realm="User Visible Realm"');
-        res.status(401).json({error: 'Unauthorized'});
-        return;
-    }
+
+    const anonymousRequest = (!req.headers.authorization || req.headers.authorization === "");
 
     const response = await httpAuth(req);
     if (response.isAllowed) {
@@ -105,19 +46,12 @@ app.use(async (req, res) => {
             tranform(transformURI)(req, res, () => proxyied_request()) : proxyied_request();
 
     } else {
-        if (req.bgw.alias && req.bgw.alias.use_basic_auth) {
-            res.set('WWW-Authenticate', 'Basic realm="User Visible Realm"');
-        }
-        if (response.error) {
-            if (response.error === 'Forbidden') {
-                res.status(403).json({error: response.error});
-            }
-            else {
-                res.status(401).json({error: response.error});
-            }
+        if (response.error === 'Forbidden' && !anonymousRequest) {
+            res.status(403).json({error: response.error});
         }
         else {
-            res.status(401).json({error: 'Unauthorized'});
+            res.set('WWW-Authenticate', 'Basic realm="LinkSmart Border Gateway", charset="UTF-8"');
+            res.status(401).json({error: response.error});
         }
     }
 });

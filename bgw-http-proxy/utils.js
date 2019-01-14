@@ -1,12 +1,62 @@
 const config = require('./config');
 const {transformURI ,decode } = require("./translate_res");
+const axios = require("axios");
+const {AAA, CAT, debug, isDebugOn} = require('../bgw-aaa-client');
 
 const TYPES = {
   FORWARD: 'FORWARD',
   FORWARD_W_T: 'FORWARD_W_T',
   UNKNOWN_REQUEST: 'UNKNOWN_REQUEST',
-  PROMPT_BASIC_AUTH: 'PROMPT_BASIC_AUTH',
   INVALID_EXTERNAL_DOMAIN:"INVALID_EXTERNAL_DOMAIN"
+};
+
+const httpAuth = async (req) => {
+
+    if (config.no_auth || req.bgw.alias.no_auth) {
+
+        return {
+            isAllowed: true
+        }
+    }
+
+    AAA.log(CAT.DEBUG, 'req.headers.host:', req.headers.host);
+    const splitHost = req.headers.host.split(":");
+    let host = splitHost[0];
+    let port = splitHost[1] || 80;
+    let protocol = 'HTTP';
+    if (req.headers['x-forwarded-proto']) {
+        protocol = req.headers['x-forwarded-proto'].toUpperCase();
+    }
+    if (req.headers['x-forwarded-port']) {
+        port = req.headers['x-forwarded-port'];
+    }
+    const path = req.originalUrl.replace('//', '/');
+    const payload = `${protocol}/${req.method}/${host}/${port}${path}`;
+
+    let response;
+    try {
+        response = await axios({
+            method: 'post',
+            headers: {authorization: req.headers.authorization || ""},
+            url: config.auth_service,
+            data: {
+                rule: payload,
+                openidConnectProviderName: req.bgw.alias.openidConnectProviderName || config.openidConnectProviderName || 'default'
+            }
+        });
+    }
+    catch (error) {
+        AAA.log(CAT.DEBUG, 'auth-service returned an error message:', error.name, error.message);
+        return {
+            isAllowed: false,
+            error: "Error in auth-service, " + error.name + ": " + error.message
+        };
+    }
+
+    req.headers.authorization = (req.bgw.alias && req.bgw.alias.keep_authorization_header && req.headers.authorization) || "";
+
+    return response.data;
+
 };
 
 const bgwIfy = (req) => {
@@ -39,10 +89,7 @@ const bgwIfy = (req) => {
       forward_address: config.domains[req.hostname][local_dest].local_address,
       alias:config.domains[req.hostname][local_dest]
     };
-    if(req.bgw.alias.use_basic_auth && !req.headers.authorization){
-      req.bgw.type = TYPES.PROMPT_BASIC_AUTH;
-      return
-    }
+
     const translate = req.bgw.alias.translate_local_addresses;
     req.bgw.type = (translate) ? TYPES.FORWARD_W_T:TYPES.FORWARD;
     return
@@ -56,6 +103,7 @@ const bgwIfy = (req) => {
   req.bgw = {type:TYPES.UNKNOWN_REQUEST}
 };
 
+module.exports.httpAuth = httpAuth;
 module.exports.bgwIfy = bgwIfy;
 module.exports.REQ_TYPES = TYPES;
 module.exports.transformURI = transformURI;
