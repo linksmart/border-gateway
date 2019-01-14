@@ -11,7 +11,6 @@
 * [MQTT Proxy](#MQTT)
 * [WebSocket Proxy](#WebSocket)
 * [AAA Client](#AAA)
-* [User Access Rules](#rules)
 <a name="EI"></a>
 ## External Interface
 ```
@@ -122,19 +121,3 @@ the log level, available levels are `all, debug, info, warn, error, fatal, off`
 AAA_CLIENT_NO_TIMESTAMP=false
 ```
 Choose if a timestamp is to be provided to the logs.
-<a name="rules"></a>
-## User Access Rules
-Rules are defined using user/group attributes in the OpenID Connect provider and then included in the access token. The attributes in OpenID must be named `bgw_rules` and `group_bgw_rules`.
-The rules format is similar to an MQTT topic format
-Rule 1: "HTTP/GET/example.com/80/building1/#"
-```
-  examples  GET https://example.com/building1/floor1/temperature (ALLOW)
-            GET https://example.com/building1/floor2 (ALLOW)
-            GET https://example.com/building2/floor1 (DENY)
-```
-Rule 2: "MQTT/SUB/example.com/8883/building1/+/temperature”
-```
-  examples  SUB mqtts://example.com:8883/building1/floor1/temperature (ALLOW)
-            SUB mqtts://example.com:8883/building2/floor2/temperature (DENY)
-            SUB mqtts://example.com:8883/building1/floor3/humidity (DENY)
-```            
