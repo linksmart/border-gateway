@@ -2,6 +2,7 @@ const config = require('./config');
 const url = require("url");
 const domainMatch = require('domain-match');
 const bs36 = require('base-x')('0123456789abcdefghijklmnopqrstuvwxyz');
+const {AAA, CAT, debug, isDebugOn} = require('../bgw-aaa-client');
 
 const check_domain = /(https?|tcp|ssl|mqtt):\/\/([\-\:\_\.\w\d]*)/g;
 
@@ -16,8 +17,13 @@ const decode = (data) => {
 const transformURI = (data, req, res) =>
     (data + "").replace(check_domain, (e, i, j) => {
 
+        AAA.log(CAT.DEBUG, 'req.headers.host:', req.headers.host, ' req.headers[x-forwarded-host]:', req.headers['x-forwarded-host']);
+        let httpHost = req.headers['x-forwarded-host'] || req.headers.host;
+        const splitHost = httpHost.split(":");
+        let host = splitHost[0];
+
         let aliases = {};
-        Object.keys(config.domains[req.hostname]).forEach((key) => aliases[config.domains[req.hostname][key].local_address] = key);
+        Object.keys(config.domains[host]).forEach((key) => aliases[config.domains[host][key].local_address] = key);
         const whitelist = req.bgw.alias.translate_local_addresses.whitelist;
 
         for (let property in config.domains) {
@@ -47,7 +53,7 @@ const transformURI = (data, req, res) =>
 
         const protocol = (i.includes('http') && !config.disable_ei) ? "https://" : i + "://";
         const local_address = aliases[e] ? aliases[e] : encode(e);
-        const external_address = req.bgw.alias.target_domain || req.hostname;
+        const external_address = req.bgw.alias.target_domain || host;
         return protocol + external_address + "/" + local_address;
     })
 ;

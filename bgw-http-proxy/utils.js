@@ -19,17 +19,16 @@ const httpAuth = async (req) => {
         }
     }
 
-    AAA.log(CAT.DEBUG, 'req.headers.host:', req.headers.host);
-    const splitHost = req.headers.host.split(":");
+    AAA.log(CAT.DEBUG, 'req.headers.host:', req.headers.host, ' req.headers[x-forwarded-host]:', req.headers['x-forwarded-host']);
+    let httpHost = req.headers['x-forwarded-host'] || req.headers.host;
+    const splitHost = httpHost.split(":");
     let host = splitHost[0];
     let port = splitHost[1] || 80;
     let protocol = 'HTTP';
     if (req.headers['x-forwarded-proto']) {
         protocol = req.headers['x-forwarded-proto'].toUpperCase();
     }
-    if (req.headers['x-forwarded-port']) {
-        port = req.headers['x-forwarded-port'];
-    }
+
     const path = req.originalUrl.replace('//', '/');
     const payload = `${protocol}/${req.method}/${host}/${port}${path}`;
 
@@ -64,9 +63,12 @@ const bgwIfy = (req) => {
 
   //const public_domain = config.sub_domain_mode ?  host.includes(config.external_domain) : host === config.external_domain;
 
-    let public_domain = false;
-    const splitHost = req.headers.host.split(":");
+    AAA.log(CAT.DEBUG, 'req.headers.host:', req.headers.host, ' req.headers[x-forwarded-host]:', req.headers['x-forwarded-host']);
+    let httpHost = req.headers['x-forwarded-host'] || req.headers.host;
+    const splitHost = httpHost.split(":");
     let host = splitHost[0];
+    let public_domain = false;
+
     if(config.domains[host])
     {
         public_domain = true;
@@ -84,10 +86,10 @@ const bgwIfy = (req) => {
   //req.url =  config.sub_domain_mode ? req.url : req.url.replace(`/${local_dest}`,"");
     req.url =  req.url.replace(`/${local_dest}`,"");
 
-    if(config.domains[req.hostname][local_dest]) {
+    if(config.domains[host][local_dest]) {
     req.bgw = {
-      forward_address: config.domains[req.hostname][local_dest].local_address,
-      alias:config.domains[req.hostname][local_dest]
+      forward_address: config.domains[host][local_dest].local_address,
+      alias:config.domains[host][local_dest]
     };
 
     const translate = req.bgw.alias.translate_local_addresses;
