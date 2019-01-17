@@ -3,7 +3,7 @@ let config = {
         "127.0.0.1"
     ],
     bind_port: 5050,
-    disable_ei: false,
+    no_tls: false,
      change_origin_on: {
         https_req: false,
         http_req: false

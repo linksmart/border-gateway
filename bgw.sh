@@ -31,21 +31,15 @@ elif [ "$1" = "start" ]; then
     #export NODE_DEBUG=net,http,tls node
 
     #run_service bgw-http-proxy &
-    run_inspect_service bgw-http-proxy 9228 &
+    run_inspect_service bgw-http-proxy 9227 &
     #run_service bgw-mqtt-proxy &
-    run_inspect_service bgw-mqtt-proxy 9229 &
+    run_inspect_service bgw-mqtt-proxy 9228 &
     #run_service bgw-mqtt-proxy &
-    run_inspect_service bgw-websocket-proxy 9230 &
+    run_inspect_service bgw-websocket-proxy 9229 &
     #run_service bgw-auth-service &
-    run_inspect_service bgw-auth-service 9231 &
-
-    if [ "$2" = "disable_ei" ]; then
-
-        echo "bgw-external-interface is disabled"
-    else
-      run_inspect_service bgw-external-interface 9227 &
-      #run_service bgw-external-interface &
-    fi
+    run_inspect_service bgw-auth-service 9230 &
+    #run_service bgw-external-interface &
+    run_inspect_service bgw-external-interface 9231 &
 
 else
   echo
@@ -53,11 +47,9 @@ else
   echo
   echo -e  '\t'     bgw start            '\t\t\t\t' Start the bgw in default mode with external interface
   echo
-  echo -e  '\t'     bgw start disable_ei  '\t\t\t' Start the bgw without external interface
-  echo
   echo -e  '\t'     bgw start benchmark  '\t\t\t' Start all bgw components plus duplicates http and mqtt proxy
   echo
-  echo -e  '\t'     bgw part \$part_name   '\t\t\t' used to start a single service e.g. \(bgw-mqtt-proxy or http2https\) good for docker compose
+  echo -e  '\t'     bgw parts \$part_name   '\t\t\t' used to start a list of services e.g. \(bgw-mqtt-proxy or http2https\) good for docker compose
   echo
   echo -e  '\t'     bgw dev                '\t\t\t\t' Start bgw in dev mode using nodemon with reload on change
   echo

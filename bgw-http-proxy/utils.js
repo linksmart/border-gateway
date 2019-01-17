@@ -12,7 +12,7 @@ const TYPES = {
 
 const httpAuth = async (req) => {
 
-    if (config.no_auth || req.bgw.alias.no_auth) {
+    if (config.no_auth || (req.bgw.alias && req.bgw.alias.no_auth)) {
 
         return {
             isAllowed: true
@@ -40,7 +40,7 @@ const httpAuth = async (req) => {
             url: config.auth_service,
             data: {
                 rule: payload,
-                openidConnectProviderName: req.bgw.alias.openidConnectProviderName || config.openidConnectProviderName || 'default'
+                openidConnectProviderName: (req.bgw.alias && req.bgw.alias.openidConnectProviderName) || config.openidConnectProviderName || 'default'
             }
         });
     }
