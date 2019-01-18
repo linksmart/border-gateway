@@ -201,7 +201,7 @@ module.exports = async (rule, openid_connect_provider, source, username, passwor
             hash.update(token_endpoint + username + password);
             const redisKey = hash.digest('hex');
             redisClient.set(redisKey, encrypt(profile.access_token, password), 'EX', config.redis_expiration);
-            const ttl = redisClient.ttl(redisKey);
+            const ttl = await redisClient.ttl(redisKey);
             AAA.log(CAT.DEBUG, "Cached access token with key ",redisKey," in redis, ttl is ",ttl);
         }
 
