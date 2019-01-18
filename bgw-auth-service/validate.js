@@ -114,11 +114,12 @@ module.exports = async (rule, openid_connect_provider, source, username, passwor
             try {
                 const hash = crypto.createHash('sha256');
                 hash.update(token_endpoint + username + password);
-                const redisKey = hash.digest('utf8');
+                const redisKey = hash.digest('hex');
 
                 const encryptedToken = await redisClient.get(redisKey);
+                const ttl = await redisClient.ttl(redisKey);
                 if (encryptedToken) {
-                    AAA.log(CAT.DEBUG, "Retrieved access token from redis.");
+                    AAA.log(CAT.DEBUG, "Retrieved access token with key ",redisKey," from redis, ttl is ",ttl);
                     profile.access_token = decrypt(encryptedToken, password);
                 }
 
@@ -198,8 +199,10 @@ module.exports = async (rule, openid_connect_provider, source, username, passwor
         if (config.redis_expiration > 0) {
             const hash = crypto.createHash('sha256');
             hash.update(token_endpoint + username + password);
-            const redisKey = hash.digest('utf8');
+            const redisKey = hash.digest('hex');
             redisClient.set(redisKey, encrypt(profile.access_token, password), 'EX', config.redis_expiration);
+            const ttl = redisClient.ttl(redisKey);
+            AAA.log(CAT.DEBUG, "Cached access token with key ",redisKey," in redis, ttl is ",ttl);
         }
 
         let json = Buffer.from(profile.access_token.split(".")[1], 'base64').toString('utf8');
