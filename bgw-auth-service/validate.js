@@ -12,26 +12,41 @@ let redisClient;
 let asyncRedisClient;
 const crypto = require('crypto');
 const algorithm = 'aes256';
-const inputEncoding = 'utf8';
-const outputEncoding = 'hex';
 if (config.redis_expiration > 0) {
 
     redisClient = redis.createClient({port: config.redis_port, host: config.redis_host});
     asyncRedisClient = asyncRedis.decorate(redisClient);
 }
 
-function encrypt(value, key) {
-    let cipher = crypto.createCipher(algorithm, key);
-    let encrypted = cipher.update(value, inputEncoding, outputEncoding);
-    encrypted += cipher.final(outputEncoding);
-    return encrypted;
+function generateAES256KeyBuffer(key) {
+    let bufferedKey = Buffer.from(key);
+
+    while (bufferedKey.length < 32) {
+        key = key + key;
+        bufferedKey = Buffer.from(key)
+    }
+    key = key.substring(0, 32);
+    return Buffer.from(key);
 }
 
-function decrypt(encrypted, key) {
-    let decipher = crypto.createDecipher(algorithm, key);
-    let decrypted = decipher.update(encrypted, outputEncoding, inputEncoding);
-    decrypted += decipher.final(inputEncoding);
-    return decrypted;
+function encrypt(value, key) {
+    let iv = crypto.randomBytes(16);
+    let cipher = crypto.createCipheriv(algorithm, generateAES256KeyBuffer(key), iv);
+    let encrypted = cipher.update(value);
+    let finalBuffer = Buffer.concat([encrypted, cipher.final()]);
+    //Need to retain IV for decryption, so this can be appended to the output with a separator (non-hex for this example)
+    let encryptedHex = iv.toString('hex') + ':' + finalBuffer.toString('hex')
+    return encryptedHex;
+}
+
+function decrypt(encryptedHex, key) {
+    let encryptedArray = encryptedHex.split(':');
+    let iv = Buffer.from(encryptedArray[0], 'hex');
+    let encrypted = Buffer.from(encryptedArray[1], 'hex');
+    let decipher = crypto.createDecipheriv(algorithm, generateAES256KeyBuffer(key), iv);
+    let decrypted = decipher.update(encrypted);
+    let clearText = Buffer.concat([decrypted, decipher.final()]).toString();
+    return clearText
 }
 
 //temporary workaround because of ATOS´ self-signed certificate for Keycloak
@@ -71,6 +86,18 @@ module.exports = async (rule, openid_connect_provider, source, username, passwor
         }
         catch (err) {
             AAA.log(CAT.INVALID_ACCESS_TOKEN, "Access token is invalid", err.name, err.message);
+            if (err.name === "TokenExpiredError") {
+                decoded = jwt.verify(profile.access_token, pem, {
+                    audience: client_id,
+                    issuer: issuer,
+                    ignoreExpiration: true
+                });
+                let issuedAt = new Date(0);
+                issuedAt.setUTCSeconds(decoded.iat);
+                let expireAt = new Date(0);
+                expireAt.setUTCSeconds(decoded.exp);
+                AAA.log(CAT.DEBUG, "IssuedAt ", issuedAt, ", expireAt ", expireAt);
+            }
             return {
                 status: false,
                 error: "Access token is invalid, error = " + err.name + ", " + err.message
@@ -88,13 +115,11 @@ module.exports = async (rule, openid_connect_provider, source, username, passwor
                 const hash = crypto.createHash('sha256');
                 hash.update(token_endpoint + username + password);
                 const redisKey = hash.digest('utf8');
-                AAA.log(CAT.DEBUG, "redisKey = " + redisKey);
 
                 const encryptedToken = await redisClient.get(redisKey);
                 if (encryptedToken) {
-                    AAA.log(CAT.DEBUG, "encryptedToken = " + encryptedToken);
-                    profile.access_token = decrypt(encryptedToken, password);
                     AAA.log(CAT.DEBUG, "Retrieved access token from redis.");
+                    profile.access_token = decrypt(encryptedToken, password);
                 }
 
             }
@@ -147,17 +172,33 @@ module.exports = async (rule, openid_connect_provider, source, username, passwor
         }
         catch (err) {
             AAA.log(CAT.INVALID_ACCESS_TOKEN, "Access token is invalid", err.name, err.message);
+            if (err.name === "TokenExpiredError") {
+                decoded = jwt.verify(profile.access_token, pem, {
+                    audience: client_id,
+                    issuer: issuer,
+                    ignoreExpiration: true
+                });
+                let issuedAt = new Date(0);
+                issuedAt.setUTCSeconds(decoded.iat);
+                let expireAt = new Date(0);
+                expireAt.setUTCSeconds(decoded.exp);
+                AAA.log(CAT.DEBUG, "IssuedAt ", issuedAt, ", expireAt ", expireAt);
+            }
             return {
                 status: false,
                 error: "Access token is invalid, error " + err.name + ", " + err.message
             };
         }
         AAA.log(CAT.DEBUG, "Successfully decoded access token:\n", decoded);
+        let issuedAt = new Date(0);
+        issuedAt.setUTCSeconds(decoded.iat);
+        let expireAt = new Date(0);
+        expireAt.setUTCSeconds(decoded.exp);
+        AAA.log(CAT.DEBUG, "IssuedAt ", issuedAt, ", expireAt ", expireAt);
         if (config.redis_expiration > 0) {
             const hash = crypto.createHash('sha256');
             hash.update(token_endpoint + username + password);
             const redisKey = hash.digest('utf8');
-            AAA.log(CAT.DEBUG, "redisKey = " + redisKey);
             redisClient.set(redisKey, encrypt(profile.access_token, password), 'EX', config.redis_expiration);
         }
 
@@ -165,7 +206,7 @@ module.exports = async (rule, openid_connect_provider, source, username, passwor
         try {
             profile.at_body = JSON.parse(json);
         } catch (error) {
-            AAA.log(CAT.DEBUG, "Error in JSON.parse, error = ",error," json = ",json);
+            AAA.log(CAT.DEBUG, "Error in JSON.parse, error = ", error, " json = ", json);
             return {
                 status: false,
                 error: "Cannot parse json " + error.name + ", " + error.message
