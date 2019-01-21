@@ -8,10 +8,10 @@ const checkUrl = /(https?|tcp|ssl|mqtt):\/\/([\-\:\_\.\w\d]*)/g;
 
 const encode = (data) => config.sub_domain_mode ? bs36.encode(Buffer.from(data)) : Buffer.from(data).toString('base64').replace(/=/g, '');
 const decode = (data) => {
-    const url = config.sub_domain_mode ? bs36.decode(data).toString('utf8') : Buffer.from(data, 'base64').toString('utf8');
-    let {protocol, host, port} = url.parse(url);
+    const queryString = config.sub_domain_mode ? bs36.decode(data).toString('ascii') : Buffer.from(data, 'base64').toString('ascii');
+    let {protocol, host, port} = url.parse(queryString);
     port = port ? port : (protocol === "https:" ? 443 : 80);
-    return (protocol && host && port) ? url : false;
+    return (protocol && host && port) ? queryString : false;
 };
 
 const transformURI = (data, req, res) =>

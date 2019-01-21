@@ -22,7 +22,7 @@ let config = {
         no_timestamp: false
     },
     no_auth: false,
-    auth_service: "http://localhost:5053/auth-service",
+    auth_service: "http://localhost:5053/auth/bgw",
     openidConnectProviderName: undefined
 };
 require('../bgw-aaa-client').init("MQTT_PROXY", config);
