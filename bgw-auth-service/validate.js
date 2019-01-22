@@ -109,6 +109,7 @@ module.exports = async (rule, openid_connect_provider, source, username, passwor
 
     else { // code before introducing access token functionality
 
+        let retrievedFromRedis = false;
         if (config.redis_expiration > 0) {
 
             try {
@@ -121,6 +122,7 @@ module.exports = async (rule, openid_connect_provider, source, username, passwor
                 if (encryptedToken) {
                     AAA.log(CAT.DEBUG, "Retrieved access token with key ",redisKey," from redis, ttl is ",ttl);
                     profile.access_token = decrypt(encryptedToken, password);
+                    retrievedFromRedis = true;
                 }
 
             }
@@ -129,7 +131,7 @@ module.exports = async (rule, openid_connect_provider, source, username, passwor
             }
         }
 
-        if (!profile.access_token) {
+        if (!retrievedFromRedis) {
             const options = {
                 method: "POST",
                 headers: {'content-type': 'application/x-www-form-urlencoded'},
@@ -196,7 +198,7 @@ module.exports = async (rule, openid_connect_provider, source, username, passwor
         let expireAt = new Date(0);
         expireAt.setUTCSeconds(decoded.exp);
         AAA.log(CAT.DEBUG, "IssuedAt ", issuedAt, ", expireAt ", expireAt);
-        if (config.redis_expiration > 0) {
+        if (!retrievedFromRedis && config.redis_expiration > 0) {
             const hash = crypto.createHash('sha256');
             hash.update(token_endpoint + username + password);
             const redisKey = hash.digest('hex');
