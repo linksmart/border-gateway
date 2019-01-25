@@ -27,7 +27,7 @@ const mqttAuth = async (port, credentials, method, path = '') => {
         response = await axios({
             method: 'post',
             headers: {authorization: authorization || ""},
-            url: config.auth_service,
+            url: config.auth_service+"/bgw/authorize",
             data: {
                 rule: payload,
                 openidConnectProviderName: config.openidConnectProviderName || 'default'
@@ -39,7 +39,7 @@ const mqttAuth = async (port, credentials, method, path = '') => {
         return false
     }
 
-    return response.data.isAllowed;
+    return response.data.isAuthorized;
 };
 
 module.exports = {

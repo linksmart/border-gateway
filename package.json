@@ -21,6 +21,7 @@
     "bgw-http-proxy": "file:./bgw-http-proxy",
     "bgw-mqtt-proxy": "file:./bgw-mqtt-proxy",
     "bgw-websocket-proxy": "file:./bgw-websocket-proxy",
+    "bgw-rabbitmq-auth-backend-http": "file:./bgw-rabbitmq-auth-backend-http",
     "dotenv": "latest"
   },
   "devDependencies": {

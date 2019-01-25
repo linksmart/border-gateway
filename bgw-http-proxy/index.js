@@ -27,7 +27,7 @@ app.use(async (req, res) => {
     const anonymousRequest = (!req.headers.authorization || req.headers.authorization === "");
 
     const response = await httpAuth(req);
-    if (response.isAllowed) {
+    if (response.isAuthorized) {
 
         const is_https = req.bgw.forward_address.includes('https://');
         const {http_req, https_req} = (req.bgw.alias && req.bgw.alias.change_origin_on) || config.change_origin_on;

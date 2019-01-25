@@ -1,7 +1,7 @@
 const config = require("./config");
 const fetch = require('node-fetch');
 const qs = require("querystring");
-const matchRules = require('./rules');
+//const matchRules = require('./rules');
 const jwt = require('jsonwebtoken');
 const getPem = require('rsa-pem-from-mod-exp');
 const https = require("https");
@@ -15,7 +15,7 @@ const algorithm = 'aes256';
 if (config.redis_expiration > 0) {
 
     redisClient = redis.createClient({port: config.redis_port, host: config.redis_host});
-    asyncRedisClient = asyncRedis.decorate(redisClient);
+    asyncRedis.decorate(redisClient);
 }
 
 function generateAES256KeyBuffer(key) {
@@ -35,8 +35,7 @@ function encrypt(value, key) {
     let encrypted = cipher.update(value);
     let finalBuffer = Buffer.concat([encrypted, cipher.final()]);
     //Need to retain IV for decryption, so this can be appended to the output with a separator (non-hex for this example)
-    let encryptedHex = iv.toString('hex') + ':' + finalBuffer.toString('hex')
-    return encryptedHex;
+    return iv.toString('hex') + ':' + finalBuffer.toString('hex');
 }
 
 function decrypt(encryptedHex, key) {
@@ -45,8 +44,7 @@ function decrypt(encryptedHex, key) {
     let encrypted = Buffer.from(encryptedArray[1], 'hex');
     let decipher = crypto.createDecipheriv(algorithm, generateAES256KeyBuffer(key), iv);
     let decrypted = decipher.update(encrypted);
-    let clearText = Buffer.concat([decrypted, decipher.final()]).toString();
-    return clearText
+    return Buffer.concat([decrypted, decipher.final()]).toString();
 }
 
 //temporary workaround because of ATOS´ self-signed certificate for Keycloak
@@ -59,7 +57,8 @@ let parse_credentials = {
     access_token: (access_token) => ({access_token}),
 };
 
-module.exports = async (rule, openid_connect_provider, source, username, password, auth_type) => {
+//module.exports =
+async function getProfile (openid_connect_provider, source, username, password, auth_type) {
 
     const anonymous_user = openid_connect_provider.anonymous_user || 'anonymous';
     const client_id = openid_connect_provider.client_id;
@@ -151,7 +150,7 @@ module.exports = async (rule, openid_connect_provider, source, username, passwor
                 profile = await result.json();
                 //isDebugOn && debug('open id server result ', JSON.stringify(profile));
             } catch (e) {
-                AAA.log(CAT.WRONG_AUTH_SERVER_RES, "DENIED This could be due to auth server being offline or failing", rule, source);
+                AAA.log(CAT.WRONG_AUTH_SERVER_RES, "DENIED This could be due to auth server being offline or failing", source);
                 return {
                     status: false,
                     error: `Error in contacting the openid provider, ensure the openid provider is running and your bgw aaa_client host is correct`
@@ -161,7 +160,7 @@ module.exports = async (rule, openid_connect_provider, source, username, passwor
             if (!profile || !profile.access_token) {
                 let err = 'Unauthorized';
                 const res = {status: false, error: err};
-                AAA.log(CAT.INVALID_USER_CREDENTIALS, err, rule, source);
+                AAA.log(CAT.INVALID_USER_CREDENTIALS, err, source);
                 return res;
             }
         }
@@ -244,6 +243,14 @@ module.exports = async (rule, openid_connect_provider, source, username, passwor
 
     profile.user_id = profile.at_body.preferred_username;
     profile.rules = rules;
-    return matchRules(profile, rule, source);
-};
+
+    const res = {
+        status: true,
+        profile: profile
+    };
+
+    return res;
+}
+
+module.exports.getProfile = getProfile;
 

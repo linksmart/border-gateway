@@ -16,7 +16,7 @@ let config = {
         no_timestamp: false
     },
     no_auth: false,
-    auth_service: "http://localhost:5053/auth/bgw",
+    auth_service: "http://localhost:5053/auth",
     openidConnectProviderName: undefined
 };
 require('../bgw-aaa-client').init("HTTP_PROXY", config);

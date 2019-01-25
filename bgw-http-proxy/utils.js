@@ -15,7 +15,7 @@ const httpAuth = async (req) => {
     if (config.no_auth || (req.bgw.alias && req.bgw.alias.no_auth)) {
 
         return {
-            isAllowed: true
+            isAuthorized: true
         }
     }
 
@@ -37,7 +37,7 @@ const httpAuth = async (req) => {
         response = await axios({
             method: 'post',
             headers: {authorization: req.headers.authorization || ""},
-            url: config.auth_service,
+            url: config.auth_service+"/bgw/authorize",
             data: {
                 rule: payload,
                 openidConnectProviderName: (req.bgw.alias && req.bgw.alias.openidConnectProviderName) || config.openidConnectProviderName || 'default'
@@ -47,7 +47,7 @@ const httpAuth = async (req) => {
     catch (error) {
         AAA.log(CAT.DEBUG, 'auth-service returned an error message:', error.name, error.message);
         return {
-            isAllowed: false,
+            isAuthorized: false,
             error: "Error in auth-service, " + error.name + ": " + error.message
         };
     }
