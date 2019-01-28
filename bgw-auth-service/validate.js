@@ -49,7 +49,6 @@ function decrypt(encryptedHex, key) {
 
 //temporary workaround because of ATOS´ self-signed certificate for Keycloak
 const agent = new https.Agent({
-    rejectUnauthorized: false
 });
 
 let parse_credentials = {
