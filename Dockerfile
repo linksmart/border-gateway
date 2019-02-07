@@ -1,4 +1,4 @@
-FROM docker.linksmart.eu/bgw:npm
+FROM node:latest
 
 COPY ./bgw-aaa-client /bgw/bgw-aaa-client
 COPY ./bgw-auth-service /bgw/bgw-auth-service
