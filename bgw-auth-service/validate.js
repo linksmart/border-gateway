@@ -87,7 +87,7 @@ module.exports = async (rule, openid_connect_provider, source, username, passwor
         catch (err) {
             AAA.log(CAT.INVALID_ACCESS_TOKEN, "Access token is invalid", err.name, err.message);
             if (err.name === "TokenExpiredError") {
-                decoded = jwt.verify(profile.access_token, pem, {
+                decoded = jwt.verify(req_credentials.access_token, pem, {
                     audience: client_id,
                     issuer: issuer,
                     ignoreExpiration: true
