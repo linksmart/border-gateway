@@ -1,11 +1,11 @@
-const fs = require('fs');
+const config = require('./config');
 const tls = require('tls');
 const net = require('net');
 const httpProxy = require('http-proxy');
-const config = require('./config');
 const {AAA, CAT, debug} = require('../bgw-aaa-client');
+const fs = require('fs');
 
-debug('external interface configs', JSON.stringify(config, null, 4));
+// debug('external interface configs', JSON.stringify(config, null, 4));
 
 const options = {
     key: fs.readFileSync(config.tls_key),
@@ -17,7 +17,7 @@ const options = {
 };
 
 config.servers.forEach((srv) => {
-    AAA.log(CAT.PROCESS_START, `Creating server ${srv.name} for external interface...`);
+    AAA.log(CAT.PROCESS_START,'external-interface', `Creating server ${srv.name} for external interface...`);
 
     let external_interface;
 
@@ -32,7 +32,7 @@ config.servers.forEach((srv) => {
 
         external_interface.on('proxyReq', function (proxyReq, req, res, options) {
 
-            AAA.log(CAT.DEBUG, 'req.headers.host:', req.headers.host, ' req.headers[x-forwarded-host]:', req.headers['x-forwarded-host']);
+            AAA.log(CAT.DEBUG,'external-interface', 'req.headers.host:', req.headers.host, ' req.headers[x-forwarded-host]:', req.headers['x-forwarded-host']);
             proxyReq.setHeader('x-forwarded-proto', req['x-forwarded-proto'] || 'https');
             proxyReq.setHeader('x-forwarded-host', req['x-forwarded-host'] || (req.headers.host.split(":"))[0]+":"+srv.bind_port);
         });
@@ -54,7 +54,7 @@ config.servers.forEach((srv) => {
                 srcClient.end(config.servers.reduce((a, c) => a + ',' + c.name, ''));
             } else if (srcClient.remoteAddress && srcClient.remotePort) {
                 dstClient = net.connect({host: dest_address, port: dest_port}, () => {
-                    AAA.log(CAT.CON_START, `${srcClient.remoteAddress}:${srcClient.remotePort} > ${srcClient.localPort} > [PORT:${dstClient.localPort}] > ${name}`);
+                    AAA.log(CAT.CON_START,'external-interface', `${srcClient.remoteAddress}:${srcClient.remotePort} > ${srcClient.localPort} > [PORT:${dstClient.localPort}] > ${name}`);
                     dstClient.on('error', () => {
                         dstClient.destroy();
                         srcClient && srcClient.destroy();
@@ -67,15 +67,16 @@ config.servers.forEach((srv) => {
             }
             srcClient.on('end', () => {
                 srcClient.remoteAddress && srcClient.remotePort &&
-                AAA.log(CAT.CON_END, `${srcClient.remoteAddress}:${srcClient.remotePort} > ${srv.bind_port}  > ${name}`);
+                AAA.log(CAT.CON_END,'external-interface', `${srcClient.remoteAddress}:${srcClient.remotePort} > ${srv.bind_port}  > ${name}`);
             });
         });
         external_interface.on('tlsClientError', (e) => debug('tls error,this could be a none tls connection, make sure to establish a proper tls connection, details...', e.stack || e));
 
     }
     srv.bind_addresses.forEach((addr) => {
+        //AAA.log(CAT.PROCESS_START,'external-interface', "Server",srv.name,"bind address:",addr);
         external_interface.listen(srv.bind_port, addr, () =>
-            AAA.log(CAT.PROCESS_START, `PID ${process.pid} Forwarding ${srv.name} ${addr}:${srv.bind_port} ===> ${srv.dest_address}:${srv.dest_port}`));
+            AAA.log(CAT.PROCESS_START,'external-interface', `PID ${process.pid} Forwarding ${srv.name} ${addr}:${srv.bind_port} ===> ${srv.dest_address}:${srv.dest_port}`));
     });
 
 })

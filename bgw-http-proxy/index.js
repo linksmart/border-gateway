@@ -1,20 +1,42 @@
+const config = require('./config');
 const cors = require('cors');
 const app = require('express')();
 const https = require('https');
 const http = require('http');
-const tranform = require('transformer-proxy');
+const transform = require('transformer-proxy');
 const agentHTTP = new http.Agent({});
 const agentHTTPS = new https.Agent({});
 const proxy = require('http-proxy/lib/http-proxy').createProxyServer({});
-const config = require('./config');
 const {httpAuth, transformURI, bgwIfy, REQ_TYPES} = require('./utils');
 const {AAA, CAT, debug, isDebugOn} = require('../bgw-aaa-client');
+
+const redis = require("redis");
+const asyncRedis = require("async-redis");
+
+let redisClient;
+
+if (config.redis_host) {
+    redisClient = redis.createClient({port: config.redis_port, host: config.redis_host});
+    asyncRedis.decorate(redisClient);
+}
+
+if (config.redis_host) {
+    for (let domain in config.domains) {
+        if (config.domains.hasOwnProperty(domain)) {
+            for (let location in config.domains[domain]) {
+                if (config.domains[domain].hasOwnProperty(location)) {
+                    redisClient.set("location " + domain + "/" + location, JSON.stringify(config.domains[domain][location]));
+                }
+            }
+        }
+    }
+}
 
 app.use(cors());
 
 app.use(async (req, res) => {
 
-    bgwIfy(req);
+    await bgwIfy(req);
     if (req.bgw.type === REQ_TYPES.UNKNOWN_REQUEST) {
         res.status(404).json({error: 'Unknown location'});
         return;
@@ -43,7 +65,7 @@ app.use(async (req, res) => {
         const proxyied_request = () => proxy.web(req, res, proxyied_options);
 
         req.bgw.type === REQ_TYPES.FORWARD_W_T ?
-            tranform(transformURI)(req, res, () => proxyied_request()) : proxyied_request();
+            transform(transformURI)(req, res, () => proxyied_request()) : proxyied_request();
 
     } else {
         if (response.error === 'Forbidden' && !anonymousRequest) {
@@ -56,7 +78,7 @@ app.use(async (req, res) => {
     }
 });
 proxy.on('error', function (err, req, res) {
-    AAA.log(CAT.DEBUG, 'Error in proxy: ', err, err.stack, err.message);
+    AAA.log(CAT.DEBUG,'http-proxy', 'Error in proxy: ', err, err.stack, err.message);
     if (req.bgw && req.bgw.forward_address) {
         res && res.status(500).json({error: `Border Gateway could not forward your request to ${req.bgw.forward_address}`});
     } else {
@@ -66,6 +88,6 @@ proxy.on('error', function (err, req, res) {
 });
 config.bind_addresses.forEach((addr) => {
     app.listen(config.bind_port, addr, () =>
-        AAA.log(CAT.PROCESS_START, `PID ${process.pid} listening on ${addr}:${config.bind_port}`));
+        AAA.log(CAT.PROCESS_START,'http-proxy', `PID ${process.pid} listening on ${addr}:${config.bind_port}`));
 });
 

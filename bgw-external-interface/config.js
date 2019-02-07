@@ -34,6 +34,8 @@ let config = {
         no_timestamp: false
     }
 };
-
-require('../bgw-aaa-client').init("EI", config);
+const fs = require('fs');
+const configFromFile = require('../config/config.json');
+Object.assign(config,configFromFile["external-interface"]);
+//require('../bgw-aaa-client').init("EI", config);
 module.exports = config;

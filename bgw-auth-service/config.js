@@ -7,7 +7,7 @@ let config = {
     },
     redis_expiration: 0,
     redis_port: 6379,
-    redis_host: "",
+    redis_host: undefined,
     openid_connect_providers: {
         default: {
             issuer: "",
@@ -21,5 +21,10 @@ let config = {
         }
     }
 };
-require('../bgw-aaa-client').init("AUTH_SERVICE", config);
+
+const fs = require('fs');
+const configFromFile = require('../config/config.json');
+Object.assign(config,configFromFile["auth-service"]);
+
+// require('../bgw-aaa-client').init("AUTH_SERVICE", config);
 module.exports = config;

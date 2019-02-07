@@ -25,5 +25,8 @@ let config = {
     auth_service: "http://localhost:5053/auth",
     openidConnectProviderName: undefined
 };
-require('../bgw-aaa-client').init("MQTT_PROXY", config);
+const fs = require('fs');
+const configFromFile = require('../config/config.json');
+Object.assign(config,configFromFile["mqtt-proxy"]);
+//require('../bgw-aaa-client').init("MQTT_PROXY", config);
 module.exports = config;

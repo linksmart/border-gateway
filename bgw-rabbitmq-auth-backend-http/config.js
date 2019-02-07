@@ -11,8 +11,8 @@ let config = {
         tls_client_cert: false
     },
     redis_expiration: 180,
-    redis_port: 6378,
-    redis_host: "192.168.98.100",
+    redis_port: 6379,
+    redis_host: undefined,
     aaa_client: {
         name: "rabbitmq-auth-backend-http",
         log_level: "",
@@ -23,5 +23,9 @@ let config = {
     openidConnectProviderName: undefined
 
 };
-require('../bgw-aaa-client').init("RABBITMQ-AUTH-BACKEND-HTTP", config);
+
+const fs = require('fs');
+const configFromFile = require('../config/config.json');
+Object.assign(config,configFromFile["rabbitmq-auth-backend-http"]);
+//require('../bgw-aaa-client').init("RABBITMQ_AUTH_BACKEND_HTTP", config);
 module.exports = config;

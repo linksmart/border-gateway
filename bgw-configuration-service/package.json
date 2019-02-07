@@ -1,5 +1,5 @@
 {
-  "name": "bgw-http-proxy",
+  "name": "bgw-configuration-service",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
@@ -13,15 +13,9 @@
     }
   },
   "dependencies": {
-    "base-x": "latest",
-    "cors": "latest",
-    "domain-match": "latest",
+    "body-parser": "latest",
     "express": "latest",
-    "http-proxy": "latest",
-    "transformer-proxy": "latest",
-    "axios": "latest",
     "redis": "latest",
-    "async-redis": "latest",
-    "is-var-name": "latest"
+    "async-redis": "latest"
   }
 }

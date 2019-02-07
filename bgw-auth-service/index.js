@@ -65,7 +65,7 @@ app.post('/auth/bgw/authenticate', async (req, res) => {
 });
 
 app.post('/auth/bgw/authorize', async (req, res) => {
-        AAA.log(CAT.DEBUG, 'body', req.body);
+        AAA.log(CAT.DEBUG,'auth-service', 'body', req.body);
         if (req.body && req.body.rule && (typeof req.body.rule === 'string')) {
 
             let openidConnectProviderName;
@@ -136,6 +136,6 @@ app.post('/auth/bgw/authorize', async (req, res) => {
 );
 
 app.listen(config.bind_port, () =>
-    AAA.log(CAT.PROCESS_START, `auth-service listening on port ${config.bind_port}`));
+    AAA.log(CAT.PROCESS_START,'auth-service', `auth-service listening on port ${config.bind_port}`));
 
 

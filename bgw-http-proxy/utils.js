@@ -1,13 +1,23 @@
 const config = require('./config');
-const {transformURI ,decode } = require("./translate_res");
+const {transformURI, decode} = require("./translate_res");
 const axios = require("axios");
 const {AAA, CAT, debug, isDebugOn} = require('../bgw-aaa-client');
+const redis = require("redis");
+const url = require("url");
+const asyncRedis = require("async-redis");
+const isVarName = require("is-var-name");
+let redisClient;
+
+if (config.redis_host) {
+    redisClient = redis.createClient({port: config.redis_port, host: config.redis_host});
+    asyncRedis.decorate(redisClient);
+}
 
 const TYPES = {
-  FORWARD: 'FORWARD',
-  FORWARD_W_T: 'FORWARD_W_T',
-  UNKNOWN_REQUEST: 'UNKNOWN_REQUEST',
-  INVALID_EXTERNAL_DOMAIN:"INVALID_EXTERNAL_DOMAIN"
+    FORWARD: 'FORWARD',
+    FORWARD_W_T: 'FORWARD_W_T',
+    UNKNOWN_REQUEST: 'UNKNOWN_REQUEST',
+    INVALID_EXTERNAL_DOMAIN: "INVALID_EXTERNAL_DOMAIN"
 };
 
 const httpAuth = async (req) => {
@@ -19,7 +29,7 @@ const httpAuth = async (req) => {
         }
     }
 
-    AAA.log(CAT.DEBUG, 'req.headers.host:', req.headers.host, ' req.headers[x-forwarded-host]:', req.headers['x-forwarded-host']);
+    AAA.log(CAT.DEBUG,'http-proxy', 'req.headers.host:', req.headers.host, ' req.headers[x-forwarded-host]:', req.headers['x-forwarded-host']);
     let httpHost = req.headers['x-forwarded-host'] || req.headers.host;
     const splitHost = httpHost.split(":");
     let host = splitHost[0];
@@ -37,7 +47,7 @@ const httpAuth = async (req) => {
         response = await axios({
             method: 'post',
             headers: {authorization: req.headers.authorization || ""},
-            url: config.auth_service+"/bgw/authorize",
+            url: config.auth_service + "/bgw/authorize",
             data: {
                 rule: payload,
                 openidConnectProviderName: (req.bgw.alias && req.bgw.alias.openidConnectProviderName) || config.openidConnectProviderName || 'default'
@@ -45,7 +55,7 @@ const httpAuth = async (req) => {
         });
     }
     catch (error) {
-        AAA.log(CAT.DEBUG, 'auth-service returned an error message:', error.name, error.message);
+        AAA.log(CAT.DEBUG,'http-proxy', 'auth-service returned an error message:', error.name, error.message);
         return {
             isAuthorized: false,
             error: "Error in auth-service, " + error.name + ": " + error.message
@@ -58,52 +68,128 @@ const httpAuth = async (req) => {
 
 };
 
-const bgwIfy = (req) => {
-  req.bgw = {};
+const bgwIfy = async (req) => {
+        req.bgw = {};
 
-  //const public_domain = config.sub_domain_mode ?  host.includes(config.external_domain) : host === config.external_domain;
+        //const public_domain = config.sub_domain_mode ?  host.includes(config.external_domain) : host === config.external_domain;
 
-    AAA.log(CAT.DEBUG, 'req.headers.host:', req.headers.host, ' req.headers[x-forwarded-host]:', req.headers['x-forwarded-host']);
-    let httpHost = req.headers['x-forwarded-host'] || req.headers.host;
-    const splitHost = httpHost.split(":");
-    let host = splitHost[0];
-    let public_domain = false;
+        AAA.log(CAT.DEBUG,'http-proxy', 'req.headers.host:', req.headers.host, ' req.headers[x-forwarded-host]:', req.headers['x-forwarded-host']);
+        let httpHost = req.headers['x-forwarded-host'] || req.headers.host;
+        const splitHost = httpHost.split(":");
+        let host = splitHost[0];
+        let locationsFromRedis = [];
+        let destinationsFromRedis = [];
+        let locations = {};
 
-    if(config.domains[host])
-    {
-        public_domain = true;
+        if (config.domains[host]) {
+            Object.assign(locations, config.domains[host]);
+            if (config.redis_host) {
+                let keysFromRedis = await redisClient.keys("location " + host + "/" + "*");
+                AAA.log(CAT.DEBUG,'http-proxy', "keysFromRedis", keysFromRedis);
+                for (let i = 0; i < keysFromRedis.length; i++) {
+
+                    //expected format: location <host>/<location>
+                    let splitKey = (keysFromRedis[i].split(" "));
+                    let location = splitKey[1];
+                    if (location) {
+                        location = location.split("/")[1];
+                    }
+
+                    if (splitKey[0] === "location" && location && isVarName(location)) {
+
+                        locationsFromRedis[i] = location;
+                    }
+                    else {
+                        AAA.log(CAT.DEBUG,'http-proxy', "Key retrieved from redis does not contain a valid location:", location);
+                        continue
+                    }
+
+                    AAA.log(CAT.DEBUG,'http-proxy', "locationsFromRedis[" + i + "]", locationsFromRedis[i]);
+
+                    let value = await redisClient.get(keysFromRedis[i]);
+                    AAA.log(CAT.DEBUG,'http-proxy', "value", value);
+                    let parsed;
+                    try {
+
+                        parsed = JSON.parse(value);
+                    }
+
+                    catch (err) {
+                        AAA.log(CAT.DEBUG,'http-proxy', "JSON parse error", err);
+                        continue;
+                    }
+
+                    if (parsed.local_address) {
+
+                        let urlParseResult = url.parse(parsed.local_address);
+                        urlParseResult.port = urlParseResult.port ? urlParseResult.port : (urlParseResult.protocol === "https:" ? 443 : 80);
+
+                        if (!(urlParseResult.protocol && urlParseResult.host && urlParseResult.port)) {
+                            AAA.log(CAT.DEBUG,'http-proxy', "Value retrieved from redis does not contain a valid destination:", parsed);
+                            continue;
+                        }
+
+                        destinationsFromRedis[i] = parsed;
+                        AAA.log(CAT.DEBUG,'http-proxy', "destinationsFromRedis[" + i + "]", destinationsFromRedis[i]);
+
+                    }
+
+                }
+
+            }
+
+        }
+        else {
+            req.bgw = {type: TYPES.INVALID_EXTERNAL_DOMAIN};
+            return;
+
+        }
+
+        for (let i = 0; i < locationsFromRedis.length; i++) {
+            if (locationsFromRedis[i] && destinationsFromRedis[i]) {
+                //   if (locations[locationsFromRedis[i]]) {
+                //       AAA.log(CAT.DEBUG,'http-proxy', "Locations defined in config.json cannot be overridden from Redis");
+                //   }
+                //   else {
+                locations[locationsFromRedis[i]] = destinationsFromRedis[i];
+                AAA.log(CAT.DEBUG,'http-proxy', "Added location", locationsFromRedis[i], "with destination", destinationsFromRedis[i], "to locations");
+                //   }
+            }
+        }
+
+        for (let key in locations) {
+            if (locations.hasOwnProperty(key)) {
+                console.log("location:" + key + " -> " + JSON.stringify(locations[key]));
+            }
+        }
+
+        // check if subdomain mode e.g. https://rc.gateway.com or https://gateway.com/rc
+        //let local_dest =  config.sub_domain_mode ? host.split(config.external_domain).filter((e)=>e!=="")[0]:req.url.split(/\/|\?|\#/)[1];
+        let urlArray = req.url.split(/\/|\?|\#/);
+        let local_dest = urlArray[1];
+        local_dest = local_dest && local_dest.replace(".", "");
+        //req.url =  config.sub_domain_mode ? req.url : req.url.replace(`/${local_dest}`,"");
+        req.url = req.url.replace(`/${local_dest}`, "");
+
+        if (locations[local_dest]) {
+            req.bgw = {
+                forward_address: locations[local_dest].local_address,
+                alias: locations[local_dest]
+            };
+
+            const translate = req.bgw.alias.translate_local_addresses;
+            req.bgw.type = (translate) ? TYPES.FORWARD_W_T : TYPES.FORWARD;
+            return
+        }
+
+        const decoded_local_dest = local_dest && decode(local_dest);
+        if (local_dest && decoded_local_dest) {
+            req.bgw = {type: TYPES.FORWARD, forward_address: decoded_local_dest};
+            return
+        }
+        req.bgw = {type: TYPES.UNKNOWN_REQUEST}
     }
-
-    if(!public_domain){
-    req.bgw = {type:TYPES.INVALID_EXTERNAL_DOMAIN};
-    return
-  }
-  // check if subdomain mode e.g. https://rc.gateway.com or https://gateway.com/rc
-  //let local_dest =  config.sub_domain_mode ? host.split(config.external_domain).filter((e)=>e!=="")[0]:req.url.split(/\/|\?|\#/)[1];
-   let urlArray = req.url.split(/\/|\?|\#/);
-    let local_dest = urlArray[1];
-    local_dest = local_dest && local_dest.replace(".","");
-  //req.url =  config.sub_domain_mode ? req.url : req.url.replace(`/${local_dest}`,"");
-    req.url =  req.url.replace(`/${local_dest}`,"");
-
-    if(config.domains[host][local_dest]) {
-    req.bgw = {
-      forward_address: config.domains[host][local_dest].local_address,
-      alias:config.domains[host][local_dest]
-    };
-
-    const translate = req.bgw.alias.translate_local_addresses;
-    req.bgw.type = (translate) ? TYPES.FORWARD_W_T:TYPES.FORWARD;
-    return
-  }
-
-  const decoded_local_dest = local_dest && decode(local_dest);
-  if(local_dest && decoded_local_dest ){
-    req.bgw = {type:TYPES.FORWARD, forward_address:decoded_local_dest};
-    return
-  }
-  req.bgw = {type:TYPES.UNKNOWN_REQUEST}
-};
+;
 
 module.exports.httpAuth = httpAuth;
 module.exports.bgwIfy = bgwIfy;

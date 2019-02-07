@@ -35,7 +35,7 @@ const mqttAuth = async (port, credentials, method, path = '') => {
         });
     }
     catch (error) {
-        AAA.log(CAT.DEBUG, 'auth-service returned an error message:', error.name, error.message);
+        AAA.log(CAT.DEBUG,'mqtt-proxy', 'auth-service returned an error message:', error.name, error.message);
         return false
     }
 

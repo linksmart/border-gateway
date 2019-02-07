@@ -7,10 +7,11 @@ const bodyParser = require('body-parser');
 const redis = require("redis");
 const asyncRedis = require("async-redis");
 let redisClient;
-let asyncRedisClient;
 
-redisClient = redis.createClient({port: config.redis_port, host: config.redis_host});
-asyncRedis.decorate(redisClient);
+if (config.redis_host) {
+    redisClient = redis.createClient({port: config.redis_port, host: config.redis_host});
+    asyncRedis.decorate(redisClient);
+}
 
 async function retrieveRules(username) {
     let rules;
@@ -21,12 +22,12 @@ async function retrieveRules(username) {
 
         rules = await redisClient.get(redisKey);
         let rulesArray = JSON.parse(rules);
-        AAA.log(CAT.DEBUG, "typeof rules", typeof rules);
+        AAA.log(CAT.DEBUG,'rabbitmq-auth-backend-http', "typeof rules", typeof rules);
         const ttl = await redisClient.ttl(redisKey);
-        AAA.log(CAT.DEBUG, "Retrieved rules ", rulesArray, " for username ", username, " from redis, ttl is ", ttl);
+        AAA.log(CAT.DEBUG,'rabbitmq-auth-backend-http', "Retrieved rules ", rulesArray, " for username ", username, " from redis, ttl is ", ttl);
     }
     catch (err) {
-        AAA.log(CAT.DEBUG, "Could not retrieve rules from Redis: ", err);
+        AAA.log(CAT.DEBUG,'rabbitmq-auth-backend-http', "Could not retrieve rules from Redis: ", err);
     }
     return rules;
 }
@@ -51,7 +52,7 @@ async function requestToAuthService(username, password) {
         });
     }
     catch (error) {
-        AAA.log(CAT.DEBUG, 'auth-service returned an error message:', error.name, error.message);
+        AAA.log(CAT.DEBUG,'rabbitmq-auth-backend-http', 'auth-service returned an error message:', error.name, error.message);
         return false;
     }
 
@@ -61,7 +62,7 @@ async function requestToAuthService(username, password) {
         const redisKey = hash.digest('hex');
         redisClient.set(redisKey, JSON.stringify(response.data.rules), 'EX', config.redis_expiration);
         const ttl = await redisClient.ttl(redisKey);
-        AAA.log(CAT.DEBUG, "Cached rules ", JSON.stringify(response.data.rules), " with key ", redisKey, " in redis, ttl is ", ttl);
+        AAA.log(CAT.DEBUG,'rabbitmq-auth-backend-http', "Cached rules ", JSON.stringify(response.data.rules), " with key ", redisKey, " in redis, ttl is ", ttl);
         return true;
     }
     else {
@@ -71,7 +72,7 @@ async function requestToAuthService(username, password) {
 
 app.all('/auth/user', async (req, res) => {
 
-        AAA.log(CAT.DEBUG, "Request to endpoint user");
+        AAA.log(CAT.DEBUG,'rabbitmq-auth-backend-http', "Request to endpoint user");
         //MQTT connection (maybe AMQP?)
         if (req.body.vhost === "/") {
 
@@ -98,7 +99,7 @@ app.all('/auth/user', async (req, res) => {
 
 app.all('/auth/vhost', async (req, res) => {
 
-        AAA.log(CAT.DEBUG, "Request to endpoint vhost");
+        AAA.log(CAT.DEBUG,'rabbitmq-auth-backend-http', "Request to endpoint vhost");
         const rules = await retrieveRules(req.body.username);
         res.status(200).send("allow");
         return;
@@ -107,7 +108,7 @@ app.all('/auth/vhost', async (req, res) => {
 
 app.all('/auth/resource', async (req, res) => {
 
-        AAA.log(CAT.DEBUG, "Request to endpoint resource");
+        AAA.log(CAT.DEBUG,'rabbitmq-auth-backend-http', "Request to endpoint resource");
         const rules = await retrieveRules(req.body.username);
         res.status(200).send("allow");
         return;
@@ -116,7 +117,7 @@ app.all('/auth/resource', async (req, res) => {
 
 app.all('/auth/topic', async (req, res) => {
 
-        AAA.log(CAT.DEBUG, "Request to endpoint topic");
+        AAA.log(CAT.DEBUG,'rabbitmq-auth-backend-http', "Request to endpoint topic");
         const rules = await retrieveRules(req.body.username);
         res.status(200).send("allow");
         return;
@@ -125,6 +126,6 @@ app.all('/auth/topic', async (req, res) => {
 
 
 app.listen(config.bind_port, () =>
-    AAA.log(CAT.PROCESS_START, `auth-service listening on port ${config.bind_port}`));
+    AAA.log(CAT.PROCESS_START,'rabbitmq-auth-backend-http', `auth-service listening on port ${config.bind_port}`));
 
 

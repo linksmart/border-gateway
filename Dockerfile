@@ -1,14 +1,14 @@
-FROM node:latest
+FROM docker.linksmart.eu/bgw:npm
 
 COPY ./bgw-aaa-client /bgw/bgw-aaa-client
 COPY ./bgw-auth-service /bgw/bgw-auth-service
 COPY ./bgw-external-interface /bgw/bgw-external-interface
 COPY ./bgw-http-proxy /bgw/bgw-http-proxy
 COPY ./bgw-mqtt-proxy /bgw/bgw-mqtt-proxy
+COPY ./bgw-configuration-service /bgw/bgw-configuration-service
 COPY ./bgw-rabbitmq-auth-backend-http /bgw/bgw-rabbitmq-auth-backend-http
 COPY ./bgw-websocket-proxy /bgw/bgw-websocket-proxy
 COPY ./bgw.sh /bgw
-COPY ./json2env.js /bgw
 COPY ./package.json /bgw
 
 WORKDIR /bgw

@@ -17,7 +17,7 @@ const decode = (data) => {
 const transformURI = (data, req, res) =>
     (data + "").replace(checkUrl, (e, i, j) => {
 
-        AAA.log(CAT.DEBUG, 'req.headers.host:', req.headers.host, ' req.headers[x-forwarded-host]:', req.headers['x-forwarded-host']);
+        AAA.log(CAT.DEBUG,'http-proxy', 'req.headers.host:', req.headers.host, ' req.headers[x-forwarded-host]:', req.headers['x-forwarded-host']);
 
         if (req.bgw.alias.translate_local_addresses && req.bgw.alias.translate_local_addresses.url_translation_map && req.bgw.alias.translate_local_addresses.url_translation_map[e]) {
             return req.bgw.alias.translate_local_addresses.url_translation_map[e];

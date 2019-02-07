@@ -1,27 +1,19 @@
 let config = {
-    bind_addresses: [
-        "127.0.0.1"
-    ],
-    bind_port: 5050,
-    no_tls: false,
-     change_origin_on: {
-        https_req: false,
-        http_req: false
-    },
-    domains: {},
-    redis_host: undefined,
+    bind_port: 5056,
     redis_port: 6379,
+    redis_host: undefined,
     aaa_client: {
-        name: "http-proxy",
+        name: "configuration-service",
         log_level: "",
         no_timestamp: false
     },
     no_auth: false,
     auth_service: "http://localhost:5053/auth",
     openidConnectProviderName: undefined
-};
 
+};
 const fs = require('fs');
 const configFromFile = require('../config/config.json');
-Object.assign(config,configFromFile["http-proxy"]);
+Object.assign(config,configFromFile["configuration-service"]);
+//require('../bgw-aaa-client').init("CONFIGURATION_SERVICE", config);
 module.exports = config;

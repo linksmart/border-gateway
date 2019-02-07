@@ -9,5 +9,8 @@ let config = {
         no_timestamp: false
     }
 };
-require('../bgw-aaa-client').init("WEBSOCKET_PROXY", config);
+const fs = require('fs');
+const configFromFile = require('../config/config.json');
+Object.assign(config,configFromFile["websocket-proxy"]);
+//require('../bgw-aaa-client').init("WEBSOCKET_PROXY", config);
 module.exports = config;
