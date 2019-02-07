@@ -35,7 +35,7 @@ function encrypt(value, key) {
     let encrypted = cipher.update(value);
     let finalBuffer = Buffer.concat([encrypted, cipher.final()]);
     //Need to retain IV for decryption, so this can be appended to the output with a separator (non-hex for this example)
-    let encryptedHex = iv.toString('hex') + ':' + finalBuffer.toString('hex')
+    let encryptedHex = iv.toString('hex') + ':' + finalBuffer.toString('hex');
     return encryptedHex;
 }
 
@@ -87,11 +87,20 @@ module.exports = async (rule, openid_connect_provider, source, username, passwor
         catch (err) {
             AAA.log(CAT.INVALID_ACCESS_TOKEN, "Access token is invalid", err.name, err.message);
             if (err.name === "TokenExpiredError") {
-                decoded = jwt.verify(req_credentials.access_token, pem, {
-                    audience: client_id,
-                    issuer: issuer,
-                    ignoreExpiration: true
-                });
+                try {
+                    decoded = jwt.verify(req_credentials.access_token, pem, {
+                        audience: client_id,
+                        issuer: issuer,
+                        ignoreExpiration: true
+                    });
+                }
+                catch (err) {
+                    AAA.log(CAT.INVALID_ACCESS_TOKEN, "Access token is invalid", err.name, err.message);
+                    return {
+                        status: false,
+                        error: "Access token is invalid, error = " + err.name + ", " + err.message
+                    };
+                }
                 let issuedAt = new Date(0);
                 issuedAt.setUTCSeconds(decoded.iat);
                 let expireAt = new Date(0);
@@ -120,7 +129,7 @@ module.exports = async (rule, openid_connect_provider, source, username, passwor
                 const encryptedToken = await redisClient.get(redisKey);
                 const ttl = await redisClient.ttl(redisKey);
                 if (encryptedToken) {
-                    AAA.log(CAT.DEBUG, "Retrieved access token with key ",redisKey," from redis, ttl is ",ttl);
+                    AAA.log(CAT.DEBUG, "Retrieved access token with key ", redisKey, " from redis, ttl is ", ttl);
                     profile.access_token = decrypt(encryptedToken, password);
                     retrievedFromRedis = true;
                 }
@@ -176,11 +185,20 @@ module.exports = async (rule, openid_connect_provider, source, username, passwor
         catch (err) {
             AAA.log(CAT.INVALID_ACCESS_TOKEN, "Access token is invalid", err.name, err.message);
             if (err.name === "TokenExpiredError") {
-                decoded = jwt.verify(profile.access_token, pem, {
-                    audience: client_id,
-                    issuer: issuer,
-                    ignoreExpiration: true
-                });
+                try {
+                    decoded = jwt.verify(profile.access_token, pem, {
+                        audience: client_id,
+                        issuer: issuer,
+                        ignoreExpiration: true
+                    });
+                }
+                catch (err) {
+                    AAA.log(CAT.INVALID_ACCESS_TOKEN, "Access token is invalid", err.name, err.message);
+                    return {
+                        status: false,
+                        error: "Access token is invalid, error = " + err.name + ", " + err.message
+                    };
+                }
                 let issuedAt = new Date(0);
                 issuedAt.setUTCSeconds(decoded.iat);
                 let expireAt = new Date(0);
@@ -204,7 +222,7 @@ module.exports = async (rule, openid_connect_provider, source, username, passwor
             const redisKey = hash.digest('hex');
             redisClient.set(redisKey, encrypt(profile.access_token, password), 'EX', config.redis_expiration);
             const ttl = await redisClient.ttl(redisKey);
-            AAA.log(CAT.DEBUG, "Cached access token with key ",redisKey," in redis, ttl is ",ttl);
+            AAA.log(CAT.DEBUG, "Cached access token with key ", redisKey, " in redis, ttl is ", ttl);
         }
 
         let json = Buffer.from(profile.access_token.split(".")[1], 'base64').toString('utf8');
