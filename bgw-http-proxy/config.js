@@ -18,6 +18,7 @@ let config = {
     },
     no_auth: false,
     auth_service: "http://localhost:5053/auth",
+    configuration_service: "http://localhost:5056",
     openidConnectProviderName: undefined
 };
 

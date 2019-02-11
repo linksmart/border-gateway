@@ -14,6 +14,6 @@ let config = {
 };
 const fs = require('fs');
 const configFromFile = require('../config/config.json');
-Object.assign(config,configFromFile["configuration-service"]);
+Object.assign(config,configFromFile["http-proxy"]);
 //require('../bgw-aaa-client').init("CONFIGURATION_SERVICE", config);
 module.exports = config;

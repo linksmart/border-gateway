@@ -19,19 +19,6 @@ if (config.redis_host) {
     redisClient = redis.createClient({port: config.redis_port, host: config.redis_host});
     asyncRedis.decorate(redisClient);
 }
-
-if (config.redis_host) {
-    for (let domain in config.domains) {
-        if (config.domains.hasOwnProperty(domain)) {
-            for (let location in config.domains[domain]) {
-                if (config.domains[domain].hasOwnProperty(location)) {
-                    redisClient.set("location " + domain + "/" + location, JSON.stringify(config.domains[domain][location]));
-                }
-            }
-        }
-    }
-}
-
 app.use(cors());
 
 app.use(async (req, res) => {
@@ -78,7 +65,7 @@ app.use(async (req, res) => {
     }
 });
 proxy.on('error', function (err, req, res) {
-    AAA.log(CAT.DEBUG,'http-proxy', 'Error in proxy: ', err, err.stack, err.message);
+    AAA.log(CAT.DEBUG, 'http-proxy', 'Error in proxy: ', err, err.stack, err.message);
     if (req.bgw && req.bgw.forward_address) {
         res && res.status(500).json({error: `Border Gateway could not forward your request to ${req.bgw.forward_address}`});
     } else {
@@ -88,6 +75,6 @@ proxy.on('error', function (err, req, res) {
 });
 config.bind_addresses.forEach((addr) => {
     app.listen(config.bind_port, addr, () =>
-        AAA.log(CAT.PROCESS_START,'http-proxy', `PID ${process.pid} listening on ${addr}:${config.bind_port}`));
+        AAA.log(CAT.PROCESS_START, 'http-proxy', `PID ${process.pid} listening on ${addr}:${config.bind_port}`));
 });
 

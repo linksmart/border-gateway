@@ -29,7 +29,7 @@ const httpAuth = async (req) => {
         }
     }
 
-    AAA.log(CAT.DEBUG,'http-proxy', 'req.headers.host:', req.headers.host, ' req.headers[x-forwarded-host]:', req.headers['x-forwarded-host']);
+    AAA.log(CAT.DEBUG, 'http-proxy', 'req.headers.host:', req.headers.host, ' req.headers[x-forwarded-host]:', req.headers['x-forwarded-host']);
     let httpHost = req.headers['x-forwarded-host'] || req.headers.host;
     const splitHost = httpHost.split(":");
     let host = splitHost[0];
@@ -55,7 +55,7 @@ const httpAuth = async (req) => {
         });
     }
     catch (error) {
-        AAA.log(CAT.DEBUG,'http-proxy', 'auth-service returned an error message:', error.name, error.message);
+        AAA.log(CAT.DEBUG, 'http-proxy', 'auth-service returned an error message:', error.name, error.message);
         return {
             isAuthorized: false,
             error: "Error in auth-service, " + error.name + ": " + error.message
@@ -73,7 +73,7 @@ const bgwIfy = async (req) => {
 
         //const public_domain = config.sub_domain_mode ?  host.includes(config.external_domain) : host === config.external_domain;
 
-        AAA.log(CAT.DEBUG,'http-proxy', 'req.headers.host:', req.headers.host, ' req.headers[x-forwarded-host]:', req.headers['x-forwarded-host']);
+        AAA.log(CAT.DEBUG, 'http-proxy', 'req.headers.host:', req.headers.host, ' req.headers[x-forwarded-host]:', req.headers['x-forwarded-host']);
         let httpHost = req.headers['x-forwarded-host'] || req.headers.host;
         const splitHost = httpHost.split(":");
         let host = splitHost[0];
@@ -83,61 +83,57 @@ const bgwIfy = async (req) => {
 
         if (config.domains[host]) {
             Object.assign(locations, config.domains[host]);
-            if (config.redis_host) {
-                let keysFromRedis = await redisClient.keys("location " + host + "/" + "*");
-                AAA.log(CAT.DEBUG,'http-proxy', "keysFromRedis", keysFromRedis);
-                for (let i = 0; i < keysFromRedis.length; i++) {
 
-                    //expected format: location <host>/<location>
-                    let splitKey = (keysFromRedis[i].split(" "));
-                    let location = splitKey[1];
-                    if (location) {
-                        location = location.split("/")[1];
-                    }
+            let response;
+            try {
+                response = await axios({
+                    method: 'get',
+                    params: {
+                        host: host
+                    },
+                    headers: {authorization: req.headers.authorization || ""},
+                    url: config.configuration_service + "/locations"
+                });
+            }
+            catch (error) {
+                AAA.log(CAT.DEBUG, 'http-proxy', 'configuration-service returned an error message:', error.name, error.message);
+            }
 
-                    if (splitKey[0] === "location" && location && isVarName(location)) {
+            if (response && response.data) {
+                i = 0;
+                for (let key in response.data) {
 
-                        locationsFromRedis[i] = location;
-                    }
-                    else {
-                        AAA.log(CAT.DEBUG,'http-proxy', "Key retrieved from redis does not contain a valid location:", location);
-                        continue
-                    }
+                    if (response.data.hasOwnProperty(key)) {
+                        //expected format: <host>/<location>
+                        let location = (key.split("/"))[1];
 
-                    AAA.log(CAT.DEBUG,'http-proxy', "locationsFromRedis[" + i + "]", locationsFromRedis[i]);
+                        if (location && isVarName(location)) {
 
-                    let value = await redisClient.get(keysFromRedis[i]);
-                    AAA.log(CAT.DEBUG,'http-proxy', "value", value);
-                    let parsed;
-                    try {
+                            if (response.data[key].local_address) {
 
-                        parsed = JSON.parse(value);
-                    }
+                                let urlParseResult = url.parse(response.data[key].local_address);
+                                urlParseResult.port = urlParseResult.port ? urlParseResult.port : (urlParseResult.protocol === "https:" ? 443 : 80);
 
-                    catch (err) {
-                        AAA.log(CAT.DEBUG,'http-proxy', "JSON parse error", err);
-                        continue;
-                    }
+                                if (!(urlParseResult.protocol && urlParseResult.host && urlParseResult.port)) {
+                                    AAA.log(CAT.DEBUG, 'http-proxy', "Value retrieved from configuration-service does not contain a valid destination:", parsed);
+                                    continue;
+                                }
+                                locationsFromRedis[i] = location;
+                                destinationsFromRedis[i] = response.data[key];
+                                AAA.log(CAT.DEBUG, 'http-proxy', "locationsFromRedis[" + i + "]", locationsFromRedis[i]);
+                                AAA.log(CAT.DEBUG, 'http-proxy', "destinationsFromRedis[" + i + "]", destinationsFromRedis[i])
+                                i++;
+                            }
 
-                    if (parsed.local_address) {
 
-                        let urlParseResult = url.parse(parsed.local_address);
-                        urlParseResult.port = urlParseResult.port ? urlParseResult.port : (urlParseResult.protocol === "https:" ? 443 : 80);
-
-                        if (!(urlParseResult.protocol && urlParseResult.host && urlParseResult.port)) {
-                            AAA.log(CAT.DEBUG,'http-proxy', "Value retrieved from redis does not contain a valid destination:", parsed);
-                            continue;
+                        } else {
+                            AAA.log(CAT.DEBUG, 'http-proxy', "Key retrieved from configuration-service does not contain a valid location:", location);
+                            continue
                         }
-
-                        destinationsFromRedis[i] = parsed;
-                        AAA.log(CAT.DEBUG,'http-proxy', "destinationsFromRedis[" + i + "]", destinationsFromRedis[i]);
-
                     }
 
                 }
-
             }
-
         }
         else {
             req.bgw = {type: TYPES.INVALID_EXTERNAL_DOMAIN};
@@ -147,13 +143,8 @@ const bgwIfy = async (req) => {
 
         for (let i = 0; i < locationsFromRedis.length; i++) {
             if (locationsFromRedis[i] && destinationsFromRedis[i]) {
-                //   if (locations[locationsFromRedis[i]]) {
-                //       AAA.log(CAT.DEBUG,'http-proxy', "Locations defined in config.json cannot be overridden from Redis");
-                //   }
-                //   else {
                 locations[locationsFromRedis[i]] = destinationsFromRedis[i];
-                AAA.log(CAT.DEBUG,'http-proxy', "Added location", locationsFromRedis[i], "with destination", destinationsFromRedis[i], "to locations");
-                //   }
+                AAA.log(CAT.DEBUG, 'http-proxy', "Added location", locationsFromRedis[i], "with destination", destinationsFromRedis[i], "to locations");
             }
         }
 

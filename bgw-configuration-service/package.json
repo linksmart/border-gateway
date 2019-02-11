@@ -13,8 +13,7 @@
     }
   },
   "dependencies": {
-    "body-parser": "latest",
-    "express": "latest",
+    "restify": "latest",
     "redis": "latest",
     "async-redis": "latest"
   }

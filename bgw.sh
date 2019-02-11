@@ -1,11 +1,9 @@
 #!/bin/bash
 
 function run_service {
-  # node -r dotenv/config ./$1/index.js dotenv_config_path=./node_modules/config.env || kill -KILL 0
   node ./$1/index.js || kill -KILL 0
 }
 function run_inspect_service {
-  # node --inspect=0.0.0.0:$2 -r dotenv/config ./$1/index.js dotenv_config_path=./node_modules/config.env || kill -KILL 0
   node --inspect=0.0.0.0:$2 ./$1/index.js || kill -KILL 0
 }
 
