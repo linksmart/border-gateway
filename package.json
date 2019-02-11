@@ -21,8 +21,7 @@
     "bgw-http-proxy": "file:./bgw-http-proxy",
     "bgw-mqtt-proxy": "file:./bgw-mqtt-proxy",
     "bgw-configuration-servie": "file:./bgw-configuration-service",
-    "bgw-websocket-proxy": "file:./bgw-websocket-proxy",
-    "bgw-rabbitmq-auth-backend-http": "file:./bgw-rabbitmq-auth-backend-http"
+    "bgw-websocket-proxy": "file:./bgw-websocket-proxy"
   },
   "devDependencies": {
     "eslint": "latest"
