@@ -20,7 +20,7 @@
     "bgw-auth-service": "file:./bgw-auth-service",
     "bgw-http-proxy": "file:./bgw-http-proxy",
     "bgw-mqtt-proxy": "file:./bgw-mqtt-proxy",
-    "bgw-configuration-servie": "file:./bgw-configuration-service",
+    "bgw-configuration-service": "file:./bgw-configuration-service",
     "bgw-websocket-proxy": "file:./bgw-websocket-proxy"
   },
   "devDependencies": {
