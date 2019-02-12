@@ -1,3 +1,6 @@
+console.log("__filename",__filename);
+console.log("__dirname",__dirname);
+
 const config = require('./config');
 const tls = require('tls');
 const net = require('net');

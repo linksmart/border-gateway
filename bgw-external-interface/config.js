@@ -35,6 +35,8 @@ let config = {
     }
 };
 const fs = require('fs');
+console.log("__filename",__filename);
+console.log("__dirname",__dirname);
 const configFromFile = require('../config/config.json');
 Object.assign(config,configFromFile["external-interface"]);
 //require('../bgw-aaa-client').init("EI", config);

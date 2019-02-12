@@ -23,7 +23,7 @@ if [ "$1" = "parts" ]; then
 
 elif [ "$1" = "start" ]; then
 
-    #export NODE_DEBUG=cluster,net,http,fs,tls,module,timers node
+    export NODE_DEBUG=cluster,net,http,fs,tls,module,timers node
     #export NODE_DEBUG=net,http,tls node
 
     run_inspect_service bgw-http-proxy 9227 &
