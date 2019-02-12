@@ -1,7 +1,8 @@
 const config = require('./config');
-
+const url = require("url");
 const {AAA, CAT} = require('../bgw-aaa-client');
 const restify = require('restify');
+const isVarName = require("is-var-name");
 const redis = require("redis");
 const asyncRedis = require("async-redis");
 let redisClient;
@@ -13,7 +14,7 @@ const server = restify.createServer({
 
 AAA.log(CAT.DEBUG, 'configuration-service', "redis_host", config.redis_host);
 
-if (config.redis_host) {
+if (config.configurationService && config.redis_host) {
     redisClient = redis.createClient({port: config.redis_port, host: config.redis_host});
     asyncRedis.decorate(redisClient);
 
@@ -32,11 +33,11 @@ if (config.redis_host) {
 server.use(restify.plugins.queryParser());
 server.use(restify.plugins.bodyParser());
 
-server.get('/locations:host:location', async (req, res, next) => {
+server.get('/locations:domain:location', async (req, res, next) => {
 
     AAA.log(CAT.DEBUG, 'configuration-service', "Request to redis endpoint locations");
 
-    if (!(config.redis_host)) {
+    if (!(config.configurationService && config.redis_host)) {
         res.send(404,"Not Found");
         return next();
     }
@@ -45,12 +46,12 @@ server.get('/locations:host:location', async (req, res, next) => {
 
     let searchString = "bgw-configuration-service-location:*";
 
-    if (req.query.host) {
+    if (req.query.domain) {
 
-        searchString = "bgw-configuration-service-location:" + req.query.host + "*";
+        searchString = "bgw-configuration-service-location:" + req.query.domain + "*";
     }
     if (req.query.location) {
-        searchString = "bgw-configuration-service-location:" + req.query.host + "/" + req.query.location + "*";
+        searchString = "bgw-configuration-service-location:" + req.query.domain + "/" + req.query.location + "*";
     }
 
     let keysFromRedis = await redisClient.keys(searchString);
@@ -73,18 +74,39 @@ server.get('/locations:host:location', async (req, res, next) => {
     return next();
 });
 
-server.put('/locations:host:location', async (req, res, next) => {
+server.put('/locations:domain:location', async (req, res, next) => {
 
-    AAA.log(CAT.DEBUG, 'configuration-service', "PUT request to redis endpoint locations with host", req.query.host, "and location", req.query.location);
+    AAA.log(CAT.DEBUG, 'configuration-service', "PUT request to redis endpoint locations with domain", req.query.domain, "and location", req.query.location);
 
-    if (!(config.redis_host)) {
+    if (!(config.configurationService && config.redis_host)) {
         res.send(404, "Not Found");
         return next();
     }
 
-    if (req.body && req.body.local_address && (req.query.host && req.query.location)) {
+    if (req.body && req.body.local_address && (req.query.domain && req.query.location)) {
 
-        let result = await redisClient.set("bgw-configuration-service-location:" + req.query.host + "/" + req.query.location, JSON.stringify(req.body));
+        if (!config.domains[req.query.domain])
+        {
+            res.send(404, "Not Found. Given domain is not defined in config.json.");
+            return next();
+        }
+
+        if (!isVarName(req.query.location))
+        {
+            res.send(400, "Bad Request. Given location name is not a valid variable name.");
+            return next();
+        }
+
+
+        let urlParseResult = url.parse(req.body.local_address);
+        urlParseResult.port = urlParseResult.port ? urlParseResult.port : (urlParseResult.protocol === "https:" ? 443 : 80);
+
+        if (!(urlParseResult.protocol && urlParseResult.host && urlParseResult.port)) {
+            res.send(400, "Bad Request. Given local_address "+req.body.local_address+" is not a valid url.");
+            return next();
+        }
+
+        let result = await redisClient.set("bgw-configuration-service-location:" + req.query.domain + "/" + req.query.location, JSON.stringify(req.body));
         if (result === "OK") {
             res.send(200, "OK");
         }
@@ -98,19 +120,19 @@ server.put('/locations:host:location', async (req, res, next) => {
     return next();
 });
 
-server.del('/locations:host:location', async (req, res, next) => {
+server.del('/locations:domain:location', async (req, res, next) => {
 
-    AAA.log(CAT.DEBUG, 'configuration-service', "DEL request to locations endpoint with host", req.query.host), "and location", req.query.location;
+    AAA.log(CAT.DEBUG, 'configuration-service', "DEL request to locations endpoint with domain", req.query.domain), "and location", req.query.location;
 
-    if (!(config.redis_host)) {
+    if (!(config.configurationService && config.redis_host)) {
         res.send(404, "Not Found");
         return next();
     }
 
-    if (req.query.host && req.query.location) {
+    if (req.query.domain && req.query.location) {
         let numOfRemovedKeys;
 
-        numOfRemovedKeys = await redisClient.del("bgw-configuration-service-location:" + req.query.host + "/" + req.query.location);
+        numOfRemovedKeys = await redisClient.del("bgw-configuration-service-location:" + req.query.domain + "/" + req.query.location);
 
         if (numOfRemovedKeys === 0) {
             res.send(404, "Not Found");

@@ -19,9 +19,6 @@
     "express": "latest",
     "http-proxy": "latest",
     "transformer-proxy": "latest",
-    "axios": "latest",
-    "redis": "latest",
-    "async-redis": "latest",
-    "is-var-name": "latest"
+    "axios": "latest"
   }
 }

@@ -9,8 +9,6 @@ let config = {
         http_req: false
     },
     domains: {},
-    redis_host: undefined,
-    redis_port: 6379,
     aaa_client: {
         name: "http-proxy",
         log_level: "",
@@ -18,7 +16,9 @@ let config = {
     },
     no_auth: false,
     auth_service: "http://localhost:5053/auth",
-    configuration_service: "http://localhost:5056",
+    configurationService: undefined,
+    redis_host: undefined,
+    redis_port: 6379,
     openidConnectProviderName: undefined
 };
 

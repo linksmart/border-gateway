@@ -10,15 +10,6 @@ const proxy = require('http-proxy/lib/http-proxy').createProxyServer({});
 const {httpAuth, transformURI, bgwIfy, REQ_TYPES} = require('./utils');
 const {AAA, CAT, debug, isDebugOn} = require('../bgw-aaa-client');
 
-const redis = require("redis");
-const asyncRedis = require("async-redis");
-
-let redisClient;
-
-if (config.redis_host) {
-    redisClient = redis.createClient({port: config.redis_port, host: config.redis_host});
-    asyncRedis.decorate(redisClient);
-}
 app.use(cors());
 
 app.use(async (req, res) => {

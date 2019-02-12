@@ -15,6 +15,7 @@
   "dependencies": {
     "restify": "latest",
     "redis": "latest",
-    "async-redis": "latest"
+    "async-redis": "latest",
+    "is-var-name": "latest"
   }
 }
