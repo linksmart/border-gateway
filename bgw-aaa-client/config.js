@@ -6,5 +6,7 @@ let config = {
 
 const fs = require('fs');
 const configFromFile = require('../config/config.json');
-Object.assign(config,configFromFile["aaa-client"]);
+if(configFromFile["aaa-client"]) {
+    Object.assign(config, configFromFile["aaa-client"]);
+}
 module.exports = config;

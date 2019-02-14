@@ -24,5 +24,7 @@ let config = {
 
 const fs = require('fs');
 const configFromFile = require('../config/config.json');
-Object.assign(config,configFromFile["http-proxy"]);
+if(configFromFile["http-proxy"]) {
+    Object.assign(config, configFromFile["http-proxy"]);
+}
 module.exports = config;

@@ -27,6 +27,7 @@ let config = {
 };
 const fs = require('fs');
 const configFromFile = require('../config/config.json');
-Object.assign(config,configFromFile["mqtt-proxy"]);
-//require('../bgw-aaa-client').init("MQTT_PROXY", config);
+if(configFromFile["mqtt-proxy"]) {
+    Object.assign(config, configFromFile["mqtt-proxy"]);
+}
 module.exports = config;

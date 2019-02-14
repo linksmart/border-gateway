@@ -1,8 +1,13 @@
 let config = {
-    mqtt_proxy_ip: "127.0.0.1",
-    mqtt_proxy_port: 5051,
+    upstream_host: "localhost",
+    upstream_port: 5051,
     bind_port: 5052,
-
+    no_auth: false,
+    no_auth_mqtt: true,
+    realm_public_key_modulus: undefined,
+    realm_public_key_exponent: undefined,
+    client_id: undefined,
+    issuer: undefined,
     aaa_client: {
         name: "websocket-proxy",
         log_level: "",
@@ -11,6 +16,7 @@ let config = {
 };
 const fs = require('fs');
 const configFromFile = require('../config/config.json');
-Object.assign(config,configFromFile["websocket-proxy"]);
-//require('../bgw-aaa-client').init("WEBSOCKET_PROXY", config);
+if (configFromFile["websocket-proxy"]) {
+    Object.assign(config, configFromFile["websocket-proxy"]);
+}
 module.exports = config;
