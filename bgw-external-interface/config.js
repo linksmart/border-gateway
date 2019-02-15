@@ -1,3 +1,6 @@
+const toml = require('toml');
+const fs = require('fs');
+
 let config = {
     tls_key: "",
     tls_cert: "",
@@ -34,9 +37,9 @@ let config = {
         no_timestamp: false
     }
 };
-const fs = require('fs');
-const configFromFile = require('../config/config.json');
-if (configFromFile["external-interface"]) {
+let configFromFile = toml.parse(fs.readFileSync('./config/config.toml'));
+
+if(configFromFile["external-interface"]) {
     Object.assign(config, configFromFile["external-interface"]);
 }
 module.exports = config;

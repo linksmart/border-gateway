@@ -1,3 +1,6 @@
+const toml = require('toml');
+const fs = require('fs');
+
 let config = {
      bind_addresses: [
         "127.0.0.1"
@@ -25,8 +28,8 @@ let config = {
     auth_service: "http://localhost:5053/auth",
     openidConnectProviderName: undefined
 };
-const fs = require('fs');
-const configFromFile = require('../config/config.json');
+let configFromFile = toml.parse(fs.readFileSync('./config/config.toml'));
+
 if(configFromFile["mqtt-proxy"]) {
     Object.assign(config, configFromFile["mqtt-proxy"]);
 }

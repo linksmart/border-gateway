@@ -16,6 +16,7 @@
   "dependencies": {
     "mqtt-packet": "latest",
     "shortid": "latest",
-    "axios": "latest"
+    "axios": "latest",
+    "toml": "latest"
   }
 }

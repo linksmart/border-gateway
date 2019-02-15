@@ -1,3 +1,6 @@
+const toml = require('toml');
+const fs = require('fs');
+
 let config = {
     upstream_host: "localhost",
     upstream_port: 5051,
@@ -14,9 +17,9 @@ let config = {
         no_timestamp: false
     }
 };
-const fs = require('fs');
-const configFromFile = require('../config/config.json');
-if (configFromFile["websocket-proxy"]) {
+let configFromFile = toml.parse(fs.readFileSync('./config/config.toml'));
+
+if(configFromFile["websocket-proxy"]) {
     Object.assign(config, configFromFile["websocket-proxy"]);
 }
 module.exports = config;

@@ -5,6 +5,7 @@
     "ws": "latest",
     "jsonwebtoken": "latest",
     "rsa-pem-from-mod-exp": "latest",
-    "mqtt-match": "latest"
+    "mqtt-match": "latest",
+    "toml": "latest"
   }
 }

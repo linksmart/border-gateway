@@ -80,7 +80,7 @@ const bgwIfy = async (req) => {
                     response = await axios({
                         method: 'get',
                         params: {
-                            host: host
+                            domain: host
                         },
                         headers: {authorization: req.headers.authorization || ""},
                         url: config.configurationService + "/locations"

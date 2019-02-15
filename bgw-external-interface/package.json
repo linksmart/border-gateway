@@ -17,6 +17,7 @@
     }
   },
   "dependencies": {
-    "http-proxy": "latest"
+    "http-proxy": "latest",
+    "toml": "latest"
   }
 }

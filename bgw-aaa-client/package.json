@@ -12,5 +12,8 @@
     "parserOptions": {
       "ecmaVersion": 2017
     }
+  },
+  "dependencies": {
+    "toml": "latest"
   }
 }

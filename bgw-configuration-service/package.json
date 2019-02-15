@@ -16,6 +16,7 @@
     "restify": "latest",
     "redis": "latest",
     "async-redis": "latest",
-    "is-var-name": "latest"
+    "is-var-name": "latest",
+    "toml": "latest"
   }
 }

@@ -1,3 +1,6 @@
+const toml = require('toml');
+const fs = require('fs');
+
 let config = {
     bind_port: 5053,
     aaa_client: {
@@ -22,9 +25,10 @@ let config = {
     }
 };
 
-const fs = require('fs');
-const configFromFile = require('../config/config.json');
-Object.assign(config,configFromFile["auth-service"]);
+let configFromFile = toml.parse(fs.readFileSync('./config/config.toml'));
 
-// require('../bgw-aaa-client').init("AUTH_SERVICE", config);
+if(configFromFile["auth-service"]) {
+    Object.assign(config, configFromFile["auth-service"]);
+}
+
 module.exports = config;

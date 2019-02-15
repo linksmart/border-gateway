@@ -20,6 +20,7 @@
     "jsonwebtoken": "latest",
     "rsa-pem-from-mod-exp": "latest",
     "redis": "latest",
-    "async-redis": "latest"
+    "async-redis": "latest",
+    "toml": "latest"
   }
 }

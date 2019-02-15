@@ -1,3 +1,6 @@
+const toml = require('toml');
+const fs = require('fs');
+
 let config = {
     bind_addresses: [
         "127.0.0.1"
@@ -22,9 +25,11 @@ let config = {
     openidConnectProviderName: undefined
 };
 
-const fs = require('fs');
-const configFromFile = require('../config/config.json');
+
+let configFromFile = toml.parse(fs.readFileSync('./config/config.toml'));
+
 if(configFromFile["http-proxy"]) {
     Object.assign(config, configFromFile["http-proxy"]);
 }
+
 module.exports = config;

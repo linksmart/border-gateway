@@ -20,14 +20,11 @@ if (config.configurationService && config.redis_host) {
 
 
     for (let domain in config.domains) {
-        if (config.domains.hasOwnProperty(domain)) {
+        for (let location in config.domains[domain]) {
+            redisClient.set("bgw-configuration-service-location:" + domain + "/" + location, JSON.stringify(config.domains[domain][location]));
 
-            for (let location in config.domains[domain]) {
-                if (config.domains[domain].hasOwnProperty(location)) {
-                    redisClient.set("bgw-configuration-service-location:" + domain + "/" + location, JSON.stringify(config.domains[domain][location]));
-                }
-            }
         }
+
     }
 }
 server.use(restify.plugins.queryParser());
@@ -38,7 +35,7 @@ server.get('/locations:domain:location', async (req, res, next) => {
     AAA.log(CAT.DEBUG, 'configuration-service', "Request to redis endpoint locations");
 
     if (!(config.configurationService && config.redis_host)) {
-        res.send(404,"Not Found");
+        res.send(404, "Not Found");
         return next();
     }
 
@@ -85,14 +82,12 @@ server.put('/locations:domain:location', async (req, res, next) => {
 
     if (req.body && req.body.local_address && (req.query.domain && req.query.location)) {
 
-        if (!config.domains[req.query.domain])
-        {
+        if (!config.domains[req.query.domain]) {
             res.send(404, "Not Found. Given domain is not defined in config.json.");
             return next();
         }
 
-        if (!isVarName(req.query.location))
-        {
+        if (!isVarName(req.query.location)) {
             res.send(400, "Bad Request. Given location name is not a valid variable name.");
             return next();
         }
@@ -102,7 +97,7 @@ server.put('/locations:domain:location', async (req, res, next) => {
         urlParseResult.port = urlParseResult.port ? urlParseResult.port : (urlParseResult.protocol === "https:" ? 443 : 80);
 
         if (!(urlParseResult.protocol && urlParseResult.host && urlParseResult.port)) {
-            res.send(400, "Bad Request. Given local_address "+req.body.local_address+" is not a valid url.");
+            res.send(400, "Bad Request. Given local_address " + req.body.local_address + " is not a valid url.");
             return next();
         }
 
