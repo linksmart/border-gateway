@@ -12,10 +12,36 @@ const server = restify.createServer({
     version: '1.0.0'
 });
 
-AAA.log(CAT.DEBUG, 'configuration-service', "redis_host", config.redis_host);
-
+// function getRedisClient() {
+//     if (redisClient && redisClient.isConnected) {
+//         return redisClient;
+//     }
+//     else {
 if (config.configurationService && config.redis_host) {
-    redisClient = redis.createClient({port: config.redis_port, host: config.redis_host});
+
+    //try {
+    redisClient = redis.createClient({
+        port: config.redis_port, host: config.redis_host,
+        retry_strategy: function (options) {
+            if (options.total_retry_time > 1000 * 60) {
+                // End reconnecting after a specific timeout and flush all commands
+                // with a individual error
+                AAA.log(CAT.DEBUG, 'configuration-service', "Retry time exhausted");
+                return new Error('Retry time exhausted');
+            }
+            if (options.attempt > 10) {
+                // End reconnecting with built in error
+                return undefined;
+            }
+            // reconnect after
+            return Math.min(options.attempt * 100, 3000);
+        }
+    });
+    // }
+    // catch (err) {
+    //     AAA.log(CAT.DEBUG, 'configuration-service', "Redis client to", config.redis_host, ":", config.redis_port, "could not be created");
+    //     return false;
+    // }
     asyncRedis.decorate(redisClient);
 
 
@@ -24,9 +50,15 @@ if (config.configurationService && config.redis_host) {
             redisClient.set("bgw-configuration-service-location:" + domain + "/" + location, JSON.stringify(config.domains[domain][location]));
 
         }
-
     }
+    //return redisClient;
 }
+//}
+//}
+
+AAA.log(CAT.DEBUG, 'configuration-service', "redis_host", config.redis_host);
+
+
 server.use(restify.plugins.queryParser());
 server.use(restify.plugins.bodyParser());
 
@@ -51,12 +83,27 @@ server.get('/locations:domain:location', async (req, res, next) => {
         searchString = "bgw-configuration-service-location:" + req.query.domain + "/" + req.query.location + "*";
     }
 
-    let keysFromRedis = await redisClient.keys(searchString);
+    let keysFromRedis;
+    try {
+        keysFromRedis = await redisClient.keys(searchString);
+    }
+    catch (err) {
+        res.send(503, err);
+        return next();
+    }
 
     AAA.log(CAT.DEBUG, 'configuration-service', "keysFromRedis", keysFromRedis);
 
     for (let i = 0; i < keysFromRedis.length; i++) {
-        let value = await redisClient.get(keysFromRedis[i]);
+        let value;
+        try {
+            value = await redisClient.get(keysFromRedis[i]);
+        }
+        catch (err) {
+            res.send(503, err);
+            return next();
+        }
+
         AAA.log(CAT.DEBUG, 'configuration-service', "value", value);
         try {
             result[keysFromRedis[i].replace("bgw-configuration-service-location:", "")] = JSON.parse(value);
@@ -101,7 +148,16 @@ server.put('/locations:domain:location', async (req, res, next) => {
             return next();
         }
 
-        let result = await redisClient.set("bgw-configuration-service-location:" + req.query.domain + "/" + req.query.location, JSON.stringify(req.body));
+        let result;
+        try {
+            result = await redisClient.set("bgw-configuration-service-location:" + req.query.domain + "/" + req.query.location, JSON.stringify(req.body));
+        }
+        catch (err) {
+            res.send(503, err);
+            return next();
+        }
+
+
         if (result === "OK") {
             res.send(200, "OK");
         }
@@ -127,8 +183,14 @@ server.del('/locations:domain:location', async (req, res, next) => {
     if (req.query.domain && req.query.location) {
         let numOfRemovedKeys;
 
-        numOfRemovedKeys = await redisClient.del("bgw-configuration-service-location:" + req.query.domain + "/" + req.query.location);
-
+        let result;
+        try {
+            numOfRemovedKeys = await redisClient.del("bgw-configuration-service-location:" + req.query.domain + "/" + req.query.location);
+        }
+        catch (err) {
+            res.send(503, err);
+            return next();
+        }
         if (numOfRemovedKeys === 0) {
             res.send(404, "Not Found");
         }
