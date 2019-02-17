@@ -22,7 +22,17 @@ const httpAuth = async (req) => {
 
     AAA.log(CAT.DEBUG, 'http-proxy', 'req.headers.host:', req.headers.host, ' req.headers[x-forwarded-host]:', req.headers['x-forwarded-host']);
     let httpHost = req.headers['x-forwarded-host'] || req.headers.host;
-    const splitHost = httpHost.split(":");
+    let splitHost;
+    if (httpHost) {
+        splitHost = httpHost.split(":");
+    }
+    else {
+        AAA.log(CAT.DEBUG, 'http-proxy', 'Strange http request, req.headers:', req.headers);
+        return {
+            isAuthorized: false
+        }
+    }
+
     let host = splitHost[0];
     let port = splitHost[1] || 80;
     let protocol = 'HTTP';
@@ -66,7 +76,15 @@ const bgwIfy = async (req) => {
 
         AAA.log(CAT.DEBUG, 'http-proxy', 'req.headers.host:', req.headers.host, ' req.headers[x-forwarded-host]:', req.headers['x-forwarded-host']);
         let httpHost = req.headers['x-forwarded-host'] || req.headers.host;
-        const splitHost = httpHost.split(":");
+        let splitHost;
+        if (httpHost) {
+            splitHost = httpHost.split(":");
+        }
+        else {
+            AAA.log(CAT.DEBUG, 'http-proxy', 'Strange http request, req.headers:', req.headers);
+            req.bgw = {type: TYPES.INVALID_EXTERNAL_DOMAIN};
+            return;
+        }
         let host = splitHost[0];
         let locationsFromConfigService = {};
         let locations = {};

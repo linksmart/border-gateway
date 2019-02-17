@@ -37,7 +37,12 @@ config.servers.forEach((srv) => {
 
             AAA.log(CAT.DEBUG,'external-interface', 'req.headers.host:', req.headers.host, ' req.headers[x-forwarded-host]:', req.headers['x-forwarded-host']);
             proxyReq.setHeader('x-forwarded-proto', req['x-forwarded-proto'] || 'https');
-            proxyReq.setHeader('x-forwarded-host', req['x-forwarded-host'] || (req.headers.host.split(":"))[0]+":"+srv.bind_port);
+            if(req.headers.host) {
+                proxyReq.setHeader('x-forwarded-host', req['x-forwarded-host'] || (req.headers.host.split(":"))[0] + ":" + srv.bind_port);
+            }
+            else{
+                AAA.log(CAT.DEBUG,'external-interface', 'Strange http request, req.headers:', req.headers);
+            }
         });
     }
     else {

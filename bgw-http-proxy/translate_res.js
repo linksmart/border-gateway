@@ -28,7 +28,14 @@ const transformURI = (data, req, res) =>
         }
 
         let httpHost = req.headers['x-forwarded-host'] || req.headers.host;
-        const splitHost = httpHost.split(":");
+        let splitHost;
+        if(httpHost) {
+            splitHost = httpHost.split(":");
+        }
+        else
+        {
+            return e;
+        }
         let host = splitHost[0];
         let port = splitHost[1];
 
