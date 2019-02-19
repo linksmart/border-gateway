@@ -1,0 +1,38 @@
+version: '3.5'
+services:
+  nginx:
+    image: "nginx"
+    container_name: "nginx"
+    restart: "always"
+    volumes:
+    - "./volumes/nginx/certs/:/etc/nginx/certs"
+    - "./volumes/nginx/nginx.conf:/etc/nginx/nginx.conf"
+    - "./volumes/nginx/conf.d:/etc/nginx/conf.d"
+    ports:
+    - 443:443
+    - 8883:8883
+    - 9002:9002
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "10"
+  bgw:
+    image: "docker.linksmart.eu/bgw:snapshot"
+    container_name: "bgw"
+    command: ["parts","bgw-http-proxy","bgw-mqtt-proxy","bgw-websocket-proxy","bgw-auth-service"]
+    volumes:
+      - "./volumes/bgw/config:/bgw/config"
+      - "./volumes/bgw/certs:/bgw/certs"
+    ports:
+    - 9227:9227
+    - 9228:9228
+    - 9229:9229
+    - 9230:9230
+    - 9231:9231
+    restart: always
+    logging:
+      driver: "json-file"
+      options:
+        max-size: 10m
+        max-file: "10"

@@ -1,0 +1,2373 @@
+{
+	"info": {
+		"_postman_id": "2f8d79cc-467f-4e7e-bdbe-90e2efe25d5e",
+		"name": "test_border_gateway",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Retrieve access_token for admin-cli",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3acee57d-9db4-45ef-afd7-377b61edd85e",
+						"exec": [
+							"",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"let json = pm.response.json();",
+							"pm.environment.set('admin_access_token', json.access_token);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/x-www-form-urlencoded",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "grant_type",
+							"value": "password",
+							"type": "text"
+						},
+						{
+							"key": "client_id",
+							"value": "admin-cli",
+							"type": "text"
+						},
+						{
+							"key": "username",
+							"value": "{{admin_username}}",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "{{admin_password}}",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{admin_token_endpoint}}",
+					"host": [
+						"{{admin_token_endpoint}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get write_access group id realm1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "4980605f-0403-42ab-baad-eee4e191e83f",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"let json = pm.response.json();",
+							"pm.environment.set('write_access_group_id_realm1', json[0].id);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{admin_access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{realm1_address}}/groups?groupname=write_access",
+					"host": [
+						"{{realm1_address}}"
+					],
+					"path": [
+						"groups"
+					],
+					"query": [
+						{
+							"key": "groupname",
+							"value": "write_access"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get anonymous user id realm1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "4980605f-0403-42ab-baad-eee4e191e83f",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"let json = pm.response.json();",
+							"pm.environment.set('anonymous_user_id_realm1', json[0].id);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{admin_access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{realm1_address}}/users?username=anonymous",
+					"host": [
+						"{{realm1_address}}"
+					],
+					"path": [
+						"users"
+					],
+					"query": [
+						{
+							"key": "username",
+							"value": "anonymous"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get linksmart user id realm1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "4980605f-0403-42ab-baad-eee4e191e83f",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"let json = pm.response.json();",
+							"pm.environment.set('linksmart_user_id_realm1', json[0].id);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{admin_access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{realm1_address}}/users?username=linksmart",
+					"host": [
+						"{{realm1_address}}"
+					],
+					"path": [
+						"users"
+					],
+					"query": [
+						{
+							"key": "username",
+							"value": "linksmart"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get anonymous user id realm2",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "4980605f-0403-42ab-baad-eee4e191e83f",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"let json = pm.response.json();",
+							"pm.environment.set('anonymous_user_id_realm2', json[0].id);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{admin_access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{realm2_address}}/users?username=anonymous",
+					"host": [
+						"{{realm2_address}}"
+					],
+					"path": [
+						"users"
+					],
+					"query": [
+						{
+							"key": "username",
+							"value": "anonymous"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get linksmart user id realm2",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "4980605f-0403-42ab-baad-eee4e191e83f",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"let json = pm.response.json();",
+							"pm.environment.set('linksmart_user_id_realm2', json[0].id);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{admin_access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{realm2_address}}/users?username=linksmart",
+					"host": [
+						"{{realm2_address}}"
+					],
+					"path": [
+						"users"
+					],
+					"query": [
+						{
+							"key": "username",
+							"value": "linksmart"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Set write_access group attributes realm1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "4980605f-0403-42ab-baad-eee4e191e83f",
+						"exec": [
+							"pm.test(\"Status code is 204\", function () {",
+							"    pm.response.to.have.status(204);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{admin_access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"attributes\": {\n        \"bgw_rules_write_access\": [\n            \"{{write_access_group_attributes}}\"\n        ]\n    }\n}"
+				},
+				"url": {
+					"raw": "{{realm1_address}}/groups/{{write_access_group_id_realm1}}",
+					"host": [
+						"{{realm1_address}}"
+					],
+					"path": [
+						"groups",
+						"{{write_access_group_id_realm1}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Set linksmart user attributes realm1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "4980605f-0403-42ab-baad-eee4e191e83f",
+						"exec": [
+							"pm.test(\"Status code is 204\", function () {",
+							"    pm.response.to.have.status(204);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{admin_access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"attributes\": {\n        \"bgw_rules\": [\n            \"{{linksmart_user_attributes_realm1}}\"\n        ]\n    }\n}"
+				},
+				"url": {
+					"raw": "{{realm1_address}}/users/{{linksmart_user_id_realm1}}",
+					"host": [
+						"{{realm1_address}}"
+					],
+					"path": [
+						"users",
+						"{{linksmart_user_id_realm1}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Set anonymous user attributes realm1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "4980605f-0403-42ab-baad-eee4e191e83f",
+						"exec": [
+							"pm.test(\"Status code is 204\", function () {",
+							"    pm.response.to.have.status(204);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{admin_access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"attributes\": {\n        \"bgw_rules\": [\n            \"{{anonymous_user_attributes_realm1}}\"\n        ]\n    }\n}"
+				},
+				"url": {
+					"raw": "{{realm1_address}}/users/{{anonymous_user_id_realm1}}",
+					"host": [
+						"{{realm1_address}}"
+					],
+					"path": [
+						"users",
+						"{{anonymous_user_id_realm1}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Set linksmart user attributes realm2",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "4980605f-0403-42ab-baad-eee4e191e83f",
+						"exec": [
+							"pm.test(\"Status code is 204\", function () {",
+							"    pm.response.to.have.status(204);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{admin_access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"attributes\": {\n        \"bgw_rules\": [\n            \"{{linksmart_user_attributes_realm2}}\"\n        ]\n    }\n}"
+				},
+				"url": {
+					"raw": "{{realm2_address}}/users/{{linksmart_user_id_realm2}}",
+					"host": [
+						"{{realm2_address}}"
+					],
+					"path": [
+						"users",
+						"{{linksmart_user_id_realm2}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Set anonymous user attributes realm2",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "4980605f-0403-42ab-baad-eee4e191e83f",
+						"exec": [
+							"pm.test(\"Status code is 204\", function () {",
+							"    pm.response.to.have.status(204);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{admin_access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"attributes\": {\n        \"bgw_rules\": [\n            \"{{anonymous_user_attributes_realm2}}\"\n        ]\n    }\n}"
+				},
+				"url": {
+					"raw": "{{realm2_address}}/users/{{anonymous_user_id_realm2}}",
+					"host": [
+						"{{realm2_address}}"
+					],
+					"path": [
+						"users",
+						"{{anonymous_user_id_realm2}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "auth-service password / linksmart / bgw-dev",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3ed4745e-a6d7-4513-b843-93ba73027ab0",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"isAuthorized\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.isAuthorized).to.eql(true);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "{{password}}",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "{{username}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"rule\": \"MQTT/#\",\n    \"openidConnectProviderName\": \"linksmart\"\n}"
+				},
+				"url": {
+					"raw": "{{url}}/auth/bgw/authorize",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"auth",
+						"bgw",
+						"authorize"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "auth-service password / linksmart / bgw-dev no body",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3ed4745e-a6d7-4513-b843-93ba73027ab0",
+						"exec": [
+							"pm.test(\"Status code is 400\", function () {",
+							"    pm.response.to.have.status(400);",
+							"});",
+							"pm.test(\"isAuthorized\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.isAuthorized).to.eql(false);",
+							"});",
+							"pm.test(\"error\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.error).to.eql(\"no rule string given\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "{{password}}",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "{{username}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{url}}/auth/bgw/authorize",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"auth",
+						"bgw",
+						"authorize"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "auth-service password / anonymous / bgw-dev",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3ed4745e-a6d7-4513-b843-93ba73027ab0",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"isAuthorized\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.isAuthorized).to.eql(false);",
+							"});",
+							"pm.test(\"error\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.error).to.eql(\"Forbidden\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"rule\": \"MQTT/#\",\n    \"openidConnectProviderName\": \"linksmart\"\n}"
+				},
+				"url": {
+					"raw": "{{url}}/auth/bgw/authorize",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"auth",
+						"bgw",
+						"authorize"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Retrieve access_token for linksmart / bgw-dev",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3acee57d-9db4-45ef-afd7-377b61edd85e",
+						"exec": [
+							"",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"let json = pm.response.json();",
+							"pm.environment.set('linksmart_access_token', json.access_token);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/x-www-form-urlencoded"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "grant_type",
+							"value": "password",
+							"type": "text"
+						},
+						{
+							"key": "client_id",
+							"value": "bgw_client",
+							"type": "text"
+						},
+						{
+							"key": "username",
+							"value": "{{username}}",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "{{password}}",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{realm2_token_endpoint}}",
+					"host": [
+						"{{realm2_token_endpoint}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "auth-service access_token / linksmart / bgw-dev",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3ed4745e-a6d7-4513-b843-93ba73027ab0",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"isAuthorized\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.isAuthorized).to.eql(true);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{linksmart_access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"rule\": \"MQTT/#\",\n    \"openidConnectProviderName\": \"linksmart\"\n}"
+				},
+				"url": {
+					"raw": "{{url}}/auth/bgw/authorize",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"auth",
+						"bgw",
+						"authorize"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "auth-service wrong access_token / linksmart / bgw-dev",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3ed4745e-a6d7-4513-b843-93ba73027ab0",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"isAuthorized\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.isAuthorized).to.eql(false);",
+							"});",
+							"pm.test(\"error\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.error).to.eql(\"Access token is invalid, error = JsonWebTokenError, invalid token\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "123{{linksmart_access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"rule\": \"MQTT/#\",\n    \"openidConnectProviderName\": \"linksmart\"\n}"
+				},
+				"url": {
+					"raw": "{{url}}/auth/bgw/authorize",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"auth",
+						"bgw",
+						"authorize"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "sc GET anonymous",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "a8ada4fd-da90-47e3-b27e-3b7991f06f9b",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{url}}/sc",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"sc"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "configuration-service PUT location sc1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "497176e6-bc24-494c-a78f-7c9a7e507d20",
+						"exec": [
+							"if (pm.iterationData.get(\"useConfigService\")) {",
+							"    pm.test(\"Status code is 200\", function() {",
+							"        pm.response.to.have.status(200);",
+							"    });",
+							"} else {",
+							"    pm.test(\"Status code is 404\", function() {",
+							"        pm.response.to.have.status(404);",
+							"    });",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "{{password}}",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "{{username}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"local_address\": \"http://{{servicesDomain}}:8082\"\n}"
+				},
+				"url": {
+					"raw": "{{url}}/configuration/locations?domain={{domain}}&location=sc1",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"configuration",
+						"locations"
+					],
+					"query": [
+						{
+							"key": "domain",
+							"value": "{{domain}}"
+						},
+						{
+							"key": "location",
+							"value": "sc1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "configuration-service PUT location sc2",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "497176e6-bc24-494c-a78f-7c9a7e507d20",
+						"exec": [
+							"if (pm.iterationData.get(\"useConfigService\")) {",
+							"    pm.test(\"Status code is 200\", function() {",
+							"        pm.response.to.have.status(200);",
+							"    });",
+							"} else {",
+							"    pm.test(\"Status code is 404\", function() {",
+							"        pm.response.to.have.status(404);",
+							"    });",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "{{password}}",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "{{username}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"local_address\": \"http://{{servicesDomain}}:8082\"\n}"
+				},
+				"url": {
+					"raw": "{{url}}/configuration/locations?domain={{domain}}&location=sc2",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"configuration",
+						"locations"
+					],
+					"query": [
+						{
+							"key": "domain",
+							"value": "{{domain}}"
+						},
+						{
+							"key": "location",
+							"value": "sc2"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "configuration-service PUT location sc3 invalid url",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "497176e6-bc24-494c-a78f-7c9a7e507d20",
+						"exec": [
+							"if (pm.iterationData.get(\"useConfigService\")) {",
+							"    pm.test(\"Status code is 400\", function() {",
+							"        pm.response.to.have.status(400);",
+							"    });",
+							"} else {",
+							"    pm.test(\"Status code is 404\", function() {",
+							"        pm.response.to.have.status(404);",
+							"    });",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "{{password}}",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "{{username}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"local_address\": \"http//{{servicesDomain}}:8082\"\n}"
+				},
+				"url": {
+					"raw": "{{url}}/configuration/locations?domain={{domain}}&location=sc3",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"configuration",
+						"locations"
+					],
+					"query": [
+						{
+							"key": "domain",
+							"value": "{{domain}}"
+						},
+						{
+							"key": "location",
+							"value": "sc3"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "configuration-service PUT location sc3 invalid host",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "497176e6-bc24-494c-a78f-7c9a7e507d20",
+						"exec": [
+							"if (pm.iterationData.get(\"useConfigService\")) {",
+							"    pm.test(\"Status code is 404\", function() {",
+							"        pm.response.to.have.status(404);",
+							"    });",
+							"} else {",
+							"    pm.test(\"Status code is 404\", function() {",
+							"        pm.response.to.have.status(404);",
+							"    });",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "{{password}}",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "{{username}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"local_address\": \"http//{{servicesDomain}}:8082\"\n}"
+				},
+				"url": {
+					"raw": "{{url}}/configuration/locations?domain=192.168.98.101&location=sc3",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"configuration",
+						"locations"
+					],
+					"query": [
+						{
+							"key": "domain",
+							"value": "192.168.98.101"
+						},
+						{
+							"key": "location",
+							"value": "sc3"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "configuration-service PUT location 3sc invalid location name",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "497176e6-bc24-494c-a78f-7c9a7e507d20",
+						"exec": [
+							"if (pm.iterationData.get(\"useConfigService\")) {",
+							"    pm.test(\"Status code is 400\", function() {",
+							"        pm.response.to.have.status(400);",
+							"    });",
+							"} else {",
+							"    pm.test(\"Status code is 404\", function() {",
+							"        pm.response.to.have.status(404);",
+							"    });",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "{{password}}",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "{{username}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"local_address\": \"htp://{{servicesDomain}}:8082\"\n}"
+				},
+				"url": {
+					"raw": "{{url}}/configuration/locations?domain={{domain}}&location=3sc",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"configuration",
+						"locations"
+					],
+					"query": [
+						{
+							"key": "domain",
+							"value": "{{domain}}"
+						},
+						{
+							"key": "location",
+							"value": "3sc"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "configuration-service GET locations",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "eefe1543-5330-4f27-8aa7-7f8a14b80ae7",
+						"exec": [
+							"if (pm.iterationData.get(\"useConfigService\")) {",
+							"    pm.test(\"Status code is 200\", function() {",
+							"        pm.response.to.have.status(200);",
+							"    });",
+							"} else {",
+							"    pm.test(\"Status code is 404\", function() {",
+							"        pm.response.to.have.status(404);",
+							"    });",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "{{password}}",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "{{username}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{url}}/configuration/locations",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"configuration",
+						"locations"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "sc1 GET anonymous",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "a8ada4fd-da90-47e3-b27e-3b7991f06f9b",
+						"exec": [
+							"if (pm.iterationData.get(\"useConfigService\")) {",
+							"    pm.test(\"Status code is 200\", function() {",
+							"        pm.response.to.have.status(200);",
+							"    });",
+							"} else {",
+							"    pm.test(\"Status code is 404\", function() {",
+							"        pm.response.to.have.status(404);",
+							"    });",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{url}}/sc1",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"sc1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "sc2 GET anonymous",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "a8ada4fd-da90-47e3-b27e-3b7991f06f9b",
+						"exec": [
+							"if (pm.iterationData.get(\"useConfigService\")) {",
+							"    pm.test(\"Status code is 200\", function() {",
+							"        pm.response.to.have.status(200);",
+							"    });",
+							"} else {",
+							"    pm.test(\"Status code is 404\", function() {",
+							"        pm.response.to.have.status(404);",
+							"    });",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{url}}/sc2",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"sc2"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "configuration-service DELETE location sc1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "497176e6-bc24-494c-a78f-7c9a7e507d20",
+						"exec": [
+							"if (pm.iterationData.get(\"useConfigService\")) {",
+							"    pm.test(\"Status code is 200\", function() {",
+							"        pm.response.to.have.status(200);",
+							"    });",
+							"} else {",
+							"    pm.test(\"Status code is 404\", function() {",
+							"        pm.response.to.have.status(404);",
+							"    });",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "{{password}}",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "{{username}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"local_address\": \"http://{{servicesDomain}}:8082\"\n}"
+				},
+				"url": {
+					"raw": "{{url}}/configuration/locations?domain={{domain}}&location=sc1",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"configuration",
+						"locations"
+					],
+					"query": [
+						{
+							"key": "domain",
+							"value": "{{domain}}"
+						},
+						{
+							"key": "location",
+							"value": "sc1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "sc2 GET anonymous",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "a8ada4fd-da90-47e3-b27e-3b7991f06f9b",
+						"exec": [
+							"if (pm.iterationData.get(\"useConfigService\")) {",
+							"    pm.test(\"Status code is 200\", function() {",
+							"        pm.response.to.have.status(200);",
+							"    });",
+							"} else {",
+							"    pm.test(\"Status code is 404\", function() {",
+							"        pm.response.to.have.status(404);",
+							"    });",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{url}}/sc2",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"sc2"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "configuration-service DELETE location sc2",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "497176e6-bc24-494c-a78f-7c9a7e507d20",
+						"exec": [
+							"if (pm.iterationData.get(\"useConfigService\")) {",
+							"    pm.test(\"Status code is 200\", function() {",
+							"        pm.response.to.have.status(200);",
+							"    });",
+							"} else {",
+							"    pm.test(\"Status code is 404\", function() {",
+							"        pm.response.to.have.status(404);",
+							"    });",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "{{password}}",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "{{username}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"local_address\": \"http://{{servicesDomain}}:8082\"\n}"
+				},
+				"url": {
+					"raw": "{{url}}/configuration/locations?domain={{domain}}&location=sc2",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"configuration",
+						"locations"
+					],
+					"query": [
+						{
+							"key": "domain",
+							"value": "{{domain}}"
+						},
+						{
+							"key": "location",
+							"value": "sc2"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "sc DELETE anonymous",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "a8ada4fd-da90-47e3-b27e-3b7991f06f9b",
+						"exec": [
+							"pm.test(\"Status code is 401\", function () {",
+							"    pm.response.to.have.status(401);",
+							"});",
+							"pm.test(\"error\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.error).to.eql(\"Forbidden\");",
+							"});",
+							"pm.test(\"WWW-Authenticate is present\", function () {",
+							"    pm.response.to.have.header(\"WWW-Authenticate\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{url}}/sc",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"sc"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "sc GET wrong password",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "a8ada4fd-da90-47e3-b27e-3b7991f06f9b",
+						"exec": [
+							"pm.test(\"Status code is 401\", function () {",
+							"    pm.response.to.have.status(401);",
+							"});",
+							"pm.test(\"error\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.error).to.eql(\"Unauthorized\");",
+							"});",
+							"pm.test(\"WWW-Authenticate is present\", function () {",
+							"    pm.response.to.have.header(\"WWW-Authenticate\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "username",
+							"value": "{{username}}",
+							"type": "string"
+						},
+						{
+							"key": "password",
+							"value": "wrong",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{url}}/sc",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"sc"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "sc DELETE password / linksmart",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "a8ada4fd-da90-47e3-b27e-3b7991f06f9b",
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "{{password}}",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "{{username}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{url}}/sc/jannis-linksmart-agent",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"sc",
+						"jannis-linksmart-agent"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "sc PUT password / linksmart",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "a8ada4fd-da90-47e3-b27e-3b7991f06f9b",
+						"exec": [
+							"pm.test(\"Status code is 201\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "{{password}}",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "{{username}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"id\": \"jannis-linksmart-agent\",\n    \"name\": \"_linksmart-la.tcp_\",\n    \"description\": \"The instantiation of an LinkSmart(R) IoT Agent. A service for Stream Mining and Machine Learning management.\",\n    \"meta\": {},\n    \"apis\": {\n        \"Agent MQTT API\": \"tcp://192.168.98.100:1883\",\n        \"Agent RESTful API\": \"http://imagon:8319/\",\n        \"sc\": \"http://192.168.98.100:8082\",\n        \"api1\": \"https://demo.linksmart.eu/api\",\n        \"api2\": \"http://demo.test.eu:8080\",\n        \"some_service\": \"http://some_service:8081\"\n    },\n    \"docs\": [\n        {\n            \"description\": \"Open API V2\",\n            \"apis\": [\n                \"Agent RESTful API\"\n            ],\n            \"type\": \"application/json\",\n            \"url\": \"http://imagon:8319/swagger-ui.html\"\n        }\n    ],\n    \"ttl\": 86400\n}"
+				},
+				"url": {
+					"raw": "{{url}}/sc/jannis-linksmart-agent",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"sc",
+						"jannis-linksmart-agent"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "sc GET anonymous / test translation",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "a8ada4fd-da90-47e3-b27e-3b7991f06f9b",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"Body matches translated encoded http address\", function () {",
+							"    let expected = pm.iterationData.get(\"expectedTranslatedHttpAddress\")+\"/aHR0cDovL2ltYWdvbjo4MzE5/swagger-ui.html\";",
+							"    pm.expect(pm.response.text()).to.include(expected);",
+							"});",
+							"pm.test(\"Body matches translated unencoded http address\", function () {",
+							"    let expected = pm.iterationData.get(\"expectedTranslatedHttpAddress\")+\"/sc\";",
+							"    pm.expect(pm.response.text()).to.include(expected);",
+							"});",
+							"pm.test(\"Body matches translated tcp address\", function () {",
+							"    let expected = pm.iterationData.get(\"expectedTranslatedMqttAddress\");",
+							"    pm.expect(pm.response.text()).to.include(expected);",
+							"});",
+							"pm.test(\"Body matches whitelisted address\", function () {",
+							"    pm.expect(pm.response.text()).to.include(\"http://demo.test.eu:8080\");",
+							"});",
+							"pm.test(\"Body matches address whitelisted with wildcard\", function () {",
+							"    pm.expect(pm.response.text()).to.include(\"https://demo.linksmart.eu/api\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{url}}/sc",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"sc"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "sc POST password / linksmart",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "a8ada4fd-da90-47e3-b27e-3b7991f06f9b",
+						"exec": [
+							"pm.test(\"Status code is 403\", function () {",
+							"    pm.response.to.have.status(403);",
+							"});",
+							"pm.test(\"error\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.error).to.eql(\"Forbidden\");",
+							"});",
+							"pm.test(\"WWW-Authenticate is not present\", function () {",
+							"    pm.response.to.not.have.header(\"WWW-Authenticate\");",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "{{password}}",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "{{username}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"_linksmart-gost.tcp_\",\n    \"description\": \"GOST API\",\n    \"meta\": {},\n    \"ttl\": 86400,\n    \"apis\": {\n        \"v1.0\": \"http://192.168.99.100:8080/v1.0/\"\n    }\n}"
+				},
+				"url": {
+					"raw": "{{url}}/sc",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"sc"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "sc DELETE password / linksmart",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "a8ada4fd-da90-47e3-b27e-3b7991f06f9b",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "{{password}}",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "{{username}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{url}}/sc/jannis-linksmart-agent",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"sc",
+						"jannis-linksmart-agent"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Retrieve access_token for linksmart / bgw-jannis-local",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "3acee57d-9db4-45ef-afd7-377b61edd85e",
+						"exec": [
+							"",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"let json = pm.response.json();",
+							"pm.environment.set('default_access_token', json.access_token);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/x-www-form-urlencoded"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "grant_type",
+							"value": "password",
+							"type": "text"
+						},
+						{
+							"key": "client_id",
+							"value": "bgw_client",
+							"type": "text"
+						},
+						{
+							"key": "username",
+							"value": "{{username}}",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "{{password}}",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{realm1_token_endpoint}}",
+					"host": [
+						"{{realm1_token_endpoint}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "sc PUT wrong access_token / linksmart",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "a8ada4fd-da90-47e3-b27e-3b7991f06f9b",
+						"exec": [
+							"pm.test(\"Status code is 401\", function () {",
+							"    pm.response.to.have.status(401);",
+							"});",
+							"pm.test(\"error\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.error).to.eql(\"Access token is invalid, error = JsonWebTokenError, invalid token\");",
+							"});",
+							"pm.test(\"WWW-Authenticate is present\", function () {",
+							"    pm.response.to.have.header(\"WWW-Authenticate\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "123{{default_access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"_linksmart-gost.tcp_\",\n    \"description\": \"GOST API\",\n    \"meta\": {},\n    \"ttl\": 86400,\n    \"apis\": {\n        \"v1.0\": \"http://192.168.99.100:8080/v1.0/\"\n    }\n}"
+				},
+				"url": {
+					"raw": "{{url}}/sc/jannis-linksmart-agent",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"sc",
+						"jannis-linksmart-agent"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "sc PUT access_token / linksmart",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "a8ada4fd-da90-47e3-b27e-3b7991f06f9b",
+						"exec": [
+							"pm.test(\"Status code is 201\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{default_access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"_linksmart-gost.tcp_\",\n    \"description\": \"GOST API\",\n    \"meta\": {},\n    \"ttl\": 86400,\n    \"apis\": {\n        \"v1.0\": \"http://192.168.99.100:8080/v1.0/\"\n    }\n}"
+				},
+				"url": {
+					"raw": "{{url}}/sc/jannis-linksmart-agent",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"sc",
+						"jannis-linksmart-agent"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "sc DELETE access_token / linksmart",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "a8ada4fd-da90-47e3-b27e-3b7991f06f9b",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{default_access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{url}}/sc/jannis-linksmart-agent",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"sc",
+						"jannis-linksmart-agent"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "c63c7c9f-9130-4261-9fc0-9210fec49f46",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "380448ac-0ecf-47f7-98e2-afc0b15861aa",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}
