@@ -67,7 +67,7 @@ server.get('/locations:domain:location', async (req, res, next) => {
     AAA.log(CAT.DEBUG, 'configuration-service', "Request to redis endpoint locations");
 
     if (!(config.configurationService && config.redis_host)) {
-        res.send(404, "Not Found");
+        res.send(404, "Not Found. Redis is not up and running.");
         return next();
     }
 
@@ -88,7 +88,7 @@ server.get('/locations:domain:location', async (req, res, next) => {
         keysFromRedis = await redisClient.keys(searchString);
     }
     catch (err) {
-        res.send(503, err);
+        res.send(500, err);
         return next();
     }
 
@@ -100,7 +100,7 @@ server.get('/locations:domain:location', async (req, res, next) => {
             value = await redisClient.get(keysFromRedis[i]);
         }
         catch (err) {
-            res.send(503, err);
+            res.send(500, err);
             return next();
         }
 
@@ -123,7 +123,7 @@ server.put('/locations:domain:location', async (req, res, next) => {
     AAA.log(CAT.DEBUG, 'configuration-service', "PUT request to redis endpoint locations with domain", req.query.domain, "and location", req.query.location);
 
     if (!(config.configurationService && config.redis_host)) {
-        res.send(404, "Not Found");
+        res.send(404, "Not Found. Redis is not up and running.");
         return next();
     }
 
@@ -153,7 +153,7 @@ server.put('/locations:domain:location', async (req, res, next) => {
             result = await redisClient.set("bgw-configuration-service-location:" + req.query.domain + "/" + req.query.location, JSON.stringify(req.body));
         }
         catch (err) {
-            res.send(503, err);
+            res.send(500, err);
             return next();
         }
 
@@ -176,7 +176,7 @@ server.del('/locations:domain:location', async (req, res, next) => {
     AAA.log(CAT.DEBUG, 'configuration-service', "DEL request to locations endpoint with domain", req.query.domain), "and location", req.query.location;
 
     if (!(config.configurationService && config.redis_host)) {
-        res.send(404, "Not Found");
+        res.send(404, "Not Found. Redis is not up and running.");
         return next();
     }
 
@@ -188,7 +188,7 @@ server.del('/locations:domain:location', async (req, res, next) => {
             numOfRemovedKeys = await redisClient.del("bgw-configuration-service-location:" + req.query.domain + "/" + req.query.location);
         }
         catch (err) {
-            res.send(503, err);
+            res.send(500, err);
             return next();
         }
         if (numOfRemovedKeys === 0) {

@@ -30,7 +30,9 @@ paths:
         '200':
           description: OK
         '404':
-          description: Not Found. Redis is not up and running
+          description: Not Found
+        '500':
+          description: Internal Server Error
         default:
           description: Unexpected error
     put:
@@ -64,7 +66,9 @@ paths:
         '400':
           description: Bad request
         '404':
-          description: Not Found. Redis is not up and running
+          description: Not Found
+        '500':
+          description: Internal Server Error
         default:
           description: Unexpected error
     delete:
@@ -91,7 +95,9 @@ paths:
         '400':
           description: Bad request
         '404':
-          description: Not Found. Redis is not up and running
+          description: Not Found
+        '500':
+          description: Internal Server Error
         default:
           description: Unexpected error
 components:
