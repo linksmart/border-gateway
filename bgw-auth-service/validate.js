@@ -100,11 +100,20 @@ async function getProfile(openid_connect_provider, source, username, password, a
         catch (err) {
             AAA.log(CAT.INVALID_ACCESS_TOKEN, 'auth-service', "Access token is invalid", err.name, err.message);
             if (err.name === "TokenExpiredError") {
-                decoded = jwt.verify(profile.access_token, pem, {
-                    audience: client_id,
-                    issuer: issuer,
-                    ignoreExpiration: true
-                });
+                try {
+                    decoded = jwt.verify(req_credentials.access_token, pem, {
+                        audience: client_id,
+                        issuer: issuer,
+                        ignoreExpiration: true
+                    });
+                }
+                catch (err) {
+                    AAA.log(CAT.INVALID_ACCESS_TOKEN, "Access token is invalid", err.name, err.message);
+                    return {
+                        status: false,
+                        error: "Access token is invalid, error = " + err.name + ", " + err.message
+                    };
+                }
                 let issuedAt = new Date(0);
                 issuedAt.setUTCSeconds(decoded.iat);
                 let expireAt = new Date(0);
@@ -189,11 +198,20 @@ async function getProfile(openid_connect_provider, source, username, password, a
         catch (err) {
             AAA.log(CAT.INVALID_ACCESS_TOKEN, 'auth-service', "Access token is invalid", err.name, err.message);
             if (err.name === "TokenExpiredError") {
-                decoded = jwt.verify(profile.access_token, pem, {
-                    audience: client_id,
-                    issuer: issuer,
-                    ignoreExpiration: true
-                });
+                try {
+                    decoded = jwt.verify(profile.access_token, pem, {
+                        audience: client_id,
+                        issuer: issuer,
+                        ignoreExpiration: true
+                    });
+                }
+                catch (err) {
+                    AAA.log(CAT.INVALID_ACCESS_TOKEN, "Access token is invalid", err.name, err.message);
+                    return {
+                        status: false,
+                        error: "Access token is invalid, error = " + err.name + ", " + err.message
+                    };
+                }
                 let issuedAt = new Date(0);
                 issuedAt.setUTCSeconds(decoded.iat);
                 let expireAt = new Date(0);
