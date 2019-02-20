@@ -37,14 +37,14 @@ function sendMessage(ws,data) {
 
 agent = new https.Agent(agentOptions);
 let url = process.argv[2];
-let accessToken = process.argv[3];
+//let accessToken = process.argv[3];
 let ws;
 
 if (url.includes('wss:')) {
-    ws = new WebSocket(url, accessToken, {agent: agent});
+    ws = new WebSocket(url, null, {agent: agent});
 }
 else {
-    ws = new WebSocket(url, accessToken);
+    ws = new WebSocket(url, null);
 }
 
 ws.on('error', function close(error, reason) {

@@ -1,5 +1,6 @@
 const config = require('./config');
 const WebSocket = require('ws');
+const url = require('url');
 const jwt = require('jsonwebtoken');
 const getPem = require('rsa-pem-from-mod-exp');
 const net = require('net');
@@ -72,14 +73,20 @@ function verifyClient(info) {
         return true;
     }
 
-    let protocols;
-    if (info.req.headers['sec-websocket-protocol']) {
-        protocols = info.req.headers['sec-websocket-protocol'].split(', ');
+    //let protocols;
+    //if (info.req.headers['sec-websocket-protocol']) {
+    //    protocols = info.req.headers['sec-websocket-protocol'].split(', ');
+    //}
+    //else {
+    //    return false;
+    //}
+    //let accessToken = protocols[protocols.length - 1];
+    let query = url.parse(info.req.url,true).query;
+
+    let accessToken;
+    if(query) {
+        accessToken = query.access_token
     }
-    else {
-        return false;
-    }
-    let accessToken = protocols[protocols.length - 1];
     AAA.log(CAT.DEBUG, 'websocket-proxy', "accessToken", accessToken);
 
     const payload = `WS/CONNECT/${config.upstream_host}/${config.upstream_port}`;

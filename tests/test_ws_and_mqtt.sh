@@ -28,8 +28,16 @@ cd $scriptDir
 testWebsockets=".\mqtt_over_websocket\index.js"
 testWebsocketsGeneric=".\generic_websocket\index.js"
 
+echo "generic websockets no token"
+node "$testWebsocketsGeneric" "$wsProtocol://$host:$wsPort/"
+
+if [ $? -ne 1 ]; then
+  echo "exit code = $?"
+  exit 1
+fi
+
 echo "generic websockets wrong token"
-node "$testWebsocketsGeneric" "$wsProtocol://$host:$wsPort/" "123"
+node "$testWebsocketsGeneric" "$wsProtocol://$host:$wsPort/?access_token=123"
 
 if [ $? -ne 1 ]; then
   echo "exit code = $?"
@@ -40,7 +48,7 @@ accessToken=$(curl --silent -d "client_id=bgw_client" -d "username=$user" -d "pa
 echo "accessToken: $accessToken"
 
 echo "generic websockets"
-node "$testWebsocketsGeneric" "$wsProtocol://$host:$wsPort/" "$accessToken"
+node "$testWebsocketsGeneric" "$wsProtocol://$host:$wsPort/?access_token=$accessToken"
 
 if [ $? -ne 0 ]; then
   echo "exit code = $?"
