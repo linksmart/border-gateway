@@ -1,0 +1,18 @@
+[
+  {
+    "tokenEndpoint": "https://auth.fit.fraunhofer.de/kc/realms/bgw-jannis-local/protocol/openid-connect/token",
+    "username": "linksmart",
+    "password": "demo",
+    "write_access_group_attributes": "HTTP/PUT/# HTTP/DELETE/#",
+    "anonymous_user_attributes_realm1": "HTTP/GET/bgw/+/sc/# HTTP/GET/bgw/+/scc/# HTTP/GET/bgw/+/sccc/# HTTP/GET/bgw/+/configuration/locations/#",
+    "anonymous_user_attributes_realm2": "HTTP/GET/#",
+    "linksmart_user_attributes_realm1": "HTTP/GET/# MQTT/# WS/CONNECT/localhost/5051",
+    "linksmart_user_attributes_realm2": "HTTP/GET/# MQTT/#",
+    "expectedTranslatedHttpAddress": "https://bgw:5050",
+    "expectedTranslatedMqttAddress": "tcp://mosquitto:1883",
+    "secure": true,
+    "ws_port": 9002,
+    "mqtt_port": 8883,
+    "domain": "bgw.test.eu"
+  }
+]

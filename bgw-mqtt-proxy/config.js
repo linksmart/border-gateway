@@ -21,7 +21,7 @@ let config = {
     },
     aaa_client: {
         name: "mqtt-proxy",
-        log_level: "",
+        log_level: "debug",
         no_timestamp: false
     },
     no_auth: false,

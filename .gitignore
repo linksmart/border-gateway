@@ -3,6 +3,9 @@ logs
 *.log
 npm-debug.log*
 
+# Postman environments
+postman_environment.json
+
 # ignore bgw files and admin key
 config/bgw_db
 config/admin*

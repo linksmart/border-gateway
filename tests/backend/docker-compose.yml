@@ -1,43 +1,56 @@
 version: '3.5'
 services:
+
   mosquitto:
     image: "eclipse-mosquitto"
     container_name: "mosquitto"
     ports:
-    - 1883:1883
+      - 1883:1883
+    networks:
+      - backend
     volumes:
-    - "./volumes/mosquitto/config:/mosquitto/config"
-    restart: always
+      - "./volumes/mosquitto/config:/mosquitto/config"
     logging:
       driver: "json-file"
       options:
         max-size: 10m
         max-file: "10"
+
   sc:
     image: "docker.linksmart.eu/sc:snapshot"
     container_name: "sc"
     ports:
-    - 8082:8082
+      - 8082:8082
+    networks:
+      - backend
     volumes:
-    - "./volumes/sc/conf:/conf"
-    restart: always
+      - "./volumes/sc/conf:/conf"
     logging:
       driver: "json-file"
       options:
         max-size: 10m
         max-file: "10"
+
   redis:
     container_name: redis
     image: redis:5-alpine
     ports:
-    - 6379:6379
-#    volumes:
-#    - "./volumes/redis/data:/data"
-#    entrypoint: redis-server --appendonly yes
+      - 6379:6379
+    networks:
+      - backend
+    #    volumes:
+    #    - "./volumes/redis/data:/data"
+    #    entrypoint: redis-server --appendonly yes
   redis-commander:
     container_name: redis-commander
     image: rediscommander/redis-commander:latest
     environment:
-    - REDIS_HOSTS=local:redis:6379
+      - REDIS_HOSTS=local:redis:6379
     ports:
-    - 8089:8081
+      - 8089:8081
+    networks:
+      - backend
+
+networks:
+  backend:
+    driver: bridge

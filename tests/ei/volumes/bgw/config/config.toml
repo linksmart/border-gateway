@@ -1,0 +1,62 @@
+[external-interface]
+tls_key = "/bgw/certs/bgw.test.eu_sec_key_wo_pass.pem"
+tls_cert = "/bgw/certs/bgw.test.eu.pem"
+
+[mqtt-proxy]
+
+  [mqtt-proxy.broker]
+  address = "mosquitto"
+  port = 1883
+  username = ""
+  password = ""
+  tls = false
+  tls_ca = ""
+  tls_client_key = ""
+  tls_client_cert = ""
+
+[http-proxy]
+
+  [http-proxy.domains]
+
+    [http-proxy.domains."bgw.test.eu"]
+
+      [http-proxy.domains."bgw.test.eu".sc]
+      local_address = "http://sc:8082"
+
+        [http-proxy.domains."bgw.test.eu".sc.translate_local_addresses]
+        whitelist = [
+          "*.linksmart.eu",
+          "demo.test.eu:8080"
+        ]
+
+      [http-proxy.domains."bgw.test.eu".auth]
+      local_address = "http://localhost:5053/auth"
+      no_auth = true
+      keep_authorization_header = true
+
+[websocket-proxy]
+realm_public_key_modulus = "hF2bmoFd35rgtsXny2NFXG-M-ywZPkuonyUC8fwYQ4axSB86gPXbkkgH5LsDkpJHovMvXUgDiEJg2k0TbEfy7edtpk1e0IpqY8KKFQ-Gz_YjxXPWEsO30k11T66aczDVC1aKFDuBCQ9ExZopTehR_awHn3FAuDHTGrG8W4bMJ3z1VqcFRh5fZG3vGFvPi6J-6QpV8P82wFqMHJWeBJGUThWMNCtgi88KXf8Jz1MgvXO-NnDK_KduJBo_c6Dm5NiZjReQtKRO8TXUkhglClwHU6sOGx0IIvgQ9q5vRwWf6ou6t5_40cNYiu86GYlHH-1dimb_f6CoiTBG8-99wgfxvw"
+realm_public_key_exponent = "AQAB"
+client_id = "bgw_client"
+issuer = "https://auth.fit.fraunhofer.de/kc/realms/bgw-jannis-local"
+
+[aaa-client]
+log_level = "debug"
+
+[auth-service]
+
+  [auth-service.openid_connect_providers]
+
+    [auth-service.openid_connect_providers.default]
+    issuer = "https://auth.fit.fraunhofer.de/kc/realms/bgw-jannis-local"
+    token_endpoint = "https://auth.fit.fraunhofer.de/kc/realms/bgw-jannis-local/protocol/openid-connect/token"
+    client_id = "bgw_client"
+    realm_public_key_modulus = "hF2bmoFd35rgtsXny2NFXG-M-ywZPkuonyUC8fwYQ4axSB86gPXbkkgH5LsDkpJHovMvXUgDiEJg2k0TbEfy7edtpk1e0IpqY8KKFQ-Gz_YjxXPWEsO30k11T66aczDVC1aKFDuBCQ9ExZopTehR_awHn3FAuDHTGrG8W4bMJ3z1VqcFRh5fZG3vGFvPi6J-6QpV8P82wFqMHJWeBJGUThWMNCtgi88KXf8Jz1MgvXO-NnDK_KduJBo_c6Dm5NiZjReQtKRO8TXUkhglClwHU6sOGx0IIvgQ9q5vRwWf6ou6t5_40cNYiu86GYlHH-1dimb_f6CoiTBG8-99wgfxvw"
+    realm_public_key_exponent = "AQAB"
+
+    [auth-service.openid_connect_providers.linksmart]
+    issuer = "https://auth.fit.fraunhofer.de/kc/realms/bgw-dev"
+    token_endpoint = "https://auth.fit.fraunhofer.de/kc/realms/bgw-dev/protocol/openid-connect/token"
+    client_id = "bgw_client"
+    realm_public_key_modulus = "iLadC5cb64ZdhEJrAQsGZShQtrCWCYuosInNY5988TLb90TV5z49uGxknM8BZ58p8N4-H6ngHpVw6KgxqR8NkyNDsZ4rOCNbqle74tiY5p8b6D6oWLhdJHFeOiOj9OmEKH9hFYYmFuWQVFvnO7ropzsgz4OvGCwadqjj4UvJccKAiLmbUSbGalCTnWwNRvrCMpDhW5_Dr90HDIcxQ6amATuSBMdiY9H4nPUdkQPkmF4qDfo5gbMJIGV_pBbKj8mq7Xn8hGBVryax3EeBUs8wfk1WCptlxnxWW06henmKisvLn6kguwHm4i_5XalR3sUJQzDsTuvfxUi0Phae0K1H1w"
+    realm_public_key_exponent = "AQAB"

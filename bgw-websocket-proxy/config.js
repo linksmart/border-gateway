@@ -5,6 +5,7 @@ let config = {
     upstream_host: "localhost",
     upstream_port: 5051,
     bind_port: 5052,
+    bind_address: "127.0.0.1",
     no_auth: false,
     no_auth_mqtt: true,
     realm_public_key_modulus: undefined,
@@ -13,7 +14,7 @@ let config = {
     issuer: undefined,
     aaa_client: {
         name: "websocket-proxy",
-        log_level: "",
+        log_level: "debug",
         no_timestamp: false
     }
 };

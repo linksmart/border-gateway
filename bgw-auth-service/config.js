@@ -5,7 +5,7 @@ let config = {
     bind_port: 5053,
     aaa_client: {
         name: "auth-service",
-        log_level: "",
+        log_level: "debug",
         no_timestamp: false
     },
     redis_expiration: 0,

@@ -14,7 +14,7 @@ let config = {
     domains: {},
     aaa_client: {
         name: "http-proxy",
-        log_level: "",
+        log_level: "debug",
         no_timestamp: false
     },
     no_auth: false,

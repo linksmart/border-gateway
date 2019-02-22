@@ -1,0 +1,27 @@
+{
+	"description": "LinkSmart Internal Service Catalog",
+	"dnssdEnabled": false,
+	"storage": {
+		"type": "memory",
+		"dsn": ""
+	},
+	"http": {
+		"bindAddr": "0.0.0.0",
+		"bindPort": 8082
+	},
+	"mqtt": {
+		"client": {
+			"brokerID": "main_broker",
+			"brokerURI": "tcp://mosquitto:1883",
+			"regTopics": [],
+			"willTopics": [],
+			"qos": 1,
+			"username": "linksmart",
+			"password": "demo"
+		},
+		"commonRegTopics": ["LS/v2/+/+/service",
+		"LS/v2/+/+/service/+"],
+		"commonWillTopics": ["LS/v2/+/+/will",
+		"LS/v2/+/+/will/+"]
+	}
+}

@@ -4,7 +4,8 @@ let agentOptions;
 let agent;
 
 agentOptions = {
-    rejectUnauthorized: false
+    rejectUnauthorized: false,
+    ca: process.argv[2]
 };
 
 function waitForSocketConnection(socket, callback) {
@@ -36,7 +37,7 @@ function sendMessage(ws,data) {
 }
 
 agent = new https.Agent(agentOptions);
-let url = process.argv[2];
+let url = process.argv[3];
 //let accessToken = process.argv[3];
 let ws;
 

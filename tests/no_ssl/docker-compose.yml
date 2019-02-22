@@ -1,23 +1,36 @@
 version: '3.5'
 services:
+
+  tester:
+    image: "tester:latest"
+    networks:
+      - public
+    links:
+      - "bgw:bgw.test.eu"
+    volumes:
+    - "../..:/bgw"
+    entrypoint:
+      - /bgw/tests/test.sh
+      - /bgw/certs/CA.pem
+      - no_ssl
+
   bgw:
     image: "docker.linksmart.eu/bgw:snapshot"
-    container_name: "bgw"
     ports:
-      - 5050:5050
-      - 5051:5051
-      - 5052:5052
-      - 9227:9227
-      - 9228:9228
-      - 9229:9229
-      - 9230:9230
-      - 9231:9231
+    - 9227:9227
+    - 9228:9228
+    - 9229:9229
+    - 9230:9230
+    - 9231:9231
+    networks:
+      - backend_backend
+      - public
     command: ["parts","bgw-http-proxy","bgw-mqtt-proxy","bgw-websocket-proxy","bgw-auth-service"]
     volumes:
-      - "./volumes/bgw/config:/bgw/config"
-    restart: always
-    logging:
-      driver: "json-file"
-      options:
-        max-size: 10m
-        max-file: "10"
+    - "./volumes/bgw/config:/bgw/config"
+
+networks:
+  public:
+    driver: bridge
+  backend_backend:
+    external: true

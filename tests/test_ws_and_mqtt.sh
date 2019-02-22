@@ -16,6 +16,9 @@ else
   mqttSecureParams="--insecure"
 fi
 
+echo "cat $CA"
+cat "$CA"
+
 mqttPort=$4
 wsPort=$5
 user=$6
@@ -23,13 +26,14 @@ pass=$7
 tokenEndpoint=$8
 
 scriptDir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+echo "scriptDir = $scriptDir"
 cd $scriptDir
 
-testWebsockets=".\mqtt_over_websocket\index.js"
-testWebsocketsGeneric=".\generic_websocket\index.js"
+testWebsockets="./mqtt_over_websocket/index.js"
+testWebsocketsGeneric="./generic_websocket/index.js"
 
 echo "generic websockets no token"
-node "$testWebsocketsGeneric" "$wsProtocol://$host:$wsPort/"
+node "$testWebsocketsGeneric" "$CA" "$wsProtocol://$host:$wsPort/"
 
 if [ $? -ne 1 ]; then
   echo "exit code = $?"
@@ -37,7 +41,7 @@ if [ $? -ne 1 ]; then
 fi
 
 echo "generic websockets wrong token"
-node "$testWebsocketsGeneric" "$wsProtocol://$host:$wsPort/?access_token=123"
+node "$testWebsocketsGeneric" "$CA" "$wsProtocol://$host:$wsPort/?access_token=123"
 
 if [ $? -ne 1 ]; then
   echo "exit code = $?"
@@ -48,7 +52,7 @@ accessToken=$(curl --silent -d "client_id=bgw_client" -d "username=$user" -d "pa
 echo "accessToken: $accessToken"
 
 echo "generic websockets"
-node "$testWebsocketsGeneric" "$wsProtocol://$host:$wsPort/?access_token=$accessToken"
+node "$testWebsocketsGeneric" "$CA" "$wsProtocol://$host:$wsPort/?access_token=$accessToken"
 
 if [ $? -ne 0 ]; then
   echo "exit code = $?"
@@ -56,7 +60,7 @@ if [ $? -ne 0 ]; then
 fi
 
 echo "websockets with user/pass qos 2"
-node "$testWebsockets" "$wsProtocol"://"$host":$wsPort/ $user $pass 2
+node "$testWebsockets" "$CA" "$wsProtocol"://"$host":$wsPort/ $user $pass 2
 
 if [ $? -ne 0 ]; then
   echo "exit code = $?"
@@ -64,7 +68,7 @@ if [ $? -ne 0 ]; then
 fi
 
 echo "websockets with user/pass qos 0"
-node "$testWebsockets" "$wsProtocol"://"$host":$wsPort/ $user $pass 0
+node "$testWebsockets" "$CA" "$wsProtocol"://"$host":$wsPort/ $user $pass 0
 
 if [ $? -ne 0 ]; then
   echo "exit code = $?"
@@ -72,7 +76,7 @@ if [ $? -ne 0 ]; then
 fi
 
 echo "websockets with user/pass qos 0 anonymous"
-node "$testWebsockets" "$wsProtocol"://"$host":$wsPort/ anonymous anonymous 0
+node "$testWebsockets" "$CA" "$wsProtocol"://"$host":$wsPort/ anonymous anonymous 0
 
 if [ $? -ne 1 ]; then
   echo "exit code = $?"
@@ -83,7 +87,7 @@ accessToken=$(curl --silent -d "client_id=bgw_client" -d "username=$user" -d "pa
 echo "accessToken: $accessToken"
 
 echo "websockets with user/pass qos 2"
-node "$testWebsockets" "$wsProtocol"://"$host":$wsPort/ $accessToken "" 2
+node "$testWebsockets" "$CA" "$wsProtocol"://"$host":$wsPort/ $accessToken "" 2
 
 if [ $? -ne 0 ]; then
   echo "exit code = $?"
@@ -91,7 +95,7 @@ if [ $? -ne 0 ]; then
 fi
 
 echo "websockets with user/pass qos 0"
-node "$testWebsockets" "$wsProtocol"://"$host":$wsPort/ $accessToken "" 0
+node "$testWebsockets" "$CA" "$wsProtocol"://"$host":$wsPort/ $accessToken "" 0
 
 if [ $? -ne 0 ]; then
   echo "exit code = $?"
@@ -99,7 +103,7 @@ if [ $? -ne 0 ]; then
 fi
 
 echo "mosquitto_pub anonymous"
-command="mosquitto_pub $mqttSecureParams -h $host -p $mqttPort -d -t LS/test -m \"hello there\" -q 0"
+command="mosquitto_pub --debug $mqttSecureParams -h $host -p $mqttPort -d -t LS/test -m \"hello there\" -q 0"
 echo "$command"
 eval "$command$"
 

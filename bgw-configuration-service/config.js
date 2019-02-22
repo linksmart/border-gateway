@@ -7,7 +7,7 @@ let config = {
     redis_host: undefined,
     aaa_client: {
         name: "configuration-service",
-        log_level: "",
+        log_level: "debug",
         no_timestamp: false
     },
     no_auth: false,

@@ -1,24 +1,40 @@
 version: '3.5'
 services:
+
+  tester:
+    image: "tester:latest"
+    networks:
+      - public
+    links:
+      - "bgw:bgw.test.eu"
+    volumes:
+    - "../..:/bgw"
+    entrypoint:
+      - /bgw/tests/test.sh
+      - /bgw/certs/CA.pem
+      - ei
+
   bgw:
     image: "docker.linksmart.eu/bgw:snapshot"
-    container_name: "bgw"
+    ulimits:
+      nofile:
+        soft: 50
+        hard: 50
     ports:
-      - 443:443
-      - 8883:8883
-      - 9002:9002
       - 9227:9227
       - 9228:9228
       - 9229:9229
       - 9230:9230
       - 9231:9231
-    command: ["start"]
+    networks:
+      - backend_backend
+      - public
     volumes:
       - "./volumes/bgw/config:/bgw/config"
-      - "./volumes/bgw/certs:/bgw/certs"
-    restart: always
-    logging:
-      driver: "json-file"
-      options:
-        max-size: 10m
-        max-file: "10"
+      - "../../certs:/bgw/certs"
+
+networks:
+  public:
+    driver: bridge
+  backend_backend:
+    external: true

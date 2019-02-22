@@ -1,14 +1,15 @@
 const mqtt = require('mqtt')
 const https = require('https');
-const url = process.argv[2];
-const username = process.argv[3];
-const password = process.argv[4];
-const qos = process.argv[5];
+const url = process.argv[3];
+const username = process.argv[4];
+const password = process.argv[5];
+const qos = process.argv[6];
 
 let client
 if (url.includes('wss:')) {
     agentOptions = {
-        rejectUnauthorized: false
+        rejectUnauthorized: false,
+        ca: process.argv[2]
     };
     agent = new https.Agent(agentOptions);
     client = mqtt.connect(url, {wsOptions: {agent: agent}, username: username, password: password});

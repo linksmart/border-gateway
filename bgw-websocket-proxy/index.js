@@ -9,13 +9,13 @@ const matchRules = require('./rules');
 
 function sendMessage(ws, msg) {
     waitForSocketConnection(ws, function () {
-        AAA.log(CAT.DEBUG, 'websocket-proxy', "Send message from net.Socket to WebSocket server");
+        AAA.log(CAT.DEBUG, 'websocket-proxy', "Send message from clientSocket to serverSocket");
         ws.send(msg);
     });
 }
 
 function sendNetMessage(socket, msg) {
-    AAA.log(CAT.DEBUG, 'websocket-proxy', "Send message from net.Socket to WebSocket server");
+    AAA.log(CAT.DEBUG, 'websocket-proxy', "Send message from serverSocket to clientSocket");
     socket.write(msg);
 }
 
@@ -23,7 +23,7 @@ function waitForSocketConnection(socket, callback) {
     setTimeout(
         function () {
             if (socket.readyState === 1) {
-                AAA.log(CAT.DEBUG, 'websocket-proxy', "Connection is made");
+                //AAA.log(CAT.DEBUG, 'websocket-proxy', "Connection is made");
                 if (callback != null) {
                     callback();
                 }
@@ -43,28 +43,48 @@ function createSocketToUpstream(serverSocket) {
         port: config.upstream_port
     };
 
-    const socket = net.connect(clientOptions);
+    const clientSocket = net.connect(clientOptions);
 
-    socket.on('connect', function open() {
-        AAA.log(CAT.DEBUG, 'websocket-proxy', "net.Socket to upstream open");
+    clientSocket.on('close', function close() {
+        AAA.log(CAT.DEBUG, 'websocket-proxy', "clientSocket event close");
+    });
+
+    clientSocket.on('connect', function open() {
+        AAA.log(CAT.DEBUG, 'websocket-proxy', "clientSocket event connect");
 
     });
 
-    socket.on('data', function incoming(data) {
-        AAA.log(CAT.DEBUG, 'websocket-proxy', "net.Socket from upstream data =  %s", data);
+    clientSocket.on('data', function incoming(data) {
+        AAA.log(CAT.DEBUG, 'websocket-proxy', "clientSocket event data (incoming), forward to serverSocket", data);
         sendMessage(serverSocket, data);
 
     });
 
-    socket.on('error', function error(error) {
-        AAA.log(CAT.DEBUG, 'websocket-proxy', "net.Socket to upstream error, error.message = %s", error.message);
+    clientSocket.on('drain', function drain() {
+        AAA.log(CAT.DEBUG, 'websocket-proxy', "clientSocket event drain");
     });
 
-    socket.on('close', function close() {
-        AAA.log(CAT.DEBUG, 'websocket-proxy', "net.Socket to upstream close");
+    clientSocket.on('end', function end() {
+        AAA.log(CAT.DEBUG, 'websocket-proxy', "clientSocket event end");
     });
 
-    return socket;
+    clientSocket.on('error', function error(error) {
+        AAA.log(CAT.DEBUG, 'websocket-proxy', "clientSocket event error", error.message);
+    });
+
+    clientSocket.on('lookup', function lookup() {
+        AAA.log(CAT.DEBUG, 'websocket-proxy', "clientSocket event lookup");
+    });
+
+    clientSocket.on('ready', function ready() {
+        AAA.log(CAT.DEBUG, 'websocket-proxy', "clientSocket event ready");
+    });
+
+    clientSocket.on('timeout', function timeout() {
+        AAA.log(CAT.DEBUG, 'websocket-proxy', "clientSocket event timeout");
+    });
+
+    return clientSocket;
 }
 
 function verifyClient(info) {
@@ -87,7 +107,7 @@ function verifyClient(info) {
     if(query) {
         accessToken = query.access_token
     }
-    AAA.log(CAT.DEBUG, 'websocket-proxy', "accessToken", accessToken);
+    //AAA.log(CAT.DEBUG, 'websocket-proxy', "accessToken", accessToken);
 
     const payload = `WS/CONNECT/${config.upstream_host}/${config.upstream_port}`;
     let profile = {};
@@ -108,7 +128,6 @@ function verifyClient(info) {
 
     if (decoded) {
         AAA.log(CAT.DEBUG, 'websocket-proxy', "Decoded access token:\n", decoded);
-        AAA.log(CAT.DEBUG, 'websocket-proxy', "typeof decoded:\n", typeof decoded);
 
         let hasRules = false;
         let rules = [];
@@ -138,37 +157,62 @@ function verifyClient(info) {
     }
 }
 
-const wss = new WebSocket.Server({port: config.bind_port, verifyClient: verifyClient});
+AAA.log(CAT.DEBUG, 'websocket-proxy', "Creating server",config.bind_address,config.bind_port);
+const wss = new WebSocket.Server({host: config.bind_address, port: config.bind_port, verifyClient: verifyClient});
 
-wss.on('connection', function connection(socket, request) {
-    AAA.log(CAT.DEBUG, 'websocket-proxy', "WebSocket from client connection");
-
-
-    let clientSocket = createSocketToUpstream(socket);
-
-    socket.on('error', function error(error) {
-        AAA.log(CAT.DEBUG, 'websocket-proxy', 'WebSocket from client error, error.message = ', error.message);
-    });
-
-    socket.on('upgrade', function upgrade(response) {
-        AAA.log(CAT.DEBUG, 'websocket-proxy', 'WebSocket from client upgrade');
-    });
-
-    socket.on('unexpected-response', function unexpectedResponse(request, response) {
-        AAA.log(CAT.DEBUG, 'websocket-proxy', "WebSocket from client unexpected-response");
-    });
-
-    socket.on('open', function open() {
-        AAA.log(CAT.DEBUG, 'websocket-proxy', "WebSocket from client open");
-    });
-
-    socket.on('close', function close() {
-        AAA.log(CAT.DEBUG, 'websocket-proxy', "WebSocket from client close");
-    });
-
-    socket.on('message', function incoming(data) {
-        AAA.log(CAT.DEBUG, 'websocket-proxy', 'WebSocket from client message = %s', data);
-        sendNetMessage(clientSocket, data);
-    });
-
+wss.on('close', function close() {
+    AAA.log(CAT.DEBUG, 'websocket-proxy', "sever event close");
 });
+
+wss.on('connection', function connection(serverSocket, request) {
+    AAA.log(CAT.DEBUG, 'websocket-proxy', "server event connection");
+
+
+    let clientSocket = createSocketToUpstream(serverSocket);
+
+    serverSocket.on('close', function close() {
+        AAA.log(CAT.DEBUG, 'websocket-proxy', "serverSocket event close");
+    });
+
+    serverSocket.on('error', function error(error) {
+        AAA.log(CAT.DEBUG, 'websocket-proxy', 'serverSocket event error', error.message);
+    });
+
+    serverSocket.on('message', function incoming(message) {
+        AAA.log(CAT.DEBUG, 'websocket-proxy', 'serverSocket event message, forward to clientSocket', message);
+        sendNetMessage(clientSocket, message);
+    });
+
+    serverSocket.on('open', function open() {
+        AAA.log(CAT.DEBUG, 'websocket-proxy', "serverSocket event open");
+    });
+
+    serverSocket.on('ping', function ping(data) {
+        AAA.log(CAT.DEBUG, 'websocket-proxy', "serverSocket event ping",data);
+    });
+
+    serverSocket.on('pong', function pong(data) {
+        AAA.log(CAT.DEBUG, 'websocket-proxy', "serverSocket event pong",data);
+    });
+
+    serverSocket.on('unexpected-response', function unexpectedResponse(request, response) {
+        AAA.log(CAT.DEBUG, 'websocket-proxy', "serverSocket event unexpected-response");
+    });
+
+    serverSocket.on('upgrade', function upgrade(response) {
+        AAA.log(CAT.DEBUG, 'websocket-proxy', 'serverSocket event upgrade');
+    });
+});
+
+wss.on('error', function error(err) {
+    AAA.log(CAT.DEBUG, 'websocket-proxy', "sever event error",err);
+});
+
+wss.on('headers', function headers() {
+    AAA.log(CAT.DEBUG, 'websocket-proxy', "sever event headers");
+});
+
+wss.on('listening', function listening() {
+    AAA.log(CAT.DEBUG, 'websocket-proxy', "sever event listening");
+});
+

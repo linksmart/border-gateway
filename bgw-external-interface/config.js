@@ -33,7 +33,7 @@ let config = {
         ],
     aaa_client: {
         name: "external-interface",
-        log_level: "",
+        log_level: "debug",
         no_timestamp: false
     }
 };
