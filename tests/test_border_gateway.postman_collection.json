@@ -2116,6 +2116,120 @@
 			"response": []
 		},
 		{
+			"name": "sc PUT password in query parameter / linksmart ",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "a8ada4fd-da90-47e3-b27e-3b7991f06f9b",
+						"exec": [
+							"pm.test(\"Status code is 201\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"id\": \"jannis-linksmart-agent\",\n    \"name\": \"_linksmart-la.tcp_\",\n    \"description\": \"The instantiation of an LinkSmart(R) IoT Agent. A service for Stream Mining and Machine Learning management.\",\n    \"meta\": {},\n    \"apis\": {\n        \"Agent MQTT API\": \"tcp://{{domain}}:1883\",\n        \"Agent RESTful API\": \"http://imagon:8319/\",\n        \"sc\": \"http://sc:8082\",\n        \"api1\": \"https://demo.linksmart.eu/api\",\n        \"api2\": \"http://demo.test.eu:8080\",\n        \"some_service\": \"http://some_service:8081\"\n    },\n    \"docs\": [\n        {\n            \"description\": \"Open API V2\",\n            \"apis\": [\n                \"Agent RESTful API\"\n            ],\n            \"type\": \"application/json\",\n            \"url\": \"http://imagon:8319/swagger-ui.html\"\n        }\n    ],\n    \"ttl\": 86400\n}"
+				},
+				"url": {
+					"raw": "{{url}}/sc/jannis-linksmart-agent?username={{username}}&password={{password}}",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"sc",
+						"jannis-linksmart-agent"
+					],
+					"query": [
+						{
+							"key": "username",
+							"value": "{{username}}"
+						},
+						{
+							"key": "password",
+							"value": "{{password}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "sc DELETE password in query parameter / linksmart",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "a8ada4fd-da90-47e3-b27e-3b7991f06f9b",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{url}}/sc/jannis-linksmart-agent?username={{username}}&password={{password}}",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"sc",
+						"jannis-linksmart-agent"
+					],
+					"query": [
+						{
+							"key": "username",
+							"value": "{{username}}"
+						},
+						{
+							"key": "password",
+							"value": "{{password}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "Retrieve access_token for linksmart / bgw-jannis-local",
 			"event": [
 				{
@@ -2342,6 +2456,112 @@
 					"path": [
 						"sc",
 						"jannis-linksmart-agent"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "sc PUT access_token in query parameter / linksmart ",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "a8ada4fd-da90-47e3-b27e-3b7991f06f9b",
+						"exec": [
+							"pm.test(\"Status code is 201\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"_linksmart-gost.tcp_\",\n    \"description\": \"GOST API\",\n    \"meta\": {},\n    \"ttl\": 86400,\n    \"apis\": {\n        \"v1.0\": \"http://192.168.99.100:8080/v1.0/\"\n    }\n}"
+				},
+				"url": {
+					"raw": "{{url}}/sc/jannis-linksmart-agent?username={{default_access_token}}",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"sc",
+						"jannis-linksmart-agent"
+					],
+					"query": [
+						{
+							"key": "username",
+							"value": "{{default_access_token}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "sc DELETE access_token in query parameter / linksmart",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "a8ada4fd-da90-47e3-b27e-3b7991f06f9b",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{url}}/sc/jannis-linksmart-agent?username={{default_access_token}}",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"sc",
+						"jannis-linksmart-agent"
+					],
+					"query": [
+						{
+							"key": "username",
+							"value": "{{default_access_token}}"
+						}
 					]
 				}
 			},

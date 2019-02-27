@@ -91,6 +91,10 @@ do
     echo "Runtime for $test: ${runtimes[$test]}"
 done
 
+# Stop backend (Mosquitto, Service Catalog, Redis)
+cd "$scriptDir/backend"
+docker-compose down
+
 printf "\n"
 echo "All tests successful :-)!"
 cd "$scriptDir"

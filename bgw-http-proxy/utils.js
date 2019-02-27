@@ -40,14 +40,37 @@ const httpAuth = async (req) => {
         protocol = req.headers['x-forwarded-proto'].toUpperCase();
     }
 
-    const path = req.originalUrl.replace('//', '/');
+    // get rid of query parameters
+    const path = req.originalUrl.split("?")[0].replace('//', '/');
     const payload = `${protocol}/${req.method}/${host}/${port}${path}`;
+
+    let authorization = "";
+    if(req.headers.authorization)
+    {
+        authorization = req.headers.authorization;
+    }
+    else
+    {
+        let query = url.parse(req.originalUrl,true).query;
+
+        if(query && query.username)
+        {
+            if(query.password)
+            {
+                authorization = 'Basic ' + Buffer.from(query.username + ':' + query.password).toString('base64');
+            }
+            else
+            {
+                authorization = 'Bearer ' + query.username;
+            }
+        }
+    }
 
     let response;
     try {
         response = await axios({
             method: 'post',
-            headers: {authorization: req.headers.authorization || ""},
+            headers: {authorization: authorization},
             url: config.auth_service + "/bgw/authorize",
             data: {
                 rule: payload,
