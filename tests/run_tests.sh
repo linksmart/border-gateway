@@ -42,6 +42,7 @@ if [ "$?" -ne 0 ]; then
   exit 1
 fi
 
+# Start backend (Mosquitto, Service Catalog, Redis)
 cd "$scriptDir/backend"
 docker-compose up -d
 

@@ -2,12 +2,9 @@ const toml = require('toml');
 const fs = require('fs');
 
 let config = {
+    serviceName: 'auth-service',
+    logLevel: process.env.LOG_LEVEL || 'info',
     bind_port: 5053,
-    aaa_client: {
-        name: "auth-service",
-        log_level: "debug",
-        no_timestamp: false
-    },
     redis_expiration: 0,
     redis_port: 6379,
     redis_host: undefined,
@@ -27,8 +24,8 @@ let config = {
 
 let configFromFile = toml.parse(fs.readFileSync('./config/config.toml'));
 
-if(configFromFile["auth-service"]) {
-    Object.assign(config, configFromFile["auth-service"]);
+if(configFromFile[config.serviceName]) {
+    Object.assign(config, configFromFile[config.serviceName]);
 }
 
 module.exports = config;

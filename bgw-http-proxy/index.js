@@ -1,7 +1,5 @@
-// console.log("__filename",__filename);
-// console.log("__dirname",__dirname);
-
 const config = require('./config');
+const logger = require('../logger/log')(config.serviceName,config.logLevel);
 const cors = require('cors');
 const app = require('express')();
 const https = require('https');
@@ -11,7 +9,6 @@ const agentHTTP = new http.Agent({});
 const agentHTTPS = new https.Agent({});
 const proxy = require('http-proxy/lib/http-proxy').createProxyServer({});
 const {httpAuth, transformURI, bgwIfy, REQ_TYPES} = require('./utils');
-const {AAA, CAT, debug, isDebugOn} = require('../bgw-aaa-client');
 
 app.use(cors());
 
@@ -59,7 +56,7 @@ app.use(async (req, res) => {
     }
 });
 proxy.on('error', function (err, req, res) {
-    AAA.log(CAT.DEBUG, 'http-proxy', 'Error in proxy: ', err, err.stack, err.message);
+    logger.log('error', 'Error in proxy',{errorName: err.name, errorMessage: err.message, errorStack: err.stack});
     if (req.bgw && req.bgw.forward_address) {
         res && res.status(500).json({error: `Border Gateway could not forward your request to ${req.bgw.forward_address}`});
     } else {
@@ -69,6 +66,6 @@ proxy.on('error', function (err, req, res) {
 });
 config.bind_addresses.forEach((addr) => {
     app.listen(config.bind_port, addr, () =>
-        AAA.log(CAT.PROCESS_START, 'http-proxy', `PID ${process.pid} listening on ${addr}:${config.bind_port}`));
+        logger.log('info', `${config.serviceName} listening on ${addr}:${config.bind_port}`));
 });
 

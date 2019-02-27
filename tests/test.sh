@@ -18,14 +18,6 @@ if [ "$POST_CHAT_MESSAGE" = true ] ; then
 fi
 }
 
-depcheck "$scriptDir/../bgw-aaa-client/"
-depcheck "$scriptDir/../bgw-auth-service/"
-depcheck "$scriptDir/../bgw-configuration-service/"
-depcheck "$scriptDir/../bgw-external-interface/"
-depcheck "$scriptDir/../bgw-http-proxy/"
-depcheck "$scriptDir/../bgw-mqtt-proxy/"
-depcheck "$scriptDir/../bgw-websocket-proxy/"
-
 declare -A runtimes
 
 cd "$scriptDir/$test"

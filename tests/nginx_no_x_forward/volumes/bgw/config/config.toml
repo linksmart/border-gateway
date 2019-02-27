@@ -51,9 +51,6 @@ realm_public_key_exponent = "AQAB"
 client_id = "bgw_client"
 issuer = "https://auth.fit.fraunhofer.de/kc/realms/bgw-jannis-local"
 
-[aaa-client]
-log_level = "debug"
-
 [auth-service]
 
   [auth-service.openid_connect_providers]

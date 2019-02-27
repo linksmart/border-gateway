@@ -1,8 +1,7 @@
 {
-  "name": "bgw-aaa-client",
+  "name": "logger",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "main": "log.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -14,6 +13,6 @@
     }
   },
   "dependencies": {
-    "toml": "latest"
+    "winston": "latest"
   }
 }

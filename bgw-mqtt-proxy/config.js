@@ -2,6 +2,8 @@ const toml = require('toml');
 const fs = require('fs');
 
 let config = {
+    serviceName: 'mqtt-proxy',
+    logLevel: process.env.LOG_LEVEL || 'info',
      bind_addresses: [
         "127.0.0.1"
     ],
@@ -19,18 +21,13 @@ let config = {
         tls_client_key: false,
         tls_client_cert: false
     },
-    aaa_client: {
-        name: "mqtt-proxy",
-        log_level: "debug",
-        no_timestamp: false
-    },
     no_auth: false,
     auth_service: "http://localhost:5053/auth",
     openidConnectProviderName: undefined
 };
 let configFromFile = toml.parse(fs.readFileSync('./config/config.toml'));
 
-if(configFromFile["mqtt-proxy"]) {
-    Object.assign(config, configFromFile["mqtt-proxy"]);
+if(configFromFile[config.serviceName]) {
+    Object.assign(config, configFromFile[config.serviceName]);
 }
 module.exports = config;

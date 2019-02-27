@@ -20,5 +20,5 @@ RUN apt-get update
 RUN apt-get install -y mosquitto-clients
 
 RUN npm install -g newman
-RUN npm install -g depcheck
+
 

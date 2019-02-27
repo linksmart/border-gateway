@@ -1,15 +1,14 @@
-const config = require("./config");
+const config = require('./config');
+const logger = require('../logger/log')(config.serviceName,config.logLevel);
 const fetch = require('node-fetch');
 const qs = require("querystring");
 //const matchRules = require('./rules');
 const jwt = require('jsonwebtoken');
 const getPem = require('rsa-pem-from-mod-exp');
 const https = require("https");
-const {AAA, CAT} = require('../bgw-aaa-client');
 const redis = require("redis");
 const asyncRedis = require("async-redis");
 let redisClient;
-let asyncRedisClient;
 const crypto = require('crypto');
 const algorithm = 'aes256';
 if (config.redis_expiration > 0) {
@@ -20,7 +19,7 @@ if (config.redis_expiration > 0) {
             if (options.total_retry_time > 1000 * 60) {
                 // End reconnecting after a specific timeout and flush all commands
                 // with a individual error
-                AAA.log(CAT.DEBUG, 'configuration-service', "Retry time exhausted");
+                logger.log('error', 'Retry time exhausted');
                 return new Error('Retry time exhausted');
             }
             if (options.attempt > 10) {
@@ -98,7 +97,8 @@ async function getProfile(openid_connect_provider, source, username, password, a
             });
         }
         catch (err) {
-            AAA.log(CAT.INVALID_ACCESS_TOKEN, 'auth-service', "Access token is invalid", err.name, err.message);
+            logger.log('error', 'Access token is invalid',{errorName:err.name,errorMessage:err.message});
+
             if (err.name === "TokenExpiredError") {
                 try {
                     decoded = jwt.verify(req_credentials.access_token, pem, {
@@ -108,7 +108,7 @@ async function getProfile(openid_connect_provider, source, username, password, a
                     });
                 }
                 catch (err) {
-                    AAA.log(CAT.INVALID_ACCESS_TOKEN, "Access token is invalid", err.name, err.message);
+                    logger.log('error', 'Access token is invalid',{errorName:err.name,errorMessage:err.message});
                     return {
                         status: false,
                         error: "Access token is invalid, error = " + err.name + ", " + err.message
@@ -118,14 +118,14 @@ async function getProfile(openid_connect_provider, source, username, password, a
                 issuedAt.setUTCSeconds(decoded.iat);
                 let expireAt = new Date(0);
                 expireAt.setUTCSeconds(decoded.exp);
-                AAA.log(CAT.DEBUG, 'auth-service', "IssuedAt ", issuedAt, ", expireAt ", expireAt);
+                logger.log('debug', 'Token lifespan',{issuedAt: issuedAt,expireAt: expireAt});
             }
             return {
                 status: false,
                 error: "Access token is invalid, error = " + err.name + ", " + err.message
             };
         }
-        AAA.log(CAT.DEBUG, 'auth-service', "Decoded access token:\n", decoded);
+        logger.log('debug', 'Decoded access token',{decoded: decoded});
         profile.at_body = decoded;
     }
 
@@ -142,14 +142,14 @@ async function getProfile(openid_connect_provider, source, username, password, a
                 const encryptedToken = await redisClient.get(redisKey);
                 const ttl = await redisClient.ttl(redisKey);
                 if (encryptedToken) {
-                    AAA.log(CAT.DEBUG, 'auth-service', "Retrieved access token with key ", redisKey, " from redis, ttl is ", ttl);
+                    logger.log('debug', 'Retrieved access token from redis',{key: redisKey, ttl: ttl});
                     profile.access_token = decrypt(encryptedToken, password);
                     retrievedFromRedis = true;
                 }
 
             }
             catch (err) {
-                AAA.log(CAT.DEBUG, 'auth-service', "Could not retrieve access token from Redis: ", err);
+                logger.log('error', 'Could not retrieve access token from Redis',{errorName:err.name,errorMessage:err.message});
             }
         }
 
@@ -171,19 +171,18 @@ async function getProfile(openid_connect_provider, source, username, password, a
 
                 let result = await fetch(`${token_endpoint}`, options); // see https://www.keycloak.org/docs/3.0/securing_apps/topics/oidc/oidc-generic.html
                 profile = await result.json();
-                //isDebugOn && debug('open id server result ', JSON.stringify(profile));
             } catch (e) {
-                AAA.log(CAT.WRONG_AUTH_SERVER_RES, 'auth-service', "DENIED This could be due to auth server being offline or failing", source);
+                logger.log('error', 'DENIED This could be due to auth server being offline or failing',{source: source});
                 return {
                     status: false,
-                    error: `Error in contacting the openid provider, ensure the openid provider is running and your bgw aaa_client host is correct`
+                    error: `Error in contacting the openid provider, ensure the openid provider is running and your host is set correctly`
                 };
             }
 
             if (!profile || !profile.access_token) {
                 let err = 'Unauthorized';
                 const res = {status: false, error: err};
-                AAA.log(CAT.INVALID_USER_CREDENTIALS, 'auth-service', err, source);
+                logger.log('error', 'Invalid user credentials',{error:err, source: source});
                 return res;
             }
         }
@@ -196,7 +195,7 @@ async function getProfile(openid_connect_provider, source, username, password, a
             });
         }
         catch (err) {
-            AAA.log(CAT.INVALID_ACCESS_TOKEN, 'auth-service', "Access token is invalid", err.name, err.message);
+            logger.log('error', 'Access token is invalid',{errorName:err.name,errorMessage:err.message});
             if (err.name === "TokenExpiredError") {
                 try {
                     decoded = jwt.verify(profile.access_token, pem, {
@@ -206,7 +205,7 @@ async function getProfile(openid_connect_provider, source, username, password, a
                     });
                 }
                 catch (err) {
-                    AAA.log(CAT.INVALID_ACCESS_TOKEN, "Access token is invalid", err.name, err.message);
+                    logger.log('error', 'Access token is invalid',{errorName:err.name,errorMessage:err.message});
                     return {
                         status: false,
                         error: "Access token is invalid, error = " + err.name + ", " + err.message
@@ -216,33 +215,33 @@ async function getProfile(openid_connect_provider, source, username, password, a
                 issuedAt.setUTCSeconds(decoded.iat);
                 let expireAt = new Date(0);
                 expireAt.setUTCSeconds(decoded.exp);
-                AAA.log(CAT.DEBUG, 'auth-service', "IssuedAt ", issuedAt, ", expireAt ", expireAt);
+                logger.log('debug', 'Token lifespan',{issuedAt: issuedAt,expireAt: expireAt});
             }
             return {
                 status: false,
                 error: "Access token is invalid, error " + err.name + ", " + err.message
             };
         }
-        AAA.log(CAT.DEBUG, 'auth-service', "Successfully decoded access token:\n", decoded);
+        logger.log('debug', 'Successfully decoded access token',{decoded: decoded});
         let issuedAt = new Date(0);
         issuedAt.setUTCSeconds(decoded.iat);
         let expireAt = new Date(0);
         expireAt.setUTCSeconds(decoded.exp);
-        AAA.log(CAT.DEBUG, 'auth-service', "IssuedAt ", issuedAt, ", expireAt ", expireAt);
+        logger.log('debug', 'Token lifespan',{issuedAt: issuedAt,expireAt: expireAt});
         if (!retrievedFromRedis && config.redis_expiration > 0) {
             const hash = crypto.createHash('sha256');
             hash.update(token_endpoint + username + password);
             const redisKey = hash.digest('hex');
             redisClient.set(redisKey, encrypt(profile.access_token, password), 'EX', config.redis_expiration);
             const ttl = await redisClient.ttl(redisKey);
-            AAA.log(CAT.DEBUG, 'auth-service', "Cached access token with key ", redisKey, " in redis, ttl is ", ttl);
+            logger.log('debug', 'Cached access token with key',{key: redisKey, ttl: ttl});
         }
 
         let json = Buffer.from(profile.access_token.split(".")[1], 'base64').toString('utf8');
         try {
             profile.at_body = JSON.parse(json);
         } catch (error) {
-            AAA.log(CAT.DEBUG, 'auth-service', "Error in JSON.parse, error = ", error, " json = ", json);
+            logger.log('error', 'Error in JSON.parse',{error: error, json: json});
             return {
                 status: false,
                 error: "Cannot parse json " + error.name + ", " + error.message
@@ -269,7 +268,7 @@ async function getProfile(openid_connect_provider, source, username, password, a
             status: false,
             error: err
         };
-        AAA.log(CAT.INVALID_USER_CREDENTIALS, 'auth-service', err, rule, source);
+        logger.log('error', 'Invalid user credentials',{error: err, rule: rule, source: source});
         return res;
     }
 

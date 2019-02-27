@@ -1,5 +1,5 @@
 const config = require('./config');
-const {AAA, CAT} = require('../bgw-aaa-client');
+const logger = require('../logger/log')(config.serviceName,config.logLevel);
 const app = require('express')();
 const bodyParser = require('body-parser');
 const validate = require("./validate");
@@ -16,8 +16,7 @@ app.post('/auth/bgw/authenticate', async (req, res) => {
         if (config.openid_connect_providers[req.body.openidConnectProviderName]) {
             openidConnectProviderName = req.body.openidConnectProviderName;
 
-        }
-        else {
+        } else {
             openidConnectProviderName = 'default';
 
         }
@@ -34,9 +33,7 @@ app.post('/auth/bgw/authenticate', async (req, res) => {
                 parts = username.split(":");
                 password = parts[1];
                 auth_type = 'access_token';
-            }
-
-            else if (parts[0] === 'Basic' && (username = decode64(parts[1]))) {
+            } else if (parts[0] === 'Basic' && (username = decode64(parts[1]))) {
                 parts = username.split(":");
                 username = parts[0];
                 password = parts[1];
@@ -53,19 +50,19 @@ app.post('/auth/bgw/authenticate', async (req, res) => {
             openidConnectProviderName: openidConnectProviderName,
             rules: authenticationResult.profile.rules
         });
-    }
-    else {
+    } else {
         res.status(200).json({
             isAuthenticated: false,
             openidConnectProviderName: openidConnectProviderName,
             error: authenticationResult.error
         });
     }
-    return;
 });
 
 app.post('/auth/bgw/authorize', async (req, res) => {
-        AAA.log(CAT.DEBUG,'auth-service', 'body', req.body);
+        logger.log('debug', 'POST request to authorize endpoint', {
+            body: req.body
+        });
         if (req.body && req.body.rule && (typeof req.body.rule === 'string')) {
 
             let openidConnectProviderName;
@@ -73,8 +70,7 @@ app.post('/auth/bgw/authorize', async (req, res) => {
             if (config.openid_connect_providers[req.body.openidConnectProviderName]) {
                 openidConnectProviderName = req.body.openidConnectProviderName;
 
-            }
-            else {
+            } else {
                 openidConnectProviderName = 'default';
 
             }
@@ -90,9 +86,7 @@ app.post('/auth/bgw/authorize', async (req, res) => {
                         parts = username.split(":");
                         password = parts[1];
                         auth_type = 'access_token';
-                    }
-
-                    else if (parts[0] === 'Basic' && (username = decode64(parts[1]))) {
+                    } else if (parts[0] === 'Basic' && (username = decode64(parts[1]))) {
                         parts = username.split(":");
                         username = parts[0];
                         password = parts[1];
@@ -113,16 +107,14 @@ app.post('/auth/bgw/authorize', async (req, res) => {
                         isAuthorized: true,
                         openidConnectProviderName: openidConnectProviderName
                     });
-                }
-                else {
+                } else {
                     res.status(200).json({
                         isAuthorized: false,
                         openidConnectProviderName: openidConnectProviderName,
                         error: authorizationResult.error
                     });
                 }
-            }
-            else {
+            } else {
                 res.status(200).json({
                     isAuthorized: false,
                     openidConnectProviderName: openidConnectProviderName,
@@ -135,7 +127,9 @@ app.post('/auth/bgw/authorize', async (req, res) => {
     }
 );
 
-app.listen(config.bind_port, () =>
-    AAA.log(CAT.PROCESS_START,'auth-service', `auth-service listening on port ${config.bind_port}`));
+app.listen(config.bind_port, () => {
 
-
+    logger.log('info', config.serviceName+' started', {
+        port: config.bind_port
+    });
+});

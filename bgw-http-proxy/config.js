@@ -2,6 +2,8 @@ const toml = require('toml');
 const fs = require('fs');
 
 let config = {
+    serviceName: 'http-proxy',
+    logLevel: process.env.LOG_LEVEL || 'info',
     bind_addresses: [
         "127.0.0.1"
     ],
@@ -12,11 +14,6 @@ let config = {
         http_req: false
     },
     domains: {},
-    aaa_client: {
-        name: "http-proxy",
-        log_level: "debug",
-        no_timestamp: false
-    },
     no_auth: false,
     auth_service: "http://localhost:5053/auth",
     configurationService: undefined,
@@ -28,8 +25,8 @@ let config = {
 
 let configFromFile = toml.parse(fs.readFileSync('./config/config.toml'));
 
-if(configFromFile["http-proxy"]) {
-    Object.assign(config, configFromFile["http-proxy"]);
+if(configFromFile[config.serviceName]) {
+    Object.assign(config, configFromFile[config.serviceName]);
 }
 
 module.exports = config;

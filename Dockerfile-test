@@ -1,6 +1,6 @@
 FROM docker.linksmart.eu/bgw:npm
 
-COPY ./bgw-aaa-client /bgw/bgw-aaa-client
+COPY ./logger /bgw/logger
 COPY ./bgw-auth-service /bgw/bgw-auth-service
 COPY ./bgw-external-interface /bgw/bgw-external-interface
 COPY ./bgw-http-proxy /bgw/bgw-http-proxy

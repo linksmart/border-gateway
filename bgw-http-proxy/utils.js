@@ -1,7 +1,7 @@
 const config = require('./config');
+const logger = require('../logger/log')(config.serviceName,config.logLevel);
 const {transformURI, decode} = require("./translate_res");
 const axios = require("axios");
-const {AAA, CAT, debug, isDebugOn} = require('../bgw-aaa-client');
 const url = require("url");
 
 const TYPES = {
@@ -20,14 +20,14 @@ const httpAuth = async (req) => {
         }
     }
 
-    AAA.log(CAT.DEBUG, 'http-proxy', 'req.headers.host:', req.headers.host, ' req.headers[x-forwarded-host]:', req.headers['x-forwarded-host']);
+    logger.log('debug', 'Host headers in request',{host: req.headers.host,x_fowarded_host:req.headers['x-forwarded-host']});
     let httpHost = req.headers['x-forwarded-host'] || req.headers.host;
     let splitHost;
     if (httpHost) {
         splitHost = httpHost.split(":");
     }
     else {
-        AAA.log(CAT.DEBUG, 'http-proxy', 'Strange http request, req.headers:', req.headers);
+        logger.log('debug', 'Strange http request',{requestHeaders: req.headers});
         return {
             isAuthorized: false
         }
@@ -56,7 +56,7 @@ const httpAuth = async (req) => {
         });
     }
     catch (error) {
-        AAA.log(CAT.DEBUG, 'http-proxy', 'auth-service returned an error message:', error.name, error.message);
+        logger.log('error', 'Error in auth-service',{errorName: error.name, errorMessage: error.message});
         return {
             isAuthorized: false,
             error: "Error in auth-service, " + error.name + ": " + error.message
@@ -74,14 +74,14 @@ const bgwIfy = async (req) => {
 
         //const public_domain = config.sub_domain_mode ?  host.includes(config.external_domain) : host === config.external_domain;
 
-        AAA.log(CAT.DEBUG, 'http-proxy', 'req.headers.host:', req.headers.host, ' req.headers[x-forwarded-host]:', req.headers['x-forwarded-host']);
+    logger.log('debug', 'Host headers in request',{host: req.headers.host,x_fowarded_host:req.headers['x-forwarded-host']});
         let httpHost = req.headers['x-forwarded-host'] || req.headers.host;
         let splitHost;
         if (httpHost) {
             splitHost = httpHost.split(":");
         }
         else {
-            AAA.log(CAT.DEBUG, 'http-proxy', 'Strange http request, req.headers:', req.headers);
+            logger.log('debug', 'Strange http request',{requestHeaders: req.headers});
             req.bgw = {type: TYPES.INVALID_EXTERNAL_DOMAIN};
             return;
         }
@@ -105,7 +105,7 @@ const bgwIfy = async (req) => {
                     });
                 }
                 catch (error) {
-                    AAA.log(CAT.DEBUG, 'http-proxy', 'configuration-service returned an error message:', error.name, error.message);
+                    logger.log('error', 'Error in configuration-service',{errorName: error.name, errorMessage: error.message});
                 }
 
                 if (response && response.data) {
@@ -115,7 +115,6 @@ const bgwIfy = async (req) => {
                             //expected format: <host>/<location>
                             let location = (key.split("/"))[1];
                             locationsFromConfigService[location] = response.data[key];
-                            AAA.log(CAT.DEBUG, 'http-proxy', "locationsFromConfigService[" + location + "]", JSON.stringify(response.data[key]));
                         }
 
                     }

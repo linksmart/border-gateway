@@ -1,6 +1,6 @@
 const config = require('./config');
+const logger = require('../logger/log')(config.serviceName, config.logLevel);
 const url = require("url");
-const {AAA, CAT} = require('../bgw-aaa-client');
 const restify = require('restify');
 const isVarName = require("is-var-name");
 const redis = require("redis");
@@ -11,22 +11,15 @@ const server = restify.createServer({
     name: 'bgw-configuration-service',
     version: '1.0.0'
 });
-
-// function getRedisClient() {
-//     if (redisClient && redisClient.isConnected) {
-//         return redisClient;
-//     }
-//     else {
 if (config.configurationService && config.redis_host) {
 
-    //try {
     redisClient = redis.createClient({
         port: config.redis_port, host: config.redis_host,
         retry_strategy: function (options) {
             if (options.total_retry_time > 1000 * 60) {
                 // End reconnecting after a specific timeout and flush all commands
                 // with a individual error
-                AAA.log(CAT.DEBUG, 'configuration-service', "Retry time exhausted");
+                logger.log('error', 'Retry time exhausted');
                 return new Error('Retry time exhausted');
             }
             if (options.attempt > 10) {
@@ -37,11 +30,7 @@ if (config.configurationService && config.redis_host) {
             return Math.min(options.attempt * 100, 3000);
         }
     });
-    // }
-    // catch (err) {
-    //     AAA.log(CAT.DEBUG, 'configuration-service', "Redis client to", config.redis_host, ":", config.redis_port, "could not be created");
-    //     return false;
-    // }
+
     asyncRedis.decorate(redisClient);
 
 
@@ -51,12 +40,7 @@ if (config.configurationService && config.redis_host) {
 
         }
     }
-    //return redisClient;
 }
-//}
-//}
-
-AAA.log(CAT.DEBUG, 'configuration-service', "redis_host", config.redis_host);
 
 
 server.use(restify.plugins.queryParser());
@@ -64,8 +48,7 @@ server.use(restify.plugins.bodyParser());
 
 server.get('/locations:domain:location', async (req, res, next) => {
 
-    AAA.log(CAT.DEBUG, 'configuration-service', "Request to redis endpoint locations");
-
+    logger.log('debug', 'Request to redis endpoint locations');
     if (!(config.configurationService && config.redis_host)) {
         res.send(404, "Not Found. Redis is not up and running.");
         return next();
@@ -86,30 +69,24 @@ server.get('/locations:domain:location', async (req, res, next) => {
     let keysFromRedis;
     try {
         keysFromRedis = await redisClient.keys(searchString);
-    }
-    catch (err) {
+    } catch (err) {
         res.send(500, err);
         return next();
     }
-
-    AAA.log(CAT.DEBUG, 'configuration-service', "keysFromRedis", keysFromRedis);
 
     for (let i = 0; i < keysFromRedis.length; i++) {
         let value;
         try {
             value = await redisClient.get(keysFromRedis[i]);
-        }
-        catch (err) {
+        } catch (err) {
             res.send(500, err);
             return next();
         }
 
-        AAA.log(CAT.DEBUG, 'configuration-service', "value", value);
         try {
             result[keysFromRedis[i].replace("bgw-configuration-service-location:", "")] = JSON.parse(value);
-        }
-        catch (err) {
-            AAA.log(CAT.DEBUG, 'configuration-service', "invalid JSON", err);
+        } catch (err) {
+            logger.log('error', 'invalid JSON', {error: err});
             result[keysFromRedis[i]] = value;
         }
     }
@@ -120,7 +97,7 @@ server.get('/locations:domain:location', async (req, res, next) => {
 
 server.put('/locations:domain:location', async (req, res, next) => {
 
-    AAA.log(CAT.DEBUG, 'configuration-service', "PUT request to redis endpoint locations with domain", req.query.domain, "and location", req.query.location);
+    logger.log('debug', 'PUT request to locations endpoint', {domain: req.query.domain, location: req.query.location});
 
     if (!(config.configurationService && config.redis_host)) {
         res.send(404, "Not Found. Redis is not up and running.");
@@ -151,8 +128,7 @@ server.put('/locations:domain:location', async (req, res, next) => {
         let result;
         try {
             result = await redisClient.set("bgw-configuration-service-location:" + req.query.domain + "/" + req.query.location, JSON.stringify(req.body));
-        }
-        catch (err) {
+        } catch (err) {
             res.send(500, err);
             return next();
         }
@@ -160,12 +136,10 @@ server.put('/locations:domain:location', async (req, res, next) => {
 
         if (result === "OK") {
             res.send(200, "OK");
-        }
-        else {
+        } else {
             res.send(400, "Bad Request");
         }
-    }
-    else {
+    } else {
         res.send(400, "Bad Request");
     }
     return next();
@@ -173,7 +147,7 @@ server.put('/locations:domain:location', async (req, res, next) => {
 
 server.del('/locations:domain:location', async (req, res, next) => {
 
-    AAA.log(CAT.DEBUG, 'configuration-service', "DEL request to locations endpoint with domain", req.query.domain), "and location", req.query.location;
+    logger.log('debug', 'DEL request to locations endpoint', {domain: req.query.domain, location: req.query.location});
 
     if (!(config.configurationService && config.redis_host)) {
         res.send(404, "Not Found. Redis is not up and running.");
@@ -186,25 +160,24 @@ server.del('/locations:domain:location', async (req, res, next) => {
         let result;
         try {
             numOfRemovedKeys = await redisClient.del("bgw-configuration-service-location:" + req.query.domain + "/" + req.query.location);
-        }
-        catch (err) {
+        } catch (err) {
             res.send(500, err);
             return next();
         }
         if (numOfRemovedKeys === 0) {
             res.send(404, "Not Found");
-        }
-        else {
+        } else {
             res.send(200, "OK");
         }
-    }
-    else {
+    } else {
         res.send(400, "Bad Request");
     }
     return next();
 });
 
-server.listen(config.bind_port, () =>
-    AAA.log(CAT.PROCESS_START, 'configuration-service', `configuration-service listening on port ${config.bind_port}`));
+server.listen(config.bind_port, () => {
+    logger.log('info', config.serviceName + ' listening on port '+config.bind_port);
+});
+
 
 

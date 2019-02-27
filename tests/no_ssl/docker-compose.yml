@@ -16,6 +16,9 @@ services:
 
   bgw:
     image: "docker.linksmart.eu/bgw:snapshot"
+    command: ["parts","bgw-http-proxy","bgw-mqtt-proxy","bgw-websocket-proxy","bgw-auth-service"]
+    environment:
+      LOG_LEVEL: "debug"
     ports:
     - 9227:9227
     - 9228:9228
@@ -25,7 +28,6 @@ services:
     networks:
       - backend_backend
       - public
-    command: ["parts","bgw-http-proxy","bgw-mqtt-proxy","bgw-websocket-proxy","bgw-auth-service"]
     volumes:
     - "./volumes/bgw/config:/bgw/config"
 

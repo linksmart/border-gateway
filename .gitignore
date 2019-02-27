@@ -3,6 +3,9 @@ logs
 *.log
 npm-debug.log*
 
+#IntelliJ
+.idea
+
 # Postman environments
 postman_environment.json
 

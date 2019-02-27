@@ -1,7 +1,25 @@
 const WebSocket = require('ws');
 const https = require('https');
+const winston = require('winston')
 let agentOptions;
 let agent;
+
+const myFormat = winston.format.printf(({ timestamp, label, level, message, metadata }) => {
+    return `${timestamp} [${label}] ${level}: ${message} ${JSON.stringify(metadata)}`;
+});
+
+const logger = winston.createLogger({
+    level: 'debug',
+    format: winston.format.combine(
+        winston.format.label({ label: 'generic_websocket' }),
+        winston.format.timestamp(),
+        winston.format.metadata({ fillExcept: ['message', 'level', 'timestamp', 'label'] }),
+        myFormat
+    ),
+    transports: [
+        new winston.transports.Console()
+    ]
+});
 
 agentOptions = {
     rejectUnauthorized: false,
@@ -38,7 +56,11 @@ function sendMessage(ws,data) {
 
 agent = new https.Agent(agentOptions);
 let url = process.argv[3];
-//let accessToken = process.argv[3];
+logger.log('debug', 'Starting generic_websocket', {
+    ca: process.argv[2],
+    url: url
+})
+
 let ws;
 
 if (url.includes('wss:')) {
@@ -49,12 +71,15 @@ else {
 }
 
 ws.on('error', function close(error, reason) {
-    console.log("Websocket connection closed, error", error, "reason", reason);
+    logger.log('error', 'Websocket connection closed',{
+        error: error,
+        reason: reason
+    });
     process.exit(1);
 });
 
 ws.on('pong', function pong() {
-    console.log("Pong received");
+    logger.log('info', 'Pong received',{});
     ws.terminate();
     process.exit(0);
 });

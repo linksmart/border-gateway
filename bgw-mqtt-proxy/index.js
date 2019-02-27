@@ -1,10 +1,9 @@
 const config = require('./config');
+const logger = require('../logger/log')(config.serviceName, config.logLevel);
 const net = require('net');
 const tls = require('tls');
 const shortid = require('shortid');
 const mqtt = require('mqtt-packet');
-
-const {AAA, CAT, debug} = require('../bgw-aaa-client');
 const validate = require('./validate');
 
 let packetSet = new Set([]);
@@ -13,7 +12,7 @@ function waitUntilEmpty(packetSet, callback, counter) {
     setTimeout(
         function () {
             if (packetSet.size === 0) {
-                AAA.log(CAT.DEBUG, 'mqtt-proxy', "disconnect can be forwarded");
+                logger.log('debug', 'disconnect can be forwarded');
                 if (callback != null) {
                     callback();
                 }
@@ -22,7 +21,7 @@ function waitUntilEmpty(packetSet, callback, counter) {
             } else {
                 counter++;
                 if ((counter % 1000) === 0) {
-                    AAA.log(CAT.DEBUG, 'mqtt-proxy', "waiting for %d seconds before disconnect can be forwarded: ", counter / 1000);
+                    logger.log('debug', "waiting for %d seconds before disconnect can be forwarded: ", counter / 1000);
                 }
                 waitUntilEmpty(packetSet, callback, counter);
             }
@@ -34,7 +33,7 @@ async function wrappedValidate(clientAddress, packet, credentials) {
     try {
         return await validate.validate(clientAddress, packet, credentials);
     } catch (err) {
-        AAA.log(CAT.BUG, 'mqtt-proxy', "err when validating", err);
+        logger.log('error', "Error when validating", {error: err});
         return {status: false};
     }
 }
@@ -49,7 +48,6 @@ const clientOptions = {
     cert: broker.tls && broker.tls_client_cert && fs.readFileSync(broker.tls_client_cert)
 };
 
-AAA.log(CAT.PROCESS_START, 'mqtt-proxy', "Creating mqtt-proxy server...");
 const server = net.createServer(serverOptions, (srcClient) => {
 
     const socketConnect = broker.tls ? tls.connect : net.connect;
@@ -60,9 +58,8 @@ const server = net.createServer(serverOptions, (srcClient) => {
         srcClient.on('data', (data) => {
             try {
                 srcParser.parse(data);
-            }
-            catch (err) {
-                AAA.log(CAT.DEBUG, 'mqtt-proxy', "Parse error in srcParser", err);
+            } catch (err) {
+                logger.log('error', "Parse error in srcParser", {error: err});
             }
         });
 
@@ -70,9 +67,8 @@ const server = net.createServer(serverOptions, (srcClient) => {
         config.authorize_response ? dstClient.on('data', (data) => {
             try {
                 dstParser.parse(data)
-            }
-            catch (err) {
-                AAA.log(CAT.DEBUG, 'mqtt-proxy', "Parse error in dstParser", err);
+            } catch (err) {
+                logger.log('error', "Parse error in dstParser", {error: err});
             }
         }) : dstClient.pipe(srcClient);
 
@@ -91,7 +87,7 @@ const server = net.createServer(serverOptions, (srcClient) => {
         let credentials = {};
 
         srcParser.on('packet', (packet) => {
-            AAA.log(CAT.DEBUG, 'mqtt-proxy', "packet event emitted", packet.cmd);
+            logger.log('debug', "packet event emitted", {command: packet.cmd});
             let packetID = shortid.generate();
 
             for (let key in packet) {
@@ -104,7 +100,7 @@ const server = net.createServer(serverOptions, (srcClient) => {
 
             if (packet.cmd !== 'disconnect') {
                 packetSet.add(packetID);
-                AAA.log(CAT.DEBUG, 'mqtt-proxy', "packetSet", packetSet);
+                logger.log('debug', "packetSet", {packetSet: packetSet});
             }
             // get the client key and store it
             if (packet.cmd === 'connect') {
@@ -119,7 +115,7 @@ const server = net.createServer(serverOptions, (srcClient) => {
             wrappedValidate(clientAddress, packet, credentials).then(result => {
                 let valid = result;
                 // got final result
-                AAA.log(CAT.DEBUG, 'mqtt-proxy', 'packet validated', packet.cmd);
+                logger.log('debug', "packet validated", {command: packet.cmd});
 
                 valid.packet = valid.packet && mqtt.generate(valid.packet);
 
@@ -129,18 +125,16 @@ const server = net.createServer(serverOptions, (srcClient) => {
                         waitUntilEmpty(packetSet, function () {
                             dstClient.write(valid.packet);
                         }, 0);
-                    }
-                    else {
+                    } else {
                         dstClient.write(valid.packet);
                     }
-                }
-                else {
+                } else {
                     // if the packet is invalid in the case of publish or subscribe and
                     // configs for disconnecting on unauthorized is set to true, then
                     // disconnect
                     if ((packet.cmd === 'subscribe' && config.disconnect_on_unauthorized_subscribe) ||
                         (packet.cmd === 'publish' && config.disconnect_on_unauthorized_publish)) {
-                        AAA.log(CAT.CON_TERMINATE, 'mqtt-proxy', 'disconnecting client for unauthorized ', packet.cmd);
+                        logger.log('info', "disconnecting client for unauthorized", {command: packet.cmd});
                         srcClient.destroy();
                         dstClient.destroy();
                     } else {
@@ -152,7 +146,7 @@ const server = net.createServer(serverOptions, (srcClient) => {
 
                 }
             }).catch(err => {
-                AAA.log(CAT.BUG, 'mqtt-proxy', "error when validating", err);
+                logger.log('error', "Error when validating", {error: err});
                 if (packet.cmd !== 'disconnect') {
                     packetSet.delete(packetID);
                 }
@@ -163,5 +157,5 @@ const server = net.createServer(serverOptions, (srcClient) => {
 
 config.bind_addresses.forEach((addr) => {
     server.listen(config.bind_port, addr, () =>
-        AAA.log(CAT.PROCESS_START, 'mqtt-proxy', `PID ${process.pid} listening on ${addr}:${config.bind_port}`));
+        logger.log('error', `${config.serviceName} listening on ${addr}:${config.bind_port}`));
 });

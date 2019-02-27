@@ -1,7 +1,7 @@
-const {connack, suback, puback, pubrec} = require('./packet_template');
 const config = require('./config');
+const logger = require('../logger/log')(config.serviceName,config.logLevel);
 const axios = require('axios');
-const {AAA, CAT} = require('../bgw-aaa-client');
+const {connack, suback, puback, pubrec} = require('./packet_template');
 
 const mqttAuth = async (port, credentials, method, path = '') => {
 
@@ -35,7 +35,7 @@ const mqttAuth = async (port, credentials, method, path = '') => {
         });
     }
     catch (error) {
-        AAA.log(CAT.DEBUG,'mqtt-proxy', 'auth-service returned an error message:', error.name, error.message);
+        logger.log('error', 'Error in auth-service',{errorName: error.name, errorMessage: error.message});
         return false
     }
 
