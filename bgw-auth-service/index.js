@@ -27,16 +27,14 @@ app.post('/auth/bgw/authenticate', async (req, res) => {
     let password = openid_connect_provider.anonymous_user || 'anonymous';
 
     if (req.headers && req.headers.authorization) {
-        let parts = req.headers.authorization.split(' ');
-        if (parts.length === 2) {
-            if ((parts[0] === 'Bearer' || parts[0] === 'bearer') && (username = parts[1])) {
-                parts = username.split(":");
-                password = parts[1];
+        let headerStrings = req.headers.authorization.split(' ');
+        if (headerStrings.length === 2) {
+            if ((headerStrings[0] === 'Bearer' || headerStrings[0] === 'bearer') && (username = headerStrings[1])) {
                 auth_type = 'access_token';
-            } else if (parts[0] === 'Basic' && (username = decode64(parts[1]))) {
-                parts = username.split(":");
-                username = parts[0];
-                password = parts[1];
+            } else if ((headerStrings[0] === 'Basic' || headerStrings[0] === 'basic') && (username = decode64(headerStrings[1]))) {
+                let separatorPos = username.indexOf(":");
+                password = username.substring((separatorPos+1));
+                username = username.substring(0,separatorPos);
                 auth_type = 'password';
             }
         }
@@ -80,16 +78,14 @@ app.post('/auth/bgw/authorize', async (req, res) => {
             let password = openid_connect_provider.anonymous_user || 'anonymous';
 
             if (req.headers && req.headers.authorization) {
-                let parts = req.headers.authorization.split(' ');
-                if (parts.length === 2) {
-                    if ((parts[0] === 'Bearer' || parts[0] === 'bearer') && (username = parts[1])) {
-                        parts = username.split(":");
-                        password = parts[1];
+                let headerStrings = req.headers.authorization.split(' ');
+                if (headerStrings.length === 2) {
+                    if ((headerStrings[0] === 'Bearer' || headerStrings[0] === 'bearer') && (username = headerStrings[1])) {
                         auth_type = 'access_token';
-                    } else if (parts[0] === 'Basic' && (username = decode64(parts[1]))) {
-                        parts = username.split(":");
-                        username = parts[0];
-                        password = parts[1];
+                    } else if ((headerStrings[0] === 'Basic' || headerStrings[0] === 'basic') && (username = decode64(headerStrings[1]))) {
+                        let separatorPos = username.indexOf(":");
+                        password = username.substring((separatorPos+1));
+                        username = username.substring(0,separatorPos);
                         auth_type = 'password';
                     }
                 }
