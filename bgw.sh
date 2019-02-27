@@ -10,6 +10,8 @@ function run_inspect_service {
 # export NODE_DEBUG=cluster,net,http,fs,tls,module,timers node
 # export NODE_DEBUG=net,http,tls node
 
+echo "Starting LinkSmart Border Gateway..."
+
 if [ "$1" = "parts" ]; then
 
      debugPort=9227
