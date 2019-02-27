@@ -5,8 +5,6 @@ const net = require('net');
 const httpProxy = require('http-proxy');
 const fs = require('fs');
 
-// debug('external interface configs', JSON.stringify(config, null, 4));
-
 const options = {
     key: fs.readFileSync(config.tls_key),
     cert: fs.readFileSync(config.tls_cert),
@@ -76,7 +74,7 @@ config.servers.forEach((srv) => {
                 logger.log('debug', `End connection ${srcClient.remoteAddress}:${srcClient.remotePort} > ${srv.bind_port}  > ${name}`);
             });
         });
-        external_interface.on('tlsClientError', (e) => debug('tls error,this could be a none tls connection, make sure to establish a proper tls connection, details...', e.stack || e));
+        external_interface.on('tlsClientError', (e) => logger.log('error', 'tls error,this could be a none tls connection, make sure to establish a proper tls connection, details...',{errorStack:e.stack}));
 
     }
     srv.bind_addresses.forEach((addr) => {

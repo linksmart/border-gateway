@@ -73,12 +73,12 @@ const server = net.createServer(serverOptions, (srcClient) => {
         }) : dstClient.pipe(srcClient);
 
         dstClient.on('error', (err) => {
-            debug('err in dstClient', err);
+            logger.log('error', "err in dstClient", {error: err});
             srcClient && srcClient.end && srcClient.end();
             dstClient.destroy();
         });
         srcClient.on('error', (err) => {
-            debug('err in srcClient', err);
+            logger.log('error', "err in srcClient", {error: err});
             dstClient && dstClient.end && dstClient.end();
             srcClient.destroy();
         });
