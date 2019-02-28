@@ -268,7 +268,7 @@ async function getProfile(openid_connect_provider, source, username, password, a
             status: false,
             error: err
         };
-        logger.log('error', 'Invalid user credentials',{error: err, rule: rule, source: source});
+        logger.log('error', 'Invalid user credentials',{error: err, rule: rules, source: source});
         return res;
     }
 
