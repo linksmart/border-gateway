@@ -1,7 +1,7 @@
 const winston = require('winston');
 
 const myFormat = winston.format.printf(({ timestamp, label, level, message, metadata }) => {
-    return `${timestamp} [${label}] ${level}: ${message} ${JSON.stringify(metadata,null,2)}`;
+    return `${timestamp} [${label}] ${level}: ${message} ${JSON.stringify(metadata)}`;
 });
 
 function logger(serviceName, logLevel)

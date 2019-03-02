@@ -33,6 +33,29 @@ if (config.configurationService && config.redis_host) {
 
     asyncRedis.decorate(redisClient);
 
+    redisClient.on('ready', function () {
+        logger.log('debug', 'redisClient is ready');
+    });
+
+    redisClient.on('connect', function () {
+        logger.log('debug', 'redisClient is connected');
+    });
+
+    redisClient.on('reconnecting', function () {
+        logger.log('debug', 'redisClient is reconnecting');
+    });
+
+    redisClient.on('error', function () {
+        logger.log('error', 'Error in redisClient', {error:error});
+    });
+
+    redisClient.on('end', function () {
+        logger.log('debug', 'redisClient has ended the connection');
+    });
+
+    redisClient.on('warning', function (warning) {
+        logger.log('info', 'Warning for redisClient',{warning:warning});
+    });
 
     for (let domain in config.domains) {
         for (let location in config.domains[domain]) {
@@ -48,7 +71,7 @@ server.use(restify.plugins.bodyParser());
 
 server.get('/locations:domain:location', async (req, res, next) => {
 
-    logger.log('debug', 'Request to redis endpoint locations');
+    logger.log('debug', 'GET request to endpoint locations');
     if (!(config.configurationService && config.redis_host)) {
         res.send(404, "Not Found. Redis is not up and running.");
         return next();
@@ -97,7 +120,7 @@ server.get('/locations:domain:location', async (req, res, next) => {
 
 server.put('/locations:domain:location', async (req, res, next) => {
 
-    logger.log('debug', 'PUT request to locations endpoint', {domain: req.query.domain, location: req.query.location});
+    logger.log('debug', 'PUT request to endpoint locations', {domain: req.query.domain, location: req.query.location});
 
     if (!(config.configurationService && config.redis_host)) {
         res.send(404, "Not Found. Redis is not up and running.");
@@ -147,7 +170,7 @@ server.put('/locations:domain:location', async (req, res, next) => {
 
 server.del('/locations:domain:location', async (req, res, next) => {
 
-    logger.log('debug', 'DEL request to locations endpoint', {domain: req.query.domain, location: req.query.location});
+    logger.log('debug', 'DEL request to endpoint locations', {domain: req.query.domain, location: req.query.location});
 
     if (!(config.configurationService && config.redis_host)) {
         res.send(404, "Not Found. Redis is not up and running.");
