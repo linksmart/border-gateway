@@ -1,5 +1,5 @@
 const config = require('./config');
-const logger = require('../logger/log')(config.serviceName,config.logLevel);
+const logger = require('../logger/log')(config.serviceName, config.logLevel);
 const {transformURI, decode} = require("./translate_res");
 const axios = require("axios");
 const url = require("url");
@@ -20,14 +20,28 @@ const httpAuth = async (req) => {
         }
     }
 
-    logger.log('debug', 'Host headers in request',{host: req.headers.host,x_fowarded_host:req.headers['x-forwarded-host']});
+    logger.log('debug', 'Host headers in request', {
+        host: req.headers.host,
+        x_fowarded_host: req.headers['x-forwarded-host']
+    });
+
     let httpHost = req.headers['x-forwarded-host'] || req.headers.host;
     let splitHost;
     if (httpHost) {
         splitHost = httpHost.split(":");
-    }
-    else {
-        logger.log('debug', 'Strange http request',{requestHeaders: req.headers});
+    } else {
+
+        let ip = req.headers['x-forwarded-for'] ||
+            (req.connection && req.connection.remoteAddress) ||
+            (req.socket && req.socket.remoteAddress) ||
+            (req.connection && req.connection.socket && req.connection.socket.remoteAddress);
+        logger.log('debug', 'Strange http request with empty or missing host header', {
+            ip: ip,
+            originalUrl: req.originalUrl,
+            httpVersion: req.httpVersion,
+            method: req.method,
+            headers: req.headers
+        });
         return {
             isAuthorized: false
         }
@@ -45,22 +59,15 @@ const httpAuth = async (req) => {
     const payload = `${protocol}/${req.method}/${host}/${port}${path}`;
 
     let authorization = "";
-    if(req.headers.authorization)
-    {
+    if (req.headers.authorization) {
         authorization = req.headers.authorization;
-    }
-    else
-    {
-        let query = url.parse(req.originalUrl,true).query;
+    } else {
+        let query = url.parse(req.originalUrl, true).query;
 
-        if(query && query.username)
-        {
-            if(query.password)
-            {
+        if (query && query.username) {
+            if (query.password) {
                 authorization = 'Basic ' + Buffer.from(query.username + ':' + query.password).toString('base64');
-            }
-            else
-            {
+            } else {
                 authorization = 'Bearer ' + query.username;
             }
         }
@@ -77,9 +84,8 @@ const httpAuth = async (req) => {
                 openidConnectProviderName: (req.bgw.alias && req.bgw.alias.openidConnectProviderName) || config.openidConnectProviderName || 'default'
             }
         });
-    }
-    catch (error) {
-        logger.log('error', 'Error in auth-service',{errorName: error.name, errorMessage: error.message});
+    } catch (error) {
+        logger.log('error', 'Error in auth-service', {errorName: error.name, errorMessage: error.message});
         return {
             isAuthorized: false,
             error: "Error in auth-service, " + error.name + ": " + error.message
@@ -97,14 +103,27 @@ const bgwIfy = async (req) => {
 
         //const public_domain = config.sub_domain_mode ?  host.includes(config.external_domain) : host === config.external_domain;
 
-    logger.log('debug', 'Host headers in request',{host: req.headers.host,x_fowarded_host:req.headers['x-forwarded-host']});
+        logger.log('debug', 'Host headers in request', {
+            host: req.headers.host,
+            x_fowarded_host: req.headers['x-forwarded-host']
+        });
+
         let httpHost = req.headers['x-forwarded-host'] || req.headers.host;
         let splitHost;
         if (httpHost) {
             splitHost = httpHost.split(":");
-        }
-        else {
-            logger.log('debug', 'Strange http request',{requestHeaders: req.headers});
+        } else {
+            let ip = req.headers['x-forwarded-for'] ||
+                (req.connection && req.connection.remoteAddress) ||
+                (req.socket && req.socket.remoteAddress) ||
+                (req.connection && req.connection.socket && req.connection.socket.remoteAddress);
+            logger.log('debug', 'Strange http request with empty or missing host header', {
+                ip: ip,
+                originalUrl: req.originalUrl,
+                httpVersion: req.httpVersion,
+                method: req.method,
+                headers: req.headers
+            });
             req.bgw = {type: TYPES.INVALID_EXTERNAL_DOMAIN};
             return;
         }
@@ -126,9 +145,11 @@ const bgwIfy = async (req) => {
                         headers: {authorization: req.headers.authorization || ""},
                         url: config.configurationService + "/locations"
                     });
-                }
-                catch (error) {
-                    logger.log('error', 'Error in configuration-service',{errorName: error.name, errorMessage: error.message});
+                } catch (error) {
+                    logger.log('error', 'Error in configuration-service', {
+                        errorName: error.name,
+                        errorMessage: error.message
+                    });
                 }
 
                 if (response && response.data) {
@@ -143,8 +164,7 @@ const bgwIfy = async (req) => {
                     }
                 }
             }
-        }
-        else {
+        } else {
             req.bgw = {type: TYPES.INVALID_EXTERNAL_DOMAIN};
             return;
 

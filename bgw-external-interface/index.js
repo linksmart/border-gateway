@@ -15,7 +15,7 @@ const options = {
 };
 
 config.servers.forEach((srv) => {
-    logger.log('info', 'Creating server '+srv.name+' for external interface');
+    logger.log('info', 'Creating server ' + srv.name + ' for external interface');
 
     let external_interface;
 
@@ -30,18 +30,33 @@ config.servers.forEach((srv) => {
 
         external_interface.on('proxyReq', function (proxyReq, req, res, options) {
 
-            logger.log('debug', 'Host headers in request',{host: req.headers.host,x_fowarded_host:req.headers['x-forwarded-host']});
+            logger.log('debug', 'Host headers in request', {
+                host: req.headers.host,
+                x_fowarded_host: req.headers['x-forwarded-host']
+            });
             proxyReq.setHeader('x-forwarded-proto', req['x-forwarded-proto'] || 'https');
-            if(req.headers.host) {
+            if (req.headers.host) {
                 proxyReq.setHeader('x-forwarded-host', req['x-forwarded-host'] || (req.headers.host.split(":"))[0] + ":" + srv.bind_port);
-                logger.log('debug', 'Host headers in request after setHeader',{host: req.headers.host,x_fowarded_host:req.headers['x-forwarded-host']});
-            }
-            else{
-                logger.log('debug', 'Strange http request',{requestHeaders: req.headers});
+                logger.log('debug', 'Host headers in request after setHeader', {
+                    host: req.headers.host,
+                    x_fowarded_host: req.headers['x-forwarded-host']
+                });
+            } else {
+                let ip = req.headers['x-forwarded-for'] ||
+                    (req.connection && req.connection.remoteAddress) ||
+                    (req.socket && req.socket.remoteAddress) ||
+                    (req.connection && req.connection.socket && req.connection.socket.remoteAddress);
+
+                logger.log('debug', 'Strange http request with empty or missing host header', {
+                    ip: req.ip,
+                    url: req.url,
+                    httpVersion: req.httpVersion,
+                    method: req.method,
+                    headers: req.headers
+                });
             }
         });
-    }
-    else {
+    } else {
         external_interface = tls.createServer(options, function (srcClient) {
 
             let dstClient = false;
@@ -59,7 +74,7 @@ config.servers.forEach((srv) => {
             } else if (srcClient.remoteAddress && srcClient.remotePort) {
                 dstClient = net.connect({host: dest_address, port: dest_port}, () => {
                     logger.log('debug', `Start connection ${srcClient.remoteAddress}:${srcClient.remotePort} > ${srcClient.localPort} > [PORT:${dstClient.localPort}] > ${name}`);
-                       dstClient.on('error', () => {
+                    dstClient.on('error', () => {
                         dstClient.destroy();
                         srcClient && srcClient.destroy();
                     });
@@ -74,7 +89,7 @@ config.servers.forEach((srv) => {
                 logger.log('debug', `End connection ${srcClient.remoteAddress}:${srcClient.remotePort} > ${srv.bind_port}  > ${name}`);
             });
         });
-        external_interface.on('tlsClientError', (e) => logger.log('error', 'tls error,this could be a none tls connection, make sure to establish a proper tls connection, details...',{errorStack:e.stack}));
+        external_interface.on('tlsClientError', (e) => logger.log('error', 'tls error,this could be a none tls connection, make sure to establish a proper tls connection, details...', {errorStack: e.stack}));
 
     }
     srv.bind_addresses.forEach((addr) => {
