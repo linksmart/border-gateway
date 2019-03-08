@@ -6,7 +6,7 @@
     "write_access_group_attributes": "HTTP/PUT/bgw.test.eu/5050/sc/jannis-linksmart-agent HTTP/DELETE/bgw.test.eu/5050/sc/jannis-linksmart-agent",
     "anonymous_user_attributes_realm1": "HTTP/GET/bgw.test.eu/5050/sc",
     "anonymous_user_attributes_realm2": "HTTP/GET/#",
-    "linksmart_user_attributes_realm1": "HTTP/GET/bgw.test.eu/5050/sc MQTT/# WS/CONNECT/localhost/5051",
+    "linksmart_user_attributes_realm1": "HTTP/GET/bgw.test.eu/5050/sc MQTT/# WS/CONNECT/+/+",
     "linksmart_user_attributes_realm2": "HTTP/GET/# MQTT/#",
     "expectedTranslatedHttpAddress": "http://bgw.test.eu:5050",
     "expectedTranslatedMqttAddress": "tcp://bgw.test.eu:1883",

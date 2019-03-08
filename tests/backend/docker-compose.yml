@@ -1,6 +1,30 @@
 version: '3.5'
 services:
 
+  websocket-test:
+    image: ksdn117/web-socket-test
+    container_name: "websocket-test"
+    ports:
+      - 8010:8010
+    networks:
+      - backend
+    logging:
+      driver: "json-file"
+      options:
+        max-size: 10m
+        max-file: "10"
+
+  grafana:
+    image: grafana/grafana
+    user: root
+    container_name: "grafana"
+    ports:
+      - 3000:3000
+    environment:
+      - GF_SERVER_ROOT_URL=https://localhost:444/grafana/
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_BASIC="Main Org."
+
   mosquitto:
     image: "eclipse-mosquitto"
     container_name: "mosquitto"

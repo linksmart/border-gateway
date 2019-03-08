@@ -1,30 +1,28 @@
 const WebSocket = require('ws');
+const logger = require('../../logger/log')("generic_websocket", "debug");
 const https = require('https');
 const winston = require('winston')
 let agentOptions;
 let agent;
 
-const myFormat = winston.format.printf(({ timestamp, label, level, message, metadata }) => {
-    return `${timestamp} [${label}] ${level}: ${message} ${JSON.stringify(metadata)}`;
-});
-
-const logger = winston.createLogger({
-    level: 'debug',
-    format: winston.format.combine(
-        winston.format.label({ label: 'generic_websocket' }),
-        winston.format.timestamp(),
-        winston.format.metadata({ fillExcept: ['message', 'level', 'timestamp', 'label'] }),
-        myFormat
-    ),
-    transports: [
-        new winston.transports.Console()
-    ]
-});
-
 agentOptions = {
     rejectUnauthorized: false,
     ca: process.argv[2]
 };
+
+
+function heartbeat() {
+    logger.log("debug", "client heartbeat");
+    clearTimeout(this.pingTimeout);
+
+    // Use `WebSocket#terminate()` and not `WebSocket#close()`. Delay should be
+    // equal to the interval at which your server sends out pings plus a
+    // conservative assumption of the latency.
+    this.pingTimeout = setTimeout(() => {
+        this.terminate();
+    }, 3000 + 1000);
+}
+
 
 function waitForSocketConnection(socket, callback) {
     setTimeout(
@@ -48,11 +46,6 @@ function sendPing(ws) {
     });
 }
 
-function sendMessage(ws,data) {
-    waitForSocketConnection(ws, function () {
-        ws.send(data);
-    });
-}
 
 agent = new https.Agent(agentOptions);
 let url = process.argv[3];
@@ -65,25 +58,80 @@ let ws;
 
 if (url.includes('wss:')) {
     ws = new WebSocket(url, null, {agent: agent});
-}
-else {
+} else {
     ws = new WebSocket(url, null);
 }
 
+ws.on('close', function close() {
+    logger.log("debug", "ws event close", {closeCode: this._closeCode});
+    clearTimeout(this.pingTimeout);
+    if(this._closeCode === 1006) {
+        process.exit(1);
+    }
+    else{
+        process.exit(0)
+    }
+});
+
 ws.on('error', function close(error, reason) {
-    logger.log('error', 'Websocket connection closed',{
+    logger.log('error', 'Websocket connection closed', {
         error: error,
         reason: reason
     });
     process.exit(1);
 });
 
+ws.on('message', function incoming(data) {
+
+    logger.log("debug", "ws event message", {data: data});
+});
+ws.on('open', heartbeat);
+
+ws.on('ping', heartbeat);
+
 ws.on('pong', function pong() {
-    logger.log('info', 'Pong received',{});
-    ws.terminate();
-    process.exit(0);
+    logger.log('info', 'Pong received', {});
+    //ws.close();
+    //process.exit(0);
 });
 
-sendPing(ws);
-sendMessage(ws,"hello")
+ws.on('unexpected-response', function unexpectedResponse(request, response) {
+    logger.log("debug", "ws event unexpected-response",{responseStatusCode:response.statusCode,responseStatusMessage:response.statusMessage});
+    process.exit(1);
+});
 
+ws.on('upgrade', function upgrade(response) {
+    logger.log("debug", "ws event upgrade");
+});
+
+
+sendPing(ws);
+sendMessage(ws, "hello world");
+const interval = setInterval(function send() {
+    sendMessage(ws, "hello"+(Math.floor(Date.now()) / 1000));
+}, 100);
+let iterations = 0;
+
+function sendMessage(ws, data) {
+    waitForSocketConnection(ws, function () {
+
+        if (iterations == 10) {
+            clearInterval(interval);
+            sendMessage(ws, "bye world");
+            setTimeout(()=>{ process.exit(0); }, 500);
+
+        }
+
+        ws.send(data, function ack(error) {
+            if (error) {
+                logger.log('error', 'Error while sending message', {
+                    error: error
+                });
+            } else {
+                logger.log("debug", 'Message sent ok');
+            }
+        });
+        iterations++;
+
+    });
+}
