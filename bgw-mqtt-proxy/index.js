@@ -6,8 +6,6 @@ const shortid = require('shortid');
 const mqtt = require('mqtt-packet');
 const validate = require('./validate');
 
-let packetSet = new Set([]);
-
 function waitUntilEmpty(packetSet, callback, counter) {
     setTimeout(
         function () {
@@ -31,6 +29,7 @@ function waitUntilEmpty(packetSet, callback, counter) {
 
 async function wrappedValidate(clientAddress, packet, credentials) {
     try {
+        logger.log('debug', "Validating", {packet: packet.cmd});
         return await validate.validate(clientAddress, packet, credentials);
     } catch (err) {
         logger.log('error', "Error when validating", {error: err});
@@ -84,7 +83,8 @@ const server = net.createServer(serverOptions, (srcClient) => {
         });
 
         const clientAddress = `${srcClient.remoteAddress}:${srcClient.remotePort}`;
-        let credentials = {};
+        srcClient.credentials = {};
+        srcClient.packetSet = new Set([]);
 
         srcParser.on('packet', (packet) => {
             logger.log('debug', "packet event emitted", {command: packet.cmd});
@@ -99,12 +99,12 @@ const server = net.createServer(serverOptions, (srcClient) => {
             }
 
             if (packet.cmd !== 'disconnect') {
-                packetSet.add(packetID);
-                logger.log('debug', "packetSet", {packetSet: packetSet});
+                srcClient.packetSet.add(packetID);
+                logger.log('debug', "srcClient.packetSet", {packetSet: srcClient.packetSet});
             }
             // get the client key and store it
             if (packet.cmd === 'connect') {
-                credentials = {username: packet.username, password: packet.password && "" + packet.password};
+                srcClient.credentials = {username: packet.username, password: packet.password && "" + packet.password};
 
                 delete packet.username;
                 delete packet.password;
@@ -112,7 +112,7 @@ const server = net.createServer(serverOptions, (srcClient) => {
                 broker.password && (packet.password = broker.password);
             }
 
-            wrappedValidate(clientAddress, packet, credentials).then(result => {
+            wrappedValidate(clientAddress, packet, srcClient.credentials).then(result => {
                 let valid = result;
                 // got final result
                 logger.log('debug', "packet validated", {command: packet.cmd});
@@ -122,7 +122,7 @@ const server = net.createServer(serverOptions, (srcClient) => {
                 if (valid.status) {
 
                     if (packet.cmd === 'disconnect') {
-                        waitUntilEmpty(packetSet, function () {
+                        waitUntilEmpty(srcClient.packetSet, function () {
                             dstClient.write(valid.packet);
                         }, 0);
                     } else {
@@ -142,13 +142,13 @@ const server = net.createServer(serverOptions, (srcClient) => {
                     }
                 }
                 if (packet.cmd !== 'disconnect') {
-                    packetSet.delete(packetID);
+                    srcClient.packetSet.delete(packetID);
 
                 }
             }).catch(err => {
                 logger.log('error', "Error when validating", {error: err});
                 if (packet.cmd !== 'disconnect') {
-                    packetSet.delete(packetID);
+                    srcClient.packetSet.delete(packetID);
                 }
             });
         });
@@ -157,5 +157,5 @@ const server = net.createServer(serverOptions, (srcClient) => {
 
 config.bind_addresses.forEach((addr) => {
     server.listen(config.bind_port, addr, () =>
-        logger.log('error', `${config.serviceName} listening on ${addr}:${config.bind_port}`));
+        logger.log('info', `${config.serviceName} listening on ${addr}:${config.bind_port}`));
 });
