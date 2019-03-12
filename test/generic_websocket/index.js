@@ -108,7 +108,7 @@ ws.on('upgrade', function upgrade(response) {
 sendPing(ws);
 sendMessage(ws, "hello world");
 const interval = setInterval(function send() {
-    sendMessage(ws, "hello"+(Math.floor(Date.now()) / 1000));
+    sendMessage(ws, "now "+(Math.floor(Date.now()) / 1000));
 }, 100);
 let iterations = 0;
 
