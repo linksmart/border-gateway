@@ -180,7 +180,6 @@ server.del('/locations:domain:location', async (req, res, next) => {
     if (req.query.domain && req.query.location) {
         let numOfRemovedKeys;
 
-        let result;
         try {
             numOfRemovedKeys = await redisClient.del("bgw-configuration-service-location:" + req.query.domain + "/" + req.query.location);
         } catch (err) {

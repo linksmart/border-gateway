@@ -94,7 +94,7 @@ app.post('/auth/bgw/authorize', async (req, res) => {
             let source = `[source:${req.connection.remoteAddress}:${req.connection.remotePort}]`;
             let authenticationResult = await validate.getProfile(openid_connect_provider, source, username, password, auth_type);
 
-            let authorizationResult = {status: false};
+            let authorizationResult;
             if (authenticationResult.status) {
                 authorizationResult = matchRules(authenticationResult.profile, req.body.rule, source);
 

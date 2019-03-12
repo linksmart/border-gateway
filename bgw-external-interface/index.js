@@ -48,7 +48,7 @@ config.servers.forEach((srv) => {
                     (req.connection && req.connection.socket && req.connection.socket.remoteAddress);
 
                 logger.log('debug', 'Strange http request with empty or missing host header', {
-                    ip: req.ip,
+                    ip: ip,
                     url: req.url,
                     httpVersion: req.httpVersion,
                     method: req.method,
