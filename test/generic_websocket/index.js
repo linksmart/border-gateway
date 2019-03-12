@@ -65,7 +65,7 @@ if (url.includes('wss:')) {
 ws.on('close', function close() {
     logger.log("debug", "ws event close", {closeCode: this._closeCode});
     clearTimeout(this.pingTimeout);
-    if(this._closeCode === 1006) {
+    if(this._closeCode === 1008) {
         process.exit(1);
     }
     else{

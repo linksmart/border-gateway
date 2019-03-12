@@ -6,7 +6,7 @@
     "write_access_group_attributes": "HTTPS/PUT/# HTTPS/DELETE/#",
     "anonymous_user_attributes_realm1": "HTTPS/GET/bgw.test.eu/+/sc/# HTTPS/GET/bgw.test.eu/+/scc/# HTTPS/GET/bgw.test.eu/+/sccc/# HTTPS/GET/bgw.test.eu/+/configuration/locations/#",
     "anonymous_user_attributes_realm2": "HTTPS/GET/#",
-    "linksmart_user_attributes_realm1": "HTTPS/GET/# MQTT/# WS/CONNECT/+/+",
+    "linksmart_user_attributes_realm1": "HTTPS/GET/# MQTT/# WS/CONNECT/+/+/# WS/CONNECT/+/+",
     "linksmart_user_attributes_realm2": "HTTPS/GET/# MQTT/#",
     "expectedTranslatedHttpAddress": "https://bgw.test.eu",
     "expectedTranslatedMqttAddress": "tcp://mosquitto:1883",

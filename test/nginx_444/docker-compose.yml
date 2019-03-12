@@ -28,7 +28,7 @@ services:
     volumes:
     - "../..:/bgw"
     entrypoint:
-      - /bgw/tests/test.sh
+      - /bgw/test/test.sh
       - /bgw/certs/CA.pem
       - nginx_444 
 
