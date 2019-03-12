@@ -7,6 +7,7 @@ let config = {
     mqtt_proxy_host: "localhost",
     mqtt_proxy_port: 5051,
     ws_upstream_host: undefined,
+    ws_upstream_path: undefined,
     ws_upstream_port: undefined,
     bind_port: 5052,
     bind_address: "127.0.0.1",

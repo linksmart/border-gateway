@@ -16,22 +16,52 @@ function heartbeat() {
     this.isAlive = true;
 }
 
-const wsAuth = async (request) => {
+const wsAuth = async (serverSocket, request) => {
 
     let query = url.parse(request.url, true).query;
 
-    if (query && query.access_token) {
+    if (query && query.accessToken) {
+        let decoded;
+        let pem = getPem(config.realm_public_key_modulus, config.realm_public_key_exponent);
+        try {
+            decoded = jwt.verify(query.accessToken, pem, {
+                audience: config.client_id,
+                issuer: config.issuer,
+                ignoreExpiration: false
+            });
+        } catch (err) {
+            logger.log("error", "Access token is invalid", {errorName: err.name, errorMessage: err.message});
+            return false;
+        }
+        logger.log('debug', 'Successfully decoded access token', {decoded: decoded});
+        let issuedAt = new Date(0);
+        issuedAt.setUTCSeconds(decoded.iat);
+        let expireAt = new Date(0);
+        expireAt.setUTCSeconds(decoded.exp);
+        serverSocket.bgwExpirationDate = expireAt;
+        logger.log('debug', 'Token lifespan', {issuedAt: issuedAt, expireAt: expireAt});
+
         return true;
-    } else if (query && query.username && query.password) {
+    } else if (query) {
+        let payload;
+        if(config.ws_upstream_path) {
+            payload = `WS/CONNECT/${config.ws_upstream_host}/${config.ws_upstream_port}/${config.ws_upstream_path}`;
+        }
+        else
+        {
+            payload = `WS/CONNECT/${config.ws_upstream_host}/${config.ws_upstream_port}`;
+        }
 
-
-        const payload = `WS/CONNECT/${config.upstream_host}/${config.upstream_port}`;
+        let authHeader = undefined;
+        if (query.username && query.password) {
+            authHeader = {authorization: 'Basic ' + Buffer.from(query.username + ':' + query.password).toString('base64')};
+        }
 
         let response;
         try {
             response = await axios({
                 method: 'post',
-                headers: {authorization: 'Basic ' + Buffer.from(query.username + ':' + query.password).toString('base64')},
+                headers: authHeader,
                 url: config.auth_service + "/bgw/authorize",
                 data: {
                     rule: payload,
@@ -51,7 +81,6 @@ const wsAuth = async (request) => {
     } else {
         return false;
     }
-
 };
 
 function sendMessages(ws, queue) {
@@ -77,6 +106,29 @@ function sendNetMessages(socket, queue) {
 function waitForWebSocketConnectionAndAuthorization(socket, callback) {
     setTimeout(
         function () {
+
+            let now = Date.now();
+            if (socket.bgwExpirationDate && socket.bgwExpirationDate.getTime() <= now) {
+                logger.log("debug", "Closing connection to server because provided accessToken has expired.", {
+                    bgwExpirationDate: socket.bgwExpirationDate.getTime(),
+                    now: now
+                });
+                socket.close(1008, "Provided accessToken has expired.");
+
+                if(socket.bgwClientSocket)
+                {
+                    socket.bgwClientSocket.terminate();
+                }
+
+                process.nextTick(() => {
+                    if ([socket.OPEN, socket.CLOSING].includes(socket.readyState)) {
+                        // Socket still hangs, hard close
+                        socket.terminate();
+                    }
+                });
+                return;
+            }
+
             if (socket.readyState === 1 && socket.bgwAuthorized) {
                 if (callback != null) {
                     callback();
@@ -122,7 +174,7 @@ function waitForNetSocketConnection(socket, callback) {
         }, 5); // wait 5 milisecond for the connection...
 }
 
-function createSocketToUpstream(serverSocket) {
+async function createSocketToUpstream(serverSocket, request) {
 
     const clientOptions = {
         host: config.mqtt_proxy_host,
@@ -141,7 +193,9 @@ function createSocketToUpstream(serverSocket) {
         serverSocket.bgwClientSocket.on('data', (data) => {
             serverSocket.bgwClientSocket.bgwQueue.push(data);
             logger.log("debug", "clientSocket (net) event data (incoming), forward to serverSocket", {queue: serverSocket.bgwClientSocket.bgwQueue});
-            sendMessages(serverSocket, serverSocket.bgwClientSocket.bgwQueue);
+            waitForWebSocketConnectionAndAuthorization(serverSocket, () => {
+                sendMessages(serverSocket, serverSocket.bgwClientSocket.bgwQueue);
+            });
         });
         serverSocket.bgwClientSocket.on('drain', () => {
             logger.log("debug", "clientSocket (net) event drain");
@@ -162,8 +216,28 @@ function createSocketToUpstream(serverSocket) {
             logger.log("debug", "clientSocket (net) event timeout");
         });
     } else {
-        let url = "ws://" + config.ws_upstream_host + ":" + config.ws_upstream_port;
-        serverSocket.bgwClientSocket = new WebSocket(url, serverSocket.protocol);
+
+        let query;
+        try {
+            query = await url.parse(request.url, true).query;
+        } catch (error) {
+
+            logger.log("error", "URL could not be parsed, terminating", {requestURL: request.url});
+            if(serverSocket.bgwClientSocket)
+            {
+                serverSocket.bgwClientSocket.terminate();
+            }
+            serverSocket.terminate();
+        }
+        delete query.username;
+        delete query.password;
+        delete query.accessToken;
+
+        let newUpstreamURL = new url.URL('/' + config.ws_upstream_path, "ws://" + config.ws_upstream_host + ":" + config.ws_upstream_port);
+        newUpstreamURL.search = new url.URLSearchParams(query);
+
+        //let upstreamURL = "ws://" + config.ws_upstream_host + ":" + config.ws_upstream_port +"/"+config.ws_upstream_path;
+        serverSocket.bgwClientSocket = new WebSocket(newUpstreamURL.toString(), serverSocket.protocol);
         serverSocket.bgwClientSocket.bgwQueue = [];
 
         serverSocket.bgwClientSocket.on('close', () => {
@@ -177,7 +251,9 @@ function createSocketToUpstream(serverSocket) {
         serverSocket.bgwClientSocket.on('message', (data) => {
             serverSocket.bgwClientSocket.bgwQueue.push(data);
             logger.log("debug", "clientSocket (net) event data (incoming), forward to serverSocket", {queue: serverSocket.bgwClientSocket.bgwQueue});
-            sendMessages(serverSocket, serverSocket.bgwClientSocket.bgwQueue);
+            waitForWebSocketConnectionAndAuthorization(serverSocket, () => {
+                sendMessages(serverSocket, serverSocket.bgwClientSocket.bgwQueue);
+            });
         });
 
         serverSocket.bgwClientSocket.on('open', () => {
@@ -212,19 +288,25 @@ function verifyClient(info) {
 
     let query = url.parse(info.req.url, true).query;
 
-    if (query && !query.access_token && query.password && query.username) {
+    if (query && !query.accessToken) {
         return true;
     }
 
     let accessToken;
     if (query) {
-        accessToken = query.access_token
+        accessToken = query.accessToken
     }
     let payload
     if (info.req.headers["sec-websocket-protocol"] === "mqtt") {
         payload = `WS/CONNECT/${config.mqtt_proxy_host}/${config.mqtt_proxy_port}`;
     } else {
-        payload = `WS/CONNECT/${config.ws_upstream_host}/${config.ws_upstream_port}`;
+        if(config.ws_upstream_path) {
+            payload = `WS/CONNECT/${config.ws_upstream_host}/${config.ws_upstream_port}/${config.ws_upstream_path}`;
+        }
+        else
+        {
+            payload = `WS/CONNECT/${config.ws_upstream_host}/${config.ws_upstream_port}`;
+        }
     }
     let profile = {};
 
@@ -268,7 +350,6 @@ function verifyClient(info) {
     } else {
         return false;
     }
-    logger.log("debug", "verifyClient returns undefined");
 }
 
 logger.log("debug", "Creating server " + config.bind_address + " " + config.bind_port);
@@ -331,16 +412,28 @@ wss.on('connection', function connection(serverSocket, request) {
     if (config.no_auth) {
         serverSocket.bgwAuthorized = true;
         logger.log("debug", "Authorized because of no_auth");
-        createSocketToUpstream(serverSocket);
+        createSocketToUpstream(serverSocket, request);
     } else {
-        wsAuth(request).then(result => {
+        wsAuth(serverSocket, request).then(result => {
             if (result) {
                 serverSocket.bgwAuthorized = true;
                 logger.log("debug", "Authorized because of auth-service");
-                createSocketToUpstream(serverSocket);
+                createSocketToUpstream(serverSocket, request);
             } else {
                 logger.log("debug", "Not Authorized, terminating.");
-                serverSocket.terminate();
+
+                if(serverSocket.bgwClientSocket)
+                {
+                    serverSocket.bgwClientSocket.terminate()
+                }
+                serverSocket.close(1008, "Not Authorized, terminating socket.");
+
+                process.nextTick(() => {
+                    if ([serverSocket.OPEN, serverSocket.CLOSING].includes(serverSocket.readyState)) {
+                        // Socket still hangs, hard close
+                        serverSocket.terminate();
+                    }
+                });
             }
         });
     }

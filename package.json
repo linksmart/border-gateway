@@ -25,5 +25,8 @@
   },
   "devDependencies": {
     "eslint": "latest"
+  },
+  "scripts": {
+    "test": "mocha"
   }
 }
