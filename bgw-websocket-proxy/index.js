@@ -162,7 +162,7 @@ function createSocketToUpstream(serverSocket) {
             logger.log("debug", "clientSocket (net) event timeout");
         });
     } else {
-        let url = "ws://" + config.ws_backend_host + ":" + config.ws_backend_port;
+        let url = "ws://" + config.ws_upstream_host + ":" + config.ws_upstream_port;
         serverSocket.bgwClientSocket = new WebSocket(url, serverSocket.protocol);
         serverSocket.bgwClientSocket.bgwQueue = [];
 
@@ -224,7 +224,7 @@ function verifyClient(info) {
     if (info.req.headers["sec-websocket-protocol"] === "mqtt") {
         payload = `WS/CONNECT/${config.mqtt_proxy_host}/${config.mqtt_proxy_port}`;
     } else {
-        payload = `WS/CONNECT/${config.ws_backend_host}/${config.ws_backend_port}`;
+        payload = `WS/CONNECT/${config.ws_upstream_host}/${config.ws_upstream_port}`;
     }
     let profile = {};
 
