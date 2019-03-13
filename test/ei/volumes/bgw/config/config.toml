@@ -35,8 +35,7 @@ tls_cert = "/bgw/certs/bgw.test.eu.pem"
       keep_authorization_header = true
 
 [websocket-proxy]
-ws_upstream_host = "websocket-test"
-ws_upstream_port = 8010
+ws_upstream_base_url = "ws://websocket-test:8010/"
 realm_public_key_modulus = "hF2bmoFd35rgtsXny2NFXG-M-ywZPkuonyUC8fwYQ4axSB86gPXbkkgH5LsDkpJHovMvXUgDiEJg2k0TbEfy7edtpk1e0IpqY8KKFQ-Gz_YjxXPWEsO30k11T66aczDVC1aKFDuBCQ9ExZopTehR_awHn3FAuDHTGrG8W4bMJ3z1VqcFRh5fZG3vGFvPi6J-6QpV8P82wFqMHJWeBJGUThWMNCtgi88KXf8Jz1MgvXO-NnDK_KduJBo_c6Dm5NiZjReQtKRO8TXUkhglClwHU6sOGx0IIvgQ9q5vRwWf6ou6t5_40cNYiu86GYlHH-1dimb_f6CoiTBG8-99wgfxvw"
 realm_public_key_exponent = "AQAB"
 client_id = "bgw_client"

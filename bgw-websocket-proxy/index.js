@@ -20,11 +20,11 @@ const wsAuth = async (serverSocket, request) => {
 
     let query = url.parse(request.url, true).query;
 
-    if (query && query.accessToken) {
+    if (query && query.access_token) {
         let decoded;
         let pem = getPem(config.realm_public_key_modulus, config.realm_public_key_exponent);
         try {
-            decoded = jwt.verify(query.accessToken, pem, {
+            decoded = jwt.verify(query.access_token, pem, {
                 audience: config.client_id,
                 issuer: config.issuer,
                 ignoreExpiration: false
@@ -43,18 +43,15 @@ const wsAuth = async (serverSocket, request) => {
 
         return true;
     } else if (query) {
+
         let payload;
-        if(config.ws_upstream_path) {
-            payload = `WS/CONNECT/${config.ws_upstream_host}/${config.ws_upstream_port}/${config.ws_upstream_path}`;
-        }
-        else
-        {
-            payload = `WS/CONNECT/${config.ws_upstream_host}/${config.ws_upstream_port}`;
-        }
+        let upstreamURL = new url.URL((config.ws_upstream_base_url.replace(/\/$/, "")) + (url.parse(request.url).pathname || ""));
+        payload = `WS/CONNECT/${upstreamURL.hostname}/${upstreamURL.port}${upstreamURL.pathname}`.replace(/\/$/, "");
+        logger.log('debug', 'Payload:', {payload: payload});
 
         let authHeader = undefined;
-        if (query.username && query.password) {
-            authHeader = {authorization: 'Basic ' + Buffer.from(query.username + ':' + query.password).toString('base64')};
+        if (query.basic_auth) {
+            authHeader = {authorization: 'Basic ' + query.basic_auth};
         }
 
         let response;
@@ -109,15 +106,18 @@ function waitForWebSocketConnectionAndAuthorization(socket, callback) {
 
             let now = Date.now();
             if (socket.bgwExpirationDate && socket.bgwExpirationDate.getTime() <= now) {
-                logger.log("debug", "Closing connection to server because provided accessToken has expired.", {
+                logger.log("debug", "Closing connection to server because provided access_token has expired.", {
                     bgwExpirationDate: socket.bgwExpirationDate.getTime(),
                     now: now
                 });
-                socket.close(1008, "Provided accessToken has expired.");
+                socket.close(1008, "Provided access_token has expired.");
 
-                if(socket.bgwClientSocket)
-                {
-                    socket.bgwClientSocket.terminate();
+                if (socket.bgwClientSocket) {
+                    if (socket.bgwClientSocket.constructor.name === "WebSocket") {
+                        socket.bgwClientSocket.terminate();
+                    } else {
+                        socket.bgwClientSocket.destroy();
+                    }
                 }
 
                 process.nextTick(() => {
@@ -223,21 +223,19 @@ async function createSocketToUpstream(serverSocket, request) {
         } catch (error) {
 
             logger.log("error", "URL could not be parsed, terminating", {requestURL: request.url});
-            if(serverSocket.bgwClientSocket)
-            {
+            if (serverSocket.bgwClientSocket) {
                 serverSocket.bgwClientSocket.terminate();
             }
             serverSocket.terminate();
         }
-        delete query.username;
-        delete query.password;
-        delete query.accessToken;
+        delete query.basic_auth;
+        delete query.access_token;
 
-        let newUpstreamURL = new url.URL('/' + config.ws_upstream_path, "ws://" + config.ws_upstream_host + ":" + config.ws_upstream_port);
-        newUpstreamURL.search = new url.URLSearchParams(query);
+        let upstreamURL = new url.URL((config.ws_upstream_base_url.replace(/\/$/, "")) + (url.parse(request.url).pathname || ""));
+        upstreamURL.search = new url.URLSearchParams(query);
 
-        //let upstreamURL = "ws://" + config.ws_upstream_host + ":" + config.ws_upstream_port +"/"+config.ws_upstream_path;
-        serverSocket.bgwClientSocket = new WebSocket(newUpstreamURL.toString(), serverSocket.protocol);
+        logger.log("debug", "Final upstream URL", {URL: upstreamURL.toString()});
+        serverSocket.bgwClientSocket = new WebSocket(upstreamURL.toString(), serverSocket.protocol);
         serverSocket.bgwClientSocket.bgwQueue = [];
 
         serverSocket.bgwClientSocket.on('close', () => {
@@ -288,32 +286,29 @@ function verifyClient(info) {
 
     let query = url.parse(info.req.url, true).query;
 
-    if (query && !query.accessToken) {
+    if (query && !query.access_token) {
         return true;
     }
 
-    let accessToken;
+    let access_token;
     if (query) {
-        accessToken = query.accessToken
+        access_token = query.access_token
     }
-    let payload
+    let payload;
+    let upstreamURL = new url.URL((config.ws_upstream_base_url.replace(/\/$/, "")) + (url.parse(info.req.url).pathname || ""));
+
     if (info.req.headers["sec-websocket-protocol"] === "mqtt") {
         payload = `WS/CONNECT/${config.mqtt_proxy_host}/${config.mqtt_proxy_port}`;
     } else {
-        if(config.ws_upstream_path) {
-            payload = `WS/CONNECT/${config.ws_upstream_host}/${config.ws_upstream_port}/${config.ws_upstream_path}`;
-        }
-        else
-        {
-            payload = `WS/CONNECT/${config.ws_upstream_host}/${config.ws_upstream_port}`;
-        }
+        payload = `WS/CONNECT/${upstreamURL.hostname}/${upstreamURL.port}${upstreamURL.pathname}`.replace(/\/$/, "");
     }
+    logger.log('debug', 'Payload:', {payload: payload});
     let profile = {};
 
     let decoded;
     let pem = getPem(config.realm_public_key_modulus, config.realm_public_key_exponent);
     try {
-        decoded = jwt.verify(accessToken, pem, {
+        decoded = jwt.verify(access_token, pem, {
             audience: config.client_id,
             issuer: config.issuer,
             ignoreExpiration: false
@@ -422,8 +417,7 @@ wss.on('connection', function connection(serverSocket, request) {
             } else {
                 logger.log("debug", "Not Authorized, terminating.");
 
-                if(serverSocket.bgwClientSocket)
-                {
+                if (serverSocket.bgwClientSocket) {
                     serverSocket.bgwClientSocket.terminate()
                 }
                 serverSocket.close(1008, "Not Authorized, terminating socket.");

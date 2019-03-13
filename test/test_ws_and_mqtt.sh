@@ -41,7 +41,7 @@ if [ $? -ne 1 ]; then
 fi
 
 echo "generic websockets wrong token"
-node "$testWebsocketsGeneric" "$CA" "$wsProtocol://$host:$wsPort/?accessToken=123"
+node "$testWebsocketsGeneric" "$CA" "$wsProtocol://$host:$wsPort/?access_token=123"
 
 if [ $? -ne 1 ]; then
   echo "exit code = $?"
@@ -49,7 +49,7 @@ if [ $? -ne 1 ]; then
 fi
 
 echo "generic websockets wrong password"
-node "$testWebsocketsGeneric" "$CA" "$wsProtocol://$host:$wsPort/?username=$user&password=123"
+node "$testWebsocketsGeneric" "$CA" "$wsProtocol://$host:$wsPort/?basic_auth=123"
 
 if [ $? -ne 1 ]; then
   echo "exit code = $?"
@@ -57,18 +57,19 @@ if [ $? -ne 1 ]; then
 fi
 
 echo "generic websockets correct password"
-node "$testWebsocketsGeneric" "$CA" "$wsProtocol://$host:$wsPort/?username=$user&password=$pass"
+basedPassword=$(echo -n "linksmart:demo" | base64)
+node "$testWebsocketsGeneric" "$CA" "$wsProtocol://$host:$wsPort/?basic_auth=$basedPassword"
 
 if [ $? -ne 0 ]; then
   echo "exit code = $?"
   exit 1
 fi
 
-accessToken=$(curl --silent -d "client_id=bgw_client" -d "username=$user" -d "password=$pass" -d "grant_type=password" -L "$tokenEndpoint" | jq -r ".access_token")
-echo "accessToken: $accessToken"
+access_token=$(curl --silent -d "client_id=bgw_client" -d "username=$user" -d "password=$pass" -d "grant_type=password" -L "$tokenEndpoint" | jq -r ".access_token")
+echo "access_token: $access_token"
 
 echo "generic websockets correct token"
-node "$testWebsocketsGeneric" "$CA" "$wsProtocol://$host:$wsPort/?accessToken=$accessToken"
+node "$testWebsocketsGeneric" "$CA" "$wsProtocol://$host:$wsPort/?access_token=$access_token"
 
 if [ $? -ne 0 ]; then
   echo "exit code = $?"
@@ -76,7 +77,7 @@ if [ $? -ne 0 ]; then
 fi
 
 echo "websockets with user/pass qos 2"
-node "$testWebsockets" "$CA" "$wsProtocol"://"$host:$wsPort/?accessToken=$accessToken" $user $pass 2
+node "$testWebsockets" "$CA" "$wsProtocol"://"$host:$wsPort/?access_token=$access_token" $user $pass 2
 
 if [ $? -ne 0 ]; then
   echo "exit code = $?"
@@ -84,7 +85,7 @@ if [ $? -ne 0 ]; then
 fi
 
 echo "websockets with user/pass qos 0"
-node "$testWebsockets" "$CA" "$wsProtocol"://"$host:$wsPort/?accessToken=$accessToken" $user $pass 0
+node "$testWebsockets" "$CA" "$wsProtocol"://"$host:$wsPort/?access_token=$access_token" $user $pass 0
 
 if [ $? -ne 0 ]; then
   echo "exit code = $?"
@@ -92,18 +93,18 @@ if [ $? -ne 0 ]; then
 fi
 
 echo "websockets with user/pass qos 0 anonymous"
-node "$testWebsockets" "$CA" "$wsProtocol"://"$host:$wsPort/?accessToken=$accessToken" anonymous anonymous 0
+node "$testWebsockets" "$CA" "$wsProtocol"://"$host:$wsPort/?access_token=$access_token" anonymous anonymous 0
 
 if [ $? -ne 1 ]; then
   echo "exit code = $?"
   exit 1
 fi
 
-accessToken=$(curl --silent -d "client_id=bgw_client" -d "username=$user" -d "password=$pass" -d "grant_type=password" -L "$tokenEndpoint" | jq -r ".access_token")
-echo "accessToken: $accessToken"
+access_token=$(curl --silent -d "client_id=bgw_client" -d "username=$user" -d "password=$pass" -d "grant_type=password" -L "$tokenEndpoint" | jq -r ".access_token")
+echo "access_token: $access_token"
 
 echo "websockets with user/pass qos 2"
-node "$testWebsockets" "$CA" "$wsProtocol"://"$host:$wsPort/?accessToken=$accessToken" $accessToken "" 2
+node "$testWebsockets" "$CA" "$wsProtocol"://"$host:$wsPort/?access_token=$access_token" $access_token "" 2
 
 if [ $? -ne 0 ]; then
   echo "exit code = $?"
@@ -111,7 +112,7 @@ if [ $? -ne 0 ]; then
 fi
 
 echo "websockets with user/pass qos 0"
-node "$testWebsockets" "$CA" "$wsProtocol"://"$host:$wsPort/?accessToken=$accessToken" $accessToken "" 0
+node "$testWebsockets" "$CA" "$wsProtocol"://"$host:$wsPort/?access_token=$access_token" $access_token "" 0
 
 if [ $? -ne 0 ]; then
   echo "exit code = $?"
