@@ -12,12 +12,13 @@ let config = {
         default: {
             issuer: "",
             token_endpoint: "",
+            audience: "",
             client_id: "",
             client_secret: "",
+            scope: "openid",
             realm_public_key_modulus: "",
             realm_public_key_exponent: "",
-            anonymous_user: "anonymous",
-            anonymous_pass: "anonymous"
+            anonymous_bgw_rules: ""
         }
     }
 };

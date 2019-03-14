@@ -4,8 +4,6 @@
     "username": "linksmart",
     "password": "demo",
     "write_access_group_attributes": "HTTP/PUT/# HTTP/DELETE/#",
-    "anonymous_user_attributes_realm1": "HTTP/GET/bgw/+/sc/# HTTP/GET/bgw/+/scc/# HTTP/GET/bgw/+/sccc/# HTTP/GET/bgw/+/configuration/locations/#",
-    "anonymous_user_attributes_realm2": "HTTP/GET/#",
     "linksmart_user_attributes_realm1": "HTTP/GET/# MQTT/# WS/CONNECT/+/+/# WS/CONNECT/+/+",
     "linksmart_user_attributes_realm2": "HTTP/GET/# MQTT/#",
     "expectedTranslatedHttpAddress": "https://bgw:5050",

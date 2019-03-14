@@ -25,7 +25,7 @@ const wsAuth = async (serverSocket, request) => {
         let pem = getPem(config.realm_public_key_modulus, config.realm_public_key_exponent);
         try {
             decoded = jwt.verify(query.access_token, pem, {
-                audience: config.client_id,
+                audience: config.audience,
                 issuer: config.issuer,
                 ignoreExpiration: false
             });
@@ -309,7 +309,7 @@ function verifyClient(info) {
     let pem = getPem(config.realm_public_key_modulus, config.realm_public_key_exponent);
     try {
         decoded = jwt.verify(access_token, pem, {
-            audience: config.client_id,
+            audience: config.audience,
             issuer: config.issuer,
             ignoreExpiration: false
         });
@@ -337,7 +337,7 @@ function verifyClient(info) {
         if (!hasRules) {
             return false;
         } else {
-            profile.user_id = decoded.preferred_username;
+            profile.user_id = decoded.preferred_username || decoded.sub;
             profile.rules = rules;
             let source = `[source:${info.req.connection.remoteAddress}:${info.req.connection.remotePort}]`;
             return (matchRules(profile, payload, source)).status;

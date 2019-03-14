@@ -65,7 +65,7 @@ if (url.includes('wss:')) {
 ws.on('close', function close() {
     logger.log("debug", "ws event close", {closeCode: this._closeCode});
     clearTimeout(this.pingTimeout);
-    if(this._closeCode === 1008) {
+    if(this._closeCode === 1008 || this._closeCode === 1006) {
         process.exit(1);
     }
     else{
@@ -91,8 +91,6 @@ ws.on('ping', heartbeat);
 
 ws.on('pong', function pong() {
     logger.log('info', 'Pong received', {});
-    //ws.close();
-    //process.exit(0);
 });
 
 ws.on('unexpected-response', function unexpectedResponse(request, response) {

@@ -13,6 +13,7 @@ let config = {
     auth_service: "http://localhost:5053/auth",
     realm_public_key_modulus: undefined,
     realm_public_key_exponent: undefined,
+    audience: undefined,
     client_id: undefined,
     issuer: undefined
 };

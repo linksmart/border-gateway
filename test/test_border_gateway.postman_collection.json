@@ -123,59 +123,6 @@
 			"response": []
 		},
 		{
-			"name": "Get anonymous user id realm1",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"id": "4980605f-0403-42ab-baad-eee4e191e83f",
-						"exec": [
-							"pm.test(\"Status code is 200\", function () {",
-							"    pm.response.to.have.status(200);",
-							"});",
-							"let json = pm.response.json();",
-							"pm.environment.set('anonymous_user_id_realm1', json[0].id);"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"auth": {
-					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "{{admin_access_token}}",
-							"type": "string"
-						}
-					]
-				},
-				"method": "GET",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": ""
-				},
-				"url": {
-					"raw": "{{realm1_address}}/users?username=anonymous",
-					"host": [
-						"{{realm1_address}}"
-					],
-					"path": [
-						"users"
-					],
-					"query": [
-						{
-							"key": "username",
-							"value": "anonymous"
-						}
-					]
-				}
-			},
-			"response": []
-		},
-		{
 			"name": "Get linksmart user id realm1",
 			"event": [
 				{
@@ -222,59 +169,6 @@
 						{
 							"key": "username",
 							"value": "linksmart"
-						}
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Get anonymous user id realm2",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"id": "4980605f-0403-42ab-baad-eee4e191e83f",
-						"exec": [
-							"pm.test(\"Status code is 200\", function () {",
-							"    pm.response.to.have.status(200);",
-							"});",
-							"let json = pm.response.json();",
-							"pm.environment.set('anonymous_user_id_realm2', json[0].id);"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"auth": {
-					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "{{admin_access_token}}",
-							"type": "string"
-						}
-					]
-				},
-				"method": "GET",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": ""
-				},
-				"url": {
-					"raw": "{{realm2_address}}/users?username=anonymous",
-					"host": [
-						"{{realm2_address}}"
-					],
-					"path": [
-						"users"
-					],
-					"query": [
-						{
-							"key": "username",
-							"value": "anonymous"
 						}
 					]
 				}
@@ -441,60 +335,6 @@
 			"response": []
 		},
 		{
-			"name": "Set anonymous user attributes realm1",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"id": "4980605f-0403-42ab-baad-eee4e191e83f",
-						"exec": [
-							"pm.test(\"Status code is 204\", function () {",
-							"    pm.response.to.have.status(204);",
-							"});",
-							""
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"auth": {
-					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "{{admin_access_token}}",
-							"type": "string"
-						}
-					]
-				},
-				"method": "PUT",
-				"header": [
-					{
-						"key": "Content-Type",
-						"name": "Content-Type",
-						"type": "text",
-						"value": "application/json"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"attributes\": {\n        \"bgw_rules\": [\n            \"{{anonymous_user_attributes_realm1}}\"\n        ]\n    }\n}"
-				},
-				"url": {
-					"raw": "{{realm1_address}}/users/{{anonymous_user_id_realm1}}",
-					"host": [
-						"{{realm1_address}}"
-					],
-					"path": [
-						"users",
-						"{{anonymous_user_id_realm1}}"
-					]
-				}
-			},
-			"response": []
-		},
-		{
 			"name": "Set linksmart user attributes realm2",
 			"event": [
 				{
@@ -542,59 +382,6 @@
 					"path": [
 						"users",
 						"{{linksmart_user_id_realm2}}"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Set anonymous user attributes realm2",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"id": "4980605f-0403-42ab-baad-eee4e191e83f",
-						"exec": [
-							"pm.test(\"Status code is 204\", function () {",
-							"    pm.response.to.have.status(204);",
-							"});"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"auth": {
-					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "{{admin_access_token}}",
-							"type": "string"
-						}
-					]
-				},
-				"method": "PUT",
-				"header": [
-					{
-						"key": "Content-Type",
-						"name": "Content-Type",
-						"type": "text",
-						"value": "application/json"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"attributes\": {\n        \"bgw_rules\": [\n            \"{{anonymous_user_attributes_realm2}}\"\n        ]\n    }\n}"
-				},
-				"url": {
-					"raw": "{{realm2_address}}/users/{{anonymous_user_id_realm2}}",
-					"host": [
-						"{{realm2_address}}"
-					],
-					"path": [
-						"users",
-						"{{anonymous_user_id_realm2}}"
 					]
 				}
 			},

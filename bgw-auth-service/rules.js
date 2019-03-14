@@ -3,7 +3,14 @@ const logger = require('../logger/log')(config.serviceName,config.logLevel);
 const mqtt_match = require('mqtt-match');
 
 module.exports = (profile, path, source) => {
-    let result = profile.rules.find((rule) => mqtt_match(rule, path));
+    let result;
+    if(profile.rules) {
+        result = profile.rules.find((rule) => mqtt_match(rule, path));
+    }
+    else
+    {
+        result = false;
+    }
     if (result) {
         logger.log('info', 'ALLOWED', {
             user: profile.user_id,

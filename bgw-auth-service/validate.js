@@ -70,18 +70,18 @@ let parse_credentials = {
     access_token: (access_token) => ({access_token}),
 };
 
-//module.exports =
 async function getProfile(openid_connect_provider, source, username, password, auth_type) {
 
-    const anonymous_user = openid_connect_provider.anonymous_user || 'anonymous';
     const client_id = openid_connect_provider.client_id;
     const client_secret = openid_connect_provider.client_secret;
+    const audience = openid_connect_provider.audience;
     const issuer = openid_connect_provider.issuer;
+    const scope = openid_connect_provider.scope;
     const token_endpoint = openid_connect_provider.token_endpoint;
     const realm_public_key_modulus = openid_connect_provider.realm_public_key_modulus;
     const realm_public_key_exponent = openid_connect_provider.realm_public_key_exponent;
 
-    let authentication_type = username === anonymous_user ? 'password' : auth_type;
+    let authentication_type = auth_type;
     let req_credentials = parse_credentials[authentication_type](username, password);
 
     let profile = {};
@@ -91,7 +91,7 @@ async function getProfile(openid_connect_provider, source, username, password, a
         let decoded;
         try {
             decoded = jwt.verify(req_credentials.access_token, pem, {
-                audience: client_id,
+                audience: audience,
                 issuer: issuer,
                 ignoreExpiration: false
             });
@@ -102,7 +102,7 @@ async function getProfile(openid_connect_provider, source, username, password, a
             if (err.name === "TokenExpiredError") {
                 try {
                     decoded = jwt.verify(req_credentials.access_token, pem, {
-                        audience: client_id,
+                        audience: audience,
                         issuer: issuer,
                         ignoreExpiration: true
                     });
@@ -160,7 +160,9 @@ async function getProfile(openid_connect_provider, source, username, password, a
                 body: {
                     'grant_type': authentication_type,
                     'client_id': client_id,
-                    'client_secret': client_secret
+                    'client_secret': client_secret,
+                    'audience': audience,
+                    'scope': scope
                 },
                 agent: agent
             };
@@ -189,7 +191,7 @@ async function getProfile(openid_connect_provider, source, username, password, a
         let decoded;
         try {
             decoded = jwt.verify(profile.access_token, pem, {
-                audience: client_id,
+                audience: audience,
                 issuer: issuer,
                 ignoreExpiration: false
             });
@@ -199,7 +201,7 @@ async function getProfile(openid_connect_provider, source, username, password, a
             if (err.name === "TokenExpiredError") {
                 try {
                     decoded = jwt.verify(profile.access_token, pem, {
-                        audience: client_id,
+                        audience: audience,
                         issuer: issuer,
                         ignoreExpiration: true
                     });
@@ -262,7 +264,7 @@ async function getProfile(openid_connect_provider, source, username, password, a
         }
     }
 
-    if (!profile.at_body || !profile.at_body.preferred_username || !hasRules) {
+    if (!profile.at_body || !hasRules) {
         let err = 'Unauthorized';
         const res = {
             status: false,
@@ -272,7 +274,7 @@ async function getProfile(openid_connect_provider, source, username, password, a
         return res;
     }
 
-    profile.user_id = profile.at_body.preferred_username;
+    profile.user_id = profile.at_body.preferred_username || profile.at_body.sub;
     profile.rules = rules;
 
     const res = {
