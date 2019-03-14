@@ -70,59 +70,6 @@
 			"response": []
 		},
 		{
-			"name": "Get write_access group id realm1",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"id": "4980605f-0403-42ab-baad-eee4e191e83f",
-						"exec": [
-							"pm.test(\"Status code is 200\", function () {",
-							"    pm.response.to.have.status(200);",
-							"});",
-							"let json = pm.response.json();",
-							"pm.environment.set('write_access_group_id_realm1', json[0].id);"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"auth": {
-					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "{{admin_access_token}}",
-							"type": "string"
-						}
-					]
-				},
-				"method": "GET",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": ""
-				},
-				"url": {
-					"raw": "{{realm1_address}}/groups?groupname=write_access",
-					"host": [
-						"{{realm1_address}}"
-					],
-					"path": [
-						"groups"
-					],
-					"query": [
-						{
-							"key": "groupname",
-							"value": "write_access"
-						}
-					]
-				}
-			},
-			"response": []
-		},
-		{
 			"name": "Get linksmart user id realm1",
 			"event": [
 				{
@@ -223,59 +170,6 @@
 							"key": "username",
 							"value": "linksmart"
 						}
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Set write_access group attributes realm1",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"id": "4980605f-0403-42ab-baad-eee4e191e83f",
-						"exec": [
-							"pm.test(\"Status code is 204\", function () {",
-							"    pm.response.to.have.status(204);",
-							"});"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"auth": {
-					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "{{admin_access_token}}",
-							"type": "string"
-						}
-					]
-				},
-				"method": "PUT",
-				"header": [
-					{
-						"key": "Content-Type",
-						"name": "Content-Type",
-						"type": "text",
-						"value": "application/json"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"attributes\": {\n        \"bgw_rules_write_access\": [\n            \"{{write_access_group_attributes}}\"\n        ]\n    }\n}"
-				},
-				"url": {
-					"raw": "{{realm1_address}}/groups/{{write_access_group_id_realm1}}",
-					"host": [
-						"{{realm1_address}}"
-					],
-					"path": [
-						"groups",
-						"{{write_access_group_id_realm1}}"
 					]
 				}
 			},
@@ -615,7 +509,7 @@
 						},
 						{
 							"key": "client_id",
-							"value": "bgw_client",
+							"value": "{{client_id}}",
 							"type": "text"
 						},
 						{
@@ -626,6 +520,21 @@
 						{
 							"key": "password",
 							"value": "{{password}}",
+							"type": "text"
+						},
+						{
+							"key": "scope",
+							"value": "openid",
+							"type": "text"
+						},
+						{
+							"key": "client_secret",
+							"value": "{{client_secret}}",
+							"type": "text"
+						},
+						{
+							"key": "audience",
+							"value": "{{audience}}",
 							"type": "text"
 						}
 					]
@@ -2056,7 +1965,7 @@
 						},
 						{
 							"key": "client_id",
-							"value": "bgw_client",
+							"value": "{{client_id}}",
 							"type": "text"
 						},
 						{
@@ -2067,6 +1976,21 @@
 						{
 							"key": "password",
 							"value": "{{password}}",
+							"type": "text"
+						},
+						{
+							"key": "scope",
+							"value": "openid",
+							"type": "text"
+						},
+						{
+							"key": "client_secret",
+							"value": "{{client_secret}}",
+							"type": "text"
+						},
+						{
+							"key": "audience",
+							"value": "{{audience}}",
 							"type": "text"
 						}
 					]

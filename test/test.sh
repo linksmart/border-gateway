@@ -36,6 +36,9 @@ secure=$(jq '.[0].secure' "data.json")
 tokenEndpoint=$(jq -r '.[0].tokenEndpoint' "data.json")
 username=$(jq -r '.[0].username' "data.json")
 password=$(jq -r '.[0].password' "data.json")
+audience=$(jq -r '.[0].audience' "data.json")
+client_id=$(jq -r '.[0].client_id' "data.json")
+client_secret=$(jq -r '.[0].client_secret' "data.json")
 
 echo "domain = $domain"
 echo "wsPort = $wsPort"
@@ -44,8 +47,12 @@ echo "secure = $secure"
 echo "tokenEndpoint = $tokenEndpoint"
 echo "username = $username"
 echo "password = $password"
+echo "audience = $audience"
+echo "client_id = $client_id"
+echo "client_secret = $client_secret"
 
-../test_ws_and_mqtt.sh "$CA" "$domain" $secure "$mqttPort" "$wsPort" $username $password $tokenEndpoint
+
+../test_ws_and_mqtt.sh "$CA" "$domain" $secure "$mqttPort" "$wsPort" "$username" "$password" "$tokenEndpoint" "$audience" "$client_id" "$client_secret"
 
 if [ "$?" -ne 0 ]; then
   notify "@jannis.warnat Mqtt and WebSocket tests failed for test $test"

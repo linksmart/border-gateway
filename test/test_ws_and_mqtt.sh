@@ -24,6 +24,9 @@ wsPort=$5
 user=$6
 pass=$7
 tokenEndpoint=$8
+audience=$9
+client_id="${10}"
+client_secret="${11}"
 
 scriptDir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 echo "scriptDir = $scriptDir"
@@ -57,7 +60,7 @@ if [ $? -ne 1 ]; then
 fi
 
 echo "generic websockets correct password"
-basedPassword=$(echo -n "linksmart:demo" | base64)
+basedPassword=$(echo -n "$user:$pass" | base64)
 node "$testWebsocketsGeneric" "$CA" "$wsProtocol://$host:$wsPort/?basic_auth=$basedPassword"
 
 if [ $? -ne 0 ]; then
@@ -65,7 +68,7 @@ if [ $? -ne 0 ]; then
   exit 1
 fi
 
-access_token=$(curl --silent -d "client_id=bgw_client" -d "username=$user" -d "password=$pass" -d "grant_type=password" -L "$tokenEndpoint" | jq -r ".access_token")
+access_token=$(curl --silent -d "client_id=$client_id" -d "client_secret=$client_secret" -d "username=$user" -d "password=$pass" -d "grant_type=password" -d "audience=$audience" -L "$tokenEndpoint" | jq -r ".access_token")
 echo "access_token: $access_token"
 
 echo "generic websockets correct token"
@@ -100,7 +103,7 @@ if [ $? -ne 1 ]; then
   exit 1
 fi
 
-access_token=$(curl --silent -d "client_id=bgw_client" -d "username=$user" -d "password=$pass" -d "grant_type=password" -L "$tokenEndpoint" | jq -r ".access_token")
+access_token=$(curl --silent -d "client_id=$client_id" -d "client_secret=$client_secret" -d "username=$user" -d "password=$pass" -d "grant_type=password" -d "audience=$audience" -L "$tokenEndpoint" | jq -r ".access_token")
 echo "access_token: $access_token"
 
 echo "websockets with user/pass qos 2"
@@ -131,7 +134,7 @@ fi
 
 echo "mosquitto_pub user/pass qos 2"
 
-command="mosquitto_pub $mqttSecureParams -h $host -p $mqttPort -d -t LS/test -m \"hello there\" -u $user -P $pass -q 2"
+command="mosquitto_pub $mqttSecureParams -h $host -p $mqttPort -d -t LS/test -m \"hello there\" -u \"$user\" -P \"$pass\" -q 2"
 echo "$command"
 eval "$command$"
 
@@ -144,12 +147,12 @@ echo "mosquitto_pub user/pass qos 0"
 
 for var in 1 2 3 4 5 6 7 8 9 10
 do
-  command="mosquitto_pub $mqttSecureParams -h $host -p $mqttPort -d -t LS/test -m \"hello there\" -u $user -P $pass -q 0"
+  command="mosquitto_pub $mqttSecureParams -h $host -p $mqttPort -d -t LS/test -m \"hello there\" -u \"$user\" -P \"$pass\" -q 0"
   echo "$command"
   eval "$command$"
 done
 
-access_token=$(curl --silent -d "client_id=bgw_client" -d "username=$user" -d "password=$pass" -d "grant_type=password" -L "$tokenEndpoint" | jq -r ".access_token")
+access_token=$(curl --silent -d "client_id=$client_id" -d "client_secret=$client_secret" -d "username=$user" -d "password=$pass" -d "grant_type=password" -d "audience=$audience" -L "$tokenEndpoint" | jq -r ".access_token")
 echo "access token: $access_token"
 
 echo "mosquitto pub access token qos 2"
