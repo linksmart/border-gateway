@@ -11,11 +11,13 @@ let config = {
     openid_connect_providers: {
         default: {
             issuer: "",
+            authorization_endpoint: "",
             token_endpoint: "",
             audience: "",
             client_id: "",
             client_secret: "",
-            scope: "openid",
+            scope: "openid profile",
+            jwks_uri: "",
             realm_public_key_modulus: "",
             realm_public_key_exponent: "",
             anonymous_bgw_rules: ""

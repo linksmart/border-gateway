@@ -57,9 +57,11 @@ const httpAuth = async (req) => {
     // get rid of query parameters
     const path = req.originalUrl.split("?")[0].replace('//', '/');
     const payload = `${protocol}/${req.method}/${host}/${port}${path}`;
-
     let authorization = "";
-    if (req.headers.authorization) {
+    let code;
+    let redirectUri = `${protocol.toLowerCase()}://${host}:${port}${path}`;
+    // Keycloak sets "Basic Og==" (decoded: ":")
+    if (req.headers.authorization && req.headers.authorization != "Basic Og==") {
         authorization = req.headers.authorization;
     } else {
         let query = url.parse(req.originalUrl, true).query;
@@ -71,7 +73,14 @@ const httpAuth = async (req) => {
                 authorization = 'Bearer ' + query.username;
             }
         }
+
+        if (query && query.code) {
+            code = query.code;
+
+
+        }
     }
+
 
     let response;
     try {
@@ -81,6 +90,8 @@ const httpAuth = async (req) => {
             url: config.auth_service + "/bgw/authorize",
             data: {
                 rule: payload,
+                code: code,
+                redirectUri: redirectUri,
                 openidConnectProviderName: (req.bgw.alias && req.bgw.alias.openidConnectProviderName) || config.openidConnectProviderName || 'default'
             }
         });

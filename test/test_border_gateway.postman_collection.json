@@ -428,7 +428,7 @@
 							"});",
 							"pm.test(\"error\", function () {",
 							"    var jsonData = pm.response.json();",
-							"    pm.expect(jsonData.error).to.eql(\"Forbidden\");",
+							"    pm.expect(jsonData.error).to.eql(\"Forbidden for anonymous access\");",
 							"});"
 						],
 						"type": "text/javascript"
@@ -1428,16 +1428,19 @@
 					"script": {
 						"id": "a8ada4fd-da90-47e3-b27e-3b7991f06f9b",
 						"exec": [
-							"pm.test(\"Status code is 401\", function () {",
-							"    pm.response.to.have.status(401);",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
 							"});",
-							"pm.test(\"error\", function () {",
-							"    var jsonData = pm.response.json();",
-							"    pm.expect(jsonData.error).to.eql(\"Forbidden\");",
-							"});",
-							"pm.test(\"WWW-Authenticate is present\", function () {",
-							"    pm.response.to.have.header(\"WWW-Authenticate\");",
-							"});"
+							"//pm.test(\"error\", function () {",
+							"//    var jsonData = pm.response.json();",
+							"//    pm.expect(jsonData.error).to.eql(\"Forbidden\");",
+							"//});",
+							"const $ = cheerio.load(pm.response.text())",
+							"",
+							"pm.test(\"it should return a title\", () => { ",
+							"    pm.expect($('title').text()).to.not.be.empty ",
+							"})",
+							""
 						],
 						"type": "text/javascript"
 					}
@@ -1470,16 +1473,20 @@
 					"script": {
 						"id": "a8ada4fd-da90-47e3-b27e-3b7991f06f9b",
 						"exec": [
-							"pm.test(\"Status code is 401\", function () {",
-							"    pm.response.to.have.status(401);",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
 							"});",
-							"pm.test(\"error\", function () {",
-							"    var jsonData = pm.response.json();",
-							"    pm.expect(jsonData.error).to.eql(\"Unauthorized\");",
-							"});",
-							"pm.test(\"WWW-Authenticate is present\", function () {",
-							"    pm.response.to.have.header(\"WWW-Authenticate\");",
-							"});"
+							"//pm.test(\"error\", function () {",
+							"//    var jsonData = pm.response.json();",
+							"//    pm.expect(jsonData.error).to.eql(\"Unauthorized\");",
+							"//});",
+							"const $ = cheerio.load(pm.response.text())",
+							"",
+							"pm.test(\"it should return a title\", () => { ",
+							"    pm.expect($('title').text()).to.not.be.empty ",
+							"})",
+							"",
+							""
 						],
 						"type": "text/javascript"
 					}
@@ -1701,9 +1708,6 @@
 							"pm.test(\"error\", function () {",
 							"    var jsonData = pm.response.json();",
 							"    pm.expect(jsonData.error).to.eql(\"Forbidden\");",
-							"});",
-							"pm.test(\"WWW-Authenticate is not present\", function () {",
-							"    pm.response.to.not.have.header(\"WWW-Authenticate\");",
 							"});",
 							""
 						],
@@ -2019,9 +2023,7 @@
 							"    var jsonData = pm.response.json();",
 							"    pm.expect(jsonData.error).to.eql(\"Access token is invalid, error = JsonWebTokenError, invalid token\");",
 							"});",
-							"pm.test(\"WWW-Authenticate is present\", function () {",
-							"    pm.response.to.have.header(\"WWW-Authenticate\");",
-							"});"
+							""
 						],
 						"type": "text/javascript"
 					}

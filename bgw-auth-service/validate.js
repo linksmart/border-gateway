@@ -65,13 +65,7 @@ function decrypt(encryptedHex, key) {
 //temporary workaround because of ATOS´ self-signed certificate for Keycloak
 const agent = new https.Agent({});
 
-let parse_credentials = {
-    password: (username, password) => ({username, password}),
-    access_token: (access_token) => ({access_token}),
-};
-
-async function getProfile(openid_connect_provider, source, username, password, auth_type) {
-
+async function getProfile(openid_connect_provider, source, username, password, auth_type, authorizationCode,redirectUri) {
     const client_id = openid_connect_provider.client_id;
     const client_secret = openid_connect_provider.client_secret;
     const audience = openid_connect_provider.audience;
@@ -82,7 +76,6 @@ async function getProfile(openid_connect_provider, source, username, password, a
     const realm_public_key_exponent = openid_connect_provider.realm_public_key_exponent;
 
     let authentication_type = auth_type;
-    let req_credentials = parse_credentials[authentication_type](username, password);
 
     let profile = {};
     let pem = getPem(realm_public_key_modulus, realm_public_key_exponent);
@@ -90,7 +83,7 @@ async function getProfile(openid_connect_provider, source, username, password, a
 
         let decoded;
         try {
-            decoded = jwt.verify(req_credentials.access_token, pem, {
+            decoded = jwt.verify(username, pem, {
                 audience: audience,
                 issuer: issuer,
                 ignoreExpiration: false
@@ -101,7 +94,7 @@ async function getProfile(openid_connect_provider, source, username, password, a
 
             if (err.name === "TokenExpiredError") {
                 try {
-                    decoded = jwt.verify(req_credentials.access_token, pem, {
+                    decoded = jwt.verify(username, pem, {
                         audience: audience,
                         issuer: issuer,
                         ignoreExpiration: true
@@ -143,7 +136,7 @@ async function getProfile(openid_connect_provider, source, username, password, a
                 const ttl = await redisClient.ttl(redisKey);
                 if (encryptedToken) {
                     logger.log('debug', 'Retrieved access token from redis',{key: redisKey, ttl: ttl});
-                    profile.access_token = decrypt(encryptedToken, password);
+                    profile.access_token = decrypt(encryptedToken, token_endpoint + username + password);
                     retrievedFromRedis = true;
                 }
 
@@ -159,14 +152,17 @@ async function getProfile(openid_connect_provider, source, username, password, a
                 headers: {'content-type': 'application/x-www-form-urlencoded'},
                 body: {
                     'grant_type': authentication_type,
+                    'username': username,
+                    'password': password,
                     'client_id': client_id,
                     'client_secret': client_secret,
                     'audience': audience,
-                    'scope': scope
+                    'scope': scope,
+                    'code': authorizationCode,
+                    'redirect_uri': redirectUri
                 },
                 agent: agent
             };
-            Object.assign(options.body, req_credentials);
             options.body = qs.stringify(options.body);
 
             try {
@@ -234,7 +230,7 @@ async function getProfile(openid_connect_provider, source, username, password, a
             const hash = crypto.createHash('sha256');
             hash.update(token_endpoint + username + password);
             const redisKey = hash.digest('hex');
-            redisClient.set(redisKey, encrypt(profile.access_token, password), 'EX', config.redis_expiration);
+            redisClient.set(redisKey, encrypt(profile.access_token, token_endpoint + username + password), 'EX', config.redis_expiration);
             const ttl = await redisClient.ttl(redisKey);
             logger.log('debug', 'Cached access token with key',{key: redisKey, ttl: ttl});
         }

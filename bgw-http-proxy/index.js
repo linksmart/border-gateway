@@ -1,9 +1,10 @@
 const config = require('./config');
-const logger = require('../logger/log')(config.serviceName,config.logLevel);
+const logger = require('../logger/log')(config.serviceName, config.logLevel);
 const cors = require('cors');
 const app = require('express')();
 const https = require('https');
 const http = require('http');
+const url = require("url");
 const transform = require('transformer-proxy');
 const agentHTTP = new http.Agent({});
 const agentHTTPS = new https.Agent({});
@@ -23,8 +24,6 @@ app.use(async (req, res) => {
         res.status(404).json({error: 'Invalid external domain'});
         return;
     }
-
-    const anonymousRequest = (!req.headers.authorization || req.headers.authorization === "");
 
     const response = await httpAuth(req);
     if (response.isAuthorized) {
@@ -46,19 +45,23 @@ app.use(async (req, res) => {
             transform(transformURI)(req, res, () => proxyied_request()) : proxyied_request();
 
     } else {
-        if (response.error === 'Forbidden' && !anonymousRequest) {
+        if (response.error === 'Forbidden') {
             res.status(403).json({error: response.error});
-        }
-        else {
-            res.set('WWW-Authenticate', 'Basic realm="LinkSmart Border Gateway", charset="UTF-8"');
-            res.status(401).json({error: response.error});
+        } else {
+            if (response.authUrl) {
+                const myURL =
+                    new url.URL(response.authUrl);
+                res.redirect(myURL);
+            } else {
+                res.status(401).json({error: response.error});
+            }
         }
     }
 });
 proxy.on('error', function (err, req, res) {
-    logger.log('error', 'Error in proxy',{errorName: err.name, errorMessage: err.message, errorStack: err.stack});
+    logger.log('error', 'Error in proxy', {errorName: err.name, errorMessage: err.message, errorStack: err.stack});
     if (req.bgw && req.bgw.forward_address) {
-        res && res.status(500).json({error: `Border Gateway could not forward your request to ${req.bgw.forward_address}`+' '+err.message});
+        res && res.status(500).json({error: `Border Gateway could not forward your request to ${req.bgw.forward_address}` + ' ' + err.message});
     } else {
         res && res.status(500).json({error: `There is a problem with the internal forward address, make sure the internal address exists and is working: `});
     }

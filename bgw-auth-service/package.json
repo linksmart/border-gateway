@@ -21,6 +21,8 @@
     "rsa-pem-from-mod-exp": "latest",
     "redis": "latest",
     "async-redis": "latest",
-    "toml": "latest"
+    "toml": "latest",
+    "openid-client": "latest",
+    "nonce": "latest"
   }
 }
