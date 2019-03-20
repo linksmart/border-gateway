@@ -4,12 +4,31 @@ const app = require('express')();
 const bodyParser = require('body-parser');
 const {Issuer} = require('openid-client');
 const nonce = require('nonce')();
+const url = require('url');
 const validate = require("./validate");
 const matchRules = require('./rules');
 const decode64 = (b64) => Buffer.from(b64, 'base64').toString('utf8');
 
 app.use(bodyParser.json());
 
+let issuers = {};
+let clients = {};
+
+const configuredProviders = Object.keys(config.openid_connect_providers);
+for (const key of configuredProviders) {
+    issuers[key] = new Issuer({
+        issuer: config.openid_connect_providers[key].issuer,
+        authorization_endpoint: config.openid_connect_providers[key].authorization_endpoint,
+        token_endpoint: config.openid_connect_providers[key].token_endpoint,
+        jwks_uri: config.openid_connect_providers[key].jwks_uri
+    }); // => Issuer
+    console.log('Set up issuer %s %O', issuers[key].issuer, issuers[key].metadata);
+
+    clients[key] = new issuers[key].Client({
+        client_id: config.openid_connect_providers[key].client_id,
+        client_secret: config.openid_connect_providers[key].client_secret
+    });
+}
 
 // app.post('/auth/bgw/authenticate', async (req, res) => {
 //
@@ -86,7 +105,6 @@ app.post('/auth/bgw/authorize', async (req, res) => {
             let username = undefined;
             let password = undefined;
             let authorizationCode = undefined;
-            let redirectUri = undefined;
 
             if (req.headers && req.headers.authorization) {
                 let headerStrings = req.headers.authorization.split(' ');
@@ -104,15 +122,19 @@ app.post('/auth/bgw/authorize', async (req, res) => {
                 if (req.body.code) {
                     auth_type = 'authorization_code';
                     authorizationCode = req.body.code;
-                    redirectUri = req.body.redirectUri;
                 }
             }
 
             let source = `[source:${req.connection.remoteAddress}:${req.connection.remotePort}]`;
 
             let authenticationResult;
-            if (username || authorizationCode) {
-                authenticationResult = await validate.getProfile(openid_connect_provider, source, username, password, auth_type, authorizationCode, redirectUri);
+            if (username) {
+                authenticationResult = await validate.getProfile(openid_connect_provider, source, username, password, auth_type);
+            } else if (authorizationCode) {
+
+                //let redirectUrl = new url.URL(req.body.targetPath);
+                //redirectUrl.pathname = '/callback';
+                authenticationResult = await validate.getProfile(openid_connect_provider, source, username, password, auth_type, authorizationCode, openid_connect_provider.redirect_uri/*redirectUrl.toString()*/);
             } else {
                 authenticationResult = {
                     status: true,
@@ -137,26 +159,18 @@ app.post('/auth/bgw/authorize', async (req, res) => {
                     let authUrl = undefined;
                     if (authenticationResult.profile.user_id === "anonymous") {
                         authorizationResult.error = "Forbidden for anonymous access"
-                        const openIDIssuer = new Issuer({
-                            issuer: openid_connect_provider.issuer,
-                            authorization_endpoint: openid_connect_provider.authorization_endpoint,
-                            token_endpoint: openid_connect_provider.token_endpoint,
-                            jwks_uri: openid_connect_provider.jwks_uri
-                        }); // => Issuer
-                        console.log('Set up issuer %s %O', openIDIssuer.issuer, openIDIssuer.metadata);
 
-                        const openIDClient = new openIDIssuer.Client({
-                            client_id: openid_connect_provider.client_id,
-                            client_secret: openid_connect_provider.client_secret
-                        });
-
-                        const redirectUri = req.body.redirectUri;
-                        authUrl = openIDClient.authorizationUrl({
-                            redirect_uri: redirectUri,
+                        authUrl = clients[openidConnectProviderName].authorizationUrl({
+                            redirect_uri: openid_connect_provider.redirect_uri,
                             audience: openid_connect_provider.audience,
                             scope: "openid profile",
                             grant_type: "authorization_code",
-                            nonce: nonce()
+                            nonce: nonce(),
+                            state: req.body.targetPath
+                        });
+
+                        logger.log('debug', 'Authorization failed (anonymous)', {
+                            authUrl: authUrl
                         });
                     }
 
@@ -174,29 +188,21 @@ app.post('/auth/bgw/authorize', async (req, res) => {
 
                 let authUrl = undefined;
                 if (auth_type != "access_token") {
-                    const openIDIssuer = new Issuer({
-                        issuer: openid_connect_provider.issuer,
-                        authorization_endpoint: openid_connect_provider.authorization_endpoint,
-                        token_endpoint: openid_connect_provider.token_endpoint,
-                        jwks_uri: openid_connect_provider.jwks_uri
-                    }); // => Issuer
-                    console.log('Set up issuer %s %O', openIDIssuer.issuer, openIDIssuer.metadata);
-
-                    const openIDClient = new openIDIssuer.Client({
-                        client_id: openid_connect_provider.client_id,
-                        client_secret: openid_connect_provider.client_secret
-                    });
-
-                    const redirectUri = req.body.redirectUri;
-                    authUrl = openIDClient.authorizationUrl({
-                        redirect_uri: redirectUri,
+                    authUrl = clients[openidConnectProviderName].authorizationUrl({
+                        redirect_uri: openid_connect_provider.redirect_uri,
                         audience: openid_connect_provider.audience,
                         scope: "openid profile",
                         grant_type: "authorization_code",
-                        nonce: nonce()
+                        nonce: nonce(),
+                        state: req.body.targetPath
                     });
 
                 }
+
+                logger.log('debug', 'Authentication failed', {
+                    authUrl: authUrl
+                });
+
                 res.status(200).json({
                     isAuthorized: false,
                     openidConnectProviderName: openidConnectProviderName,

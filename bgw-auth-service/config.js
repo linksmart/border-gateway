@@ -20,7 +20,8 @@ let config = {
             jwks_uri: "",
             realm_public_key_modulus: "",
             realm_public_key_exponent: "",
-            anonymous_bgw_rules: ""
+            anonymous_bgw_rules: "",
+            redirect_uri: ""
         }
     }
 };

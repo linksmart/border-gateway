@@ -13,6 +13,20 @@ const {httpAuth, transformURI, bgwIfy, REQ_TYPES} = require('./utils');
 
 app.use(cors());
 
+app.use('/callback', async (req, res) => {
+
+    let query = url.parse(req.url, true).query;
+    logger.log('debug', 'endpoint callback called', {queryState: query && query.state});
+    if (query) {
+
+        let targetUrl = new url.URL(query.state);
+        targetUrl.searchParams.append("code", query.code);
+
+        res.redirect(targetUrl.toString());
+    }
+});
+
+
 app.use(async (req, res) => {
 
     await bgwIfy(req);
@@ -39,6 +53,7 @@ app.use(async (req, res) => {
                 (is_https && https_req) ||
                 (!is_https && http_req)
         };
+
         const proxyied_request = () => proxy.web(req, res, proxyied_options);
 
         req.bgw.type === REQ_TYPES.FORWARD_W_T ?

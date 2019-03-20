@@ -54,12 +54,12 @@ const httpAuth = async (req) => {
         protocol = req.headers['x-forwarded-proto'].toUpperCase();
     }
 
-    // get rid of query parameters
+    // get rid of query parameters for authorization check
     const path = req.originalUrl.split("?")[0].replace('//', '/');
     const payload = `${protocol}/${req.method}/${host}/${port}${path}`;
     let authorization = "";
     let code;
-    let redirectUri = `${protocol.toLowerCase()}://${host}:${port}${path}`;
+    let targetPath = `${protocol.toLowerCase()}://${host}:${port}${path}`;
     // Keycloak sets "Basic Og==" (decoded: ":")
     if (req.headers.authorization && req.headers.authorization != "Basic Og==") {
         authorization = req.headers.authorization;
@@ -91,7 +91,7 @@ const httpAuth = async (req) => {
             data: {
                 rule: payload,
                 code: code,
-                redirectUri: redirectUri,
+                targetPath: targetPath,
                 openidConnectProviderName: (req.bgw.alias && req.bgw.alias.openidConnectProviderName) || config.openidConnectProviderName || 'default'
             }
         });

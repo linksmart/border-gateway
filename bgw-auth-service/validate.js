@@ -125,7 +125,7 @@ async function getProfile(openid_connect_provider, source, username, password, a
     else { // code before introducing access token functionality
 
         let retrievedFromRedis = false;
-        if (config.redis_expiration > 0) {
+        if (config.redis_expiration > 0 && authentication_type === 'password') {
 
             try {
                 const hash = crypto.createHash('sha256');
@@ -136,7 +136,7 @@ async function getProfile(openid_connect_provider, source, username, password, a
                 const ttl = await redisClient.ttl(redisKey);
                 if (encryptedToken) {
                     logger.log('debug', 'Retrieved access token from redis',{key: redisKey, ttl: ttl});
-                    profile.access_token = decrypt(encryptedToken, token_endpoint + username + password);
+                    profile.access_token = decrypt(encryptedToken, password);
                     retrievedFromRedis = true;
                 }
 
@@ -226,11 +226,11 @@ async function getProfile(openid_connect_provider, source, username, password, a
         let expireAt = new Date(0);
         expireAt.setUTCSeconds(decoded.exp);
         logger.log('debug', 'Token lifespan',{issuedAt: issuedAt,expireAt: expireAt});
-        if (!retrievedFromRedis && config.redis_expiration > 0) {
+        if (!retrievedFromRedis && config.redis_expiration > 0 && authentication_type === 'password') {
             const hash = crypto.createHash('sha256');
             hash.update(token_endpoint + username + password);
             const redisKey = hash.digest('hex');
-            redisClient.set(redisKey, encrypt(profile.access_token, token_endpoint + username + password), 'EX', config.redis_expiration);
+            redisClient.set(redisKey, encrypt(profile.access_token, password), 'EX', config.redis_expiration);
             const ttl = await redisClient.ttl(redisKey);
             logger.log('debug', 'Cached access token with key',{key: redisKey, ttl: ttl});
         }
