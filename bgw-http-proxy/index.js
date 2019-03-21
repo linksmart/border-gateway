@@ -60,7 +60,7 @@ app.use(async (req, res) => {
             transform(transformURI)(req, res, () => proxyied_request()) : proxyied_request();
 
     } else {
-        if (response.error === 'Forbidden') {
+        if (response.error === 'Forbidden'  && !response.authUrl) {
             res.status(403).json({error: response.error});
         } else {
             if (response.authUrl) {

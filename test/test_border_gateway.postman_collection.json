@@ -292,10 +292,14 @@
 							"pm.test(\"Status code is 200\", function () {",
 							"    pm.response.to.have.status(200);",
 							"});",
+							"var jsonData = pm.response.json();",
 							"pm.test(\"isAuthorized\", function () {",
-							"    var jsonData = pm.response.json();",
 							"    pm.expect(jsonData.isAuthorized).to.eql(true);",
-							"});"
+							"});",
+							"pm.test(\"authUrl is not present\", function () {",
+							"    pm.expect(jsonData.authUrl).to.eql(undefined);",
+							"});",
+							""
 						],
 						"type": "text/javascript"
 					}
@@ -355,14 +359,17 @@
 							"pm.test(\"Status code is 400\", function () {",
 							"    pm.response.to.have.status(400);",
 							"});",
-							"pm.test(\"isAuthorized\", function () {",
 							"    var jsonData = pm.response.json();",
+							"pm.test(\"isAuthorized\", function () {",
 							"    pm.expect(jsonData.isAuthorized).to.eql(false);",
 							"});",
 							"pm.test(\"error\", function () {",
-							"    var jsonData = pm.response.json();",
 							"    pm.expect(jsonData.error).to.eql(\"no rule string given\");",
-							"});"
+							"});",
+							"pm.test(\"authUrl is not present\", function () {",
+							"    pm.expect(jsonData.authUrl).to.eql(undefined);",
+							"});",
+							""
 						],
 						"type": "text/javascript"
 					}
@@ -422,13 +429,15 @@
 							"pm.test(\"Status code is 200\", function () {",
 							"    pm.response.to.have.status(200);",
 							"});",
+							"var jsonData = pm.response.json();",
 							"pm.test(\"isAuthorized\", function () {",
-							"    var jsonData = pm.response.json();",
 							"    pm.expect(jsonData.isAuthorized).to.eql(false);",
 							"});",
 							"pm.test(\"error\", function () {",
-							"    var jsonData = pm.response.json();",
-							"    pm.expect(jsonData.error).to.eql(\"Forbidden for anonymous access\");",
+							"    pm.expect(jsonData.error).to.eql(\"Forbidden\");",
+							"});",
+							"pm.test(\"authUrl is present\", function () {",
+							"    pm.expect(jsonData.authUrl).not.to.eql(undefined);",
 							"});"
 						],
 						"type": "text/javascript"
@@ -450,7 +459,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"rule\": \"MQTT/#\",\n    \"openidConnectProviderName\": \"linksmart\"\n}"
+					"raw": "{\n    \"rule\": \"HTTP/GET/dummy-domain/443/dummy-path\",\n    \"openidConnectProviderName\": \"linksmart\"\n}"
 				},
 				"url": {
 					"raw": "{{url}}/auth/bgw/authorize",
@@ -559,10 +568,14 @@
 							"pm.test(\"Status code is 200\", function () {",
 							"    pm.response.to.have.status(200);",
 							"});",
+							"var jsonData = pm.response.json();",
 							"pm.test(\"isAuthorized\", function () {",
-							"    var jsonData = pm.response.json();",
 							"    pm.expect(jsonData.isAuthorized).to.eql(true);",
-							"});"
+							"});",
+							"pm.test(\"authUrl is not present\", function () {",
+							"    pm.expect(jsonData.authUrl).to.eql(undefined);",
+							"});",
+							""
 						],
 						"type": "text/javascript"
 					}
@@ -617,14 +630,17 @@
 							"pm.test(\"Status code is 200\", function () {",
 							"    pm.response.to.have.status(200);",
 							"});",
+							"var jsonData = pm.response.json();",
 							"pm.test(\"isAuthorized\", function () {",
-							"    var jsonData = pm.response.json();",
 							"    pm.expect(jsonData.isAuthorized).to.eql(false);",
 							"});",
 							"pm.test(\"error\", function () {",
-							"    var jsonData = pm.response.json();",
 							"    pm.expect(jsonData.error).to.eql(\"Access token is invalid, error = JsonWebTokenError, invalid token\");",
-							"});"
+							"});",
+							"pm.test(\"authUrl is not present\", function () {",
+							"    pm.expect(jsonData.authUrl).to.eql(undefined);",
+							"});",
+							""
 						],
 						"type": "text/javascript"
 					}

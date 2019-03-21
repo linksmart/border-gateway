@@ -66,6 +66,8 @@ components:
           type: boolean
         openidConnectProviderName:
           type: string
+        authUrl:
+          type: string
         error:
           type: string
     answerTrue:

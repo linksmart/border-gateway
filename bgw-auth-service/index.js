@@ -30,8 +30,7 @@ for (const key of configuredProviders) {
     });
 }
 
-function getAuthUrl(openidConnectProviderName,targetPath)
-{
+function getAuthUrl(openidConnectProviderName, targetPath) {
 
     let openid_connect_provider = config.openid_connect_providers[openidConnectProviderName];
 
@@ -48,32 +47,36 @@ function getAuthUrl(openidConnectProviderName,targetPath)
     return authUrl;
 }
 
-function targetPathFromHttpPayload(payload)
-{
+function targetPathFromHttpPayload(payload) {
+    if(!payload.includes("HTTP") || payload.includes("#") || payload.includes("+"))
+    {
+        return undefined;
+    }
     let targetPath = "";
     let splitPayload = payload.split("/");
 
-    for (let i = 0; i < splitPayload.length; i++) {
-        if(i === 0)
-        {
+    let arrayLength = splitPayload.length;
+
+    if(arrayLength < 4)
+    {
+        return undefined;
+    }
+
+    for (let i = 0; i < arrayLength; i++) {
+        if (i === 0) {
             //protocol
-            targetPath+=(splitPayload[i].toLowerCase()+"://");
+            targetPath += (splitPayload[i].toLowerCase() + "://");
         }
         //skip http method
-        else if (i === 2)
-        {
+        else if (i === 2) {
             //domain
-            targetPath+=(splitPayload[i]+":");
-        }
-        else if (i === 3)
-        {
+            targetPath += (splitPayload[i] + ":");
+        } else if (i === 3) {
             //port
-            targetPath+=splitPayload[i];
-        }
-        else if (i >= 4)
-        {
+            targetPath += splitPayload[i];
+        } else if (i >= 4) {
             //path
-            targetPath+=("/"+splitPayload[i]);
+            targetPath += ("/" + splitPayload[i]);
         }
     }
     logger.log('debug', 'targetPath from Payload', {targetPath: targetPath});
@@ -141,6 +144,7 @@ app.post('/auth/bgw/authorize', async (req, res) => {
             if (authenticationResult.status) {
                 authorizationResult = matchRules(authenticationResult.profile, req.body.rule, source);
 
+                //authorization failed
                 if (authorizationResult.status) {
                     res.status(200).json({
                         isAuthorized: true,
@@ -149,12 +153,12 @@ app.post('/auth/bgw/authorize', async (req, res) => {
                 } else {
 
                     let authUrl = undefined;
+                    //unauthorized: only provide authUrl in case of anonymous access
                     if (authenticationResult.profile.user_id === "anonymous") {
-                        authorizationResult.error = "Forbidden for anonymous access"
 
-                        if(req.body.rule.includes('HTTP')) {
-                            let targetPath = targetPathFromHttpPayload(req.body.rule);
-                            authUrl = getAuthUrl(openidConnectProviderName,targetPath);
+                        let targetPath = targetPathFromHttpPayload(req.body.rule);
+                        if(targetPath) {
+                            authUrl = getAuthUrl(openidConnectProviderName, targetPath);
                         }
 
                         logger.log('debug', 'Authorization failed (anonymous)', {
@@ -175,9 +179,13 @@ app.post('/auth/bgw/authorize', async (req, res) => {
             else {
 
                 let authUrl = undefined;
-                if(auth_type != "access_token" && req.body.rule.includes('HTTP')) {
+
+                //unauthenticated: only provide authUrl in case username / password or authorization code were provided
+                if (auth_type === "authorization_code" || auth_type === "password") {
                     let targetPath = targetPathFromHttpPayload(req.body.rule);
-                    authUrl = getAuthUrl(openidConnectProviderName,targetPath);
+                    if(targetPath) {
+                        authUrl = getAuthUrl(openidConnectProviderName, targetPath);
+                    }
                 }
 
                 logger.log('debug', 'Authentication failed', {
