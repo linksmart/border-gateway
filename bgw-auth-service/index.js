@@ -30,60 +30,55 @@ for (const key of configuredProviders) {
     });
 }
 
-// app.post('/auth/bgw/authenticate', async (req, res) => {
-//
-//     let openidConnectProviderName;
-//
-//     if (req.body) {
-//         if (config.openid_connect_providers[req.body.openidConnectProviderName]) {
-//             openidConnectProviderName = req.body.openidConnectProviderName;
-//
-//         } else {
-//             openidConnectProviderName = 'default';
-//
-//         }
-//     }
-//     let openid_connect_provider = config.openid_connect_providers[openidConnectProviderName];
-//     let auth_type = 'password';
-//     let username = undefined;
-//     let password = undefined;
-//
-//     if (req.headers && req.headers.authorization) {
-//         let headerStrings = req.headers.authorization.split(' ');
-//         if (headerStrings.length === 2) {
-//             if ((headerStrings[0] === 'Bearer' || headerStrings[0] === 'bearer') && (username = headerStrings[1])) {
-//                 auth_type = 'access_token';
-//             } else if ((headerStrings[0] === 'Basic' || headerStrings[0] === 'basic') && (username = decode64(headerStrings[1]))) {
-//                 let separatorPos = username.indexOf(":");
-//                 password = username.substring((separatorPos + 1));
-//                 username = username.substring(0, separatorPos);
-//                 auth_type = 'password';
-//             }
-//         }
-//     }
-//
-//     let source = `[source:${req.connection.remoteAddress}:${req.connection.remotePort}]`;
-//     let authenticationResult;
-//     if (username) {
-//         authenticationResult = await validate.getProfile(openid_connect_provider, source, username, password, auth_type);
-//     } else {
-//         authenticationResult = {status: false, error: "No authorization header"};
-//     }
-//
-//     if (authenticationResult.status) {
-//         res.status(200).json({
-//             isAuthenticated: true,
-//             openidConnectProviderName: openidConnectProviderName,
-//             rules: authenticationResult.profile.rules
-//         });
-//     } else {
-//         res.status(200).json({
-//             isAuthenticated: false,
-//             openidConnectProviderName: openidConnectProviderName,
-//             error: authenticationResult.error
-//         });
-//     }
-// });
+function getAuthUrl(openidConnectProviderName,targetPath)
+{
+
+    let openid_connect_provider = config.openid_connect_providers[openidConnectProviderName];
+
+
+    authUrl = clients[openidConnectProviderName].authorizationUrl({
+        redirect_uri: openid_connect_provider.redirect_uri,
+        audience: openid_connect_provider.audience,
+        scope: "openid profile",
+        grant_type: "authorization_code",
+        nonce: nonce(),
+        state: targetPath
+    });
+    logger.log('debug', 'Created authUrl', {authUrl: authUrl});
+    return authUrl;
+}
+
+function targetPathFromHttpPayload(payload)
+{
+    let targetPath = "";
+    let splitPayload = payload.split("/");
+
+    for (let i = 0; i < splitPayload.length; i++) {
+        if(i === 0)
+        {
+            //protocol
+            targetPath+=(splitPayload[i].toLowerCase()+"://");
+        }
+        //skip http method
+        else if (i === 2)
+        {
+            //domain
+            targetPath+=(splitPayload[i]+":");
+        }
+        else if (i === 3)
+        {
+            //port
+            targetPath+=splitPayload[i];
+        }
+        else if (i >= 4)
+        {
+            //path
+            targetPath+=("/"+splitPayload[i]);
+        }
+    }
+    logger.log('debug', 'targetPath from Payload', {targetPath: targetPath});
+    return targetPath;
+}
 
 app.post('/auth/bgw/authorize', async (req, res) => {
         logger.log('debug', 'POST request to authorize endpoint', {
@@ -131,9 +126,6 @@ app.post('/auth/bgw/authorize', async (req, res) => {
             if (username) {
                 authenticationResult = await validate.getProfile(openid_connect_provider, source, username, password, auth_type);
             } else if (authorizationCode) {
-
-                //let redirectUrl = new url.URL(req.body.targetPath);
-                //redirectUrl.pathname = '/callback';
                 authenticationResult = await validate.getProfile(openid_connect_provider, source, username, password, auth_type, authorizationCode, openid_connect_provider.redirect_uri/*redirectUrl.toString()*/);
             } else {
                 authenticationResult = {
@@ -160,14 +152,10 @@ app.post('/auth/bgw/authorize', async (req, res) => {
                     if (authenticationResult.profile.user_id === "anonymous") {
                         authorizationResult.error = "Forbidden for anonymous access"
 
-                        authUrl = clients[openidConnectProviderName].authorizationUrl({
-                            redirect_uri: openid_connect_provider.redirect_uri,
-                            audience: openid_connect_provider.audience,
-                            scope: "openid profile",
-                            grant_type: "authorization_code",
-                            nonce: nonce(),
-                            state: req.body.targetPath
-                        });
+                        if(req.body.rule.includes('HTTP')) {
+                            let targetPath = targetPathFromHttpPayload(req.body.rule);
+                            authUrl = getAuthUrl(openidConnectProviderName,targetPath);
+                        }
 
                         logger.log('debug', 'Authorization failed (anonymous)', {
                             authUrl: authUrl
@@ -187,16 +175,9 @@ app.post('/auth/bgw/authorize', async (req, res) => {
             else {
 
                 let authUrl = undefined;
-                if (auth_type != "access_token") {
-                    authUrl = clients[openidConnectProviderName].authorizationUrl({
-                        redirect_uri: openid_connect_provider.redirect_uri,
-                        audience: openid_connect_provider.audience,
-                        scope: "openid profile",
-                        grant_type: "authorization_code",
-                        nonce: nonce(),
-                        state: req.body.targetPath
-                    });
-
+                if(auth_type != "access_token" && req.body.rule.includes('HTTP')) {
+                    let targetPath = targetPathFromHttpPayload(req.body.rule);
+                    authUrl = getAuthUrl(openidConnectProviderName,targetPath);
                 }
 
                 logger.log('debug', 'Authentication failed', {

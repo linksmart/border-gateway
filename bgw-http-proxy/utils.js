@@ -59,7 +59,6 @@ const httpAuth = async (req) => {
     const payload = `${protocol}/${req.method}/${host}/${port}${path}`;
     let authorization = "";
     let code;
-    let targetPath = `${protocol.toLowerCase()}://${host}:${port}${path}`;
     // Keycloak sets "Basic Og==" (decoded: ":")
     if (req.headers.authorization && req.headers.authorization != "Basic Og==") {
         authorization = req.headers.authorization;
@@ -91,7 +90,6 @@ const httpAuth = async (req) => {
             data: {
                 rule: payload,
                 code: code,
-                targetPath: targetPath,
                 openidConnectProviderName: (req.bgw.alias && req.bgw.alias.openidConnectProviderName) || config.openidConnectProviderName || 'default'
             }
         });
