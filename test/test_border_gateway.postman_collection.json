@@ -335,13 +335,11 @@
 					"raw": "{\n    \"rule\": \"MQTT/#\",\n    \"openidConnectProviderName\": \"linksmart\"\n}"
 				},
 				"url": {
-					"raw": "{{url}}/auth/bgw/authorize",
+					"raw": "{{url}}/authorize",
 					"host": [
 						"{{url}}"
 					],
 					"path": [
-						"auth",
-						"bgw",
 						"authorize"
 					]
 				}
@@ -405,13 +403,11 @@
 					"raw": ""
 				},
 				"url": {
-					"raw": "{{url}}/auth/bgw/authorize",
+					"raw": "{{url}}/authorize",
 					"host": [
 						"{{url}}"
 					],
 					"path": [
-						"auth",
-						"bgw",
 						"authorize"
 					]
 				}
@@ -462,13 +458,11 @@
 					"raw": "{\n    \"rule\": \"HTTP/GET/dummy-domain/443/dummy-path\",\n    \"openidConnectProviderName\": \"linksmart\"\n}"
 				},
 				"url": {
-					"raw": "{{url}}/auth/bgw/authorize",
+					"raw": "{{url}}/authorize",
 					"host": [
 						"{{url}}"
 					],
 					"path": [
-						"auth",
-						"bgw",
 						"authorize"
 					]
 				}
@@ -606,13 +600,11 @@
 					"raw": "{\n    \"rule\": \"MQTT/#\",\n    \"openidConnectProviderName\": \"linksmart\"\n}"
 				},
 				"url": {
-					"raw": "{{url}}/auth/bgw/authorize",
+					"raw": "{{url}}/authorize",
 					"host": [
 						"{{url}}"
 					],
 					"path": [
-						"auth",
-						"bgw",
 						"authorize"
 					]
 				}
@@ -671,13 +663,11 @@
 					"raw": "{\n    \"rule\": \"MQTT/#\",\n    \"openidConnectProviderName\": \"linksmart\"\n}"
 				},
 				"url": {
-					"raw": "{{url}}/auth/bgw/authorize",
+					"raw": "{{url}}/authorize",
 					"host": [
 						"{{url}}"
 					],
 					"path": [
-						"auth",
-						"bgw",
 						"authorize"
 					]
 				}

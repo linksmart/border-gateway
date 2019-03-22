@@ -8,7 +8,7 @@ let config = {
     redis_port: 6379,
     redis_host: undefined,
     no_auth: false,
-    auth_service: "http://localhost:5053/auth",
+    auth_service: "http://localhost:5053",
     openidConnectProviderName: undefined
 
 };

@@ -86,7 +86,7 @@ const httpAuth = async (req) => {
         response = await axios({
             method: 'post',
             headers: {authorization: authorization},
-            url: config.auth_service + "/bgw/authorize",
+            url: config.auth_service + "/authorize",
             data: {
                 rule: payload,
                 code: code,

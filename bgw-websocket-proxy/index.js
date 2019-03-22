@@ -59,7 +59,7 @@ const wsAuth = async (serverSocket, request) => {
             response = await axios({
                 method: 'post',
                 headers: authHeader,
-                url: config.auth_service + "/bgw/authorize",
+                url: config.auth_service + "/authorize",
                 data: {
                     rule: payload,
                     openidConnectProviderName: config.openidConnectProviderName || 'default'

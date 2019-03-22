@@ -83,7 +83,7 @@ function targetPathFromHttpPayload(payload) {
     return targetPath;
 }
 
-app.post('/auth/bgw/authorize', async (req, res) => {
+app.post('/authorize', async (req, res) => {
         logger.log('debug', 'POST request to authorize endpoint', {
             body: req.body
         });

@@ -10,7 +10,7 @@ let config = {
     bind_port: 5052,
     bind_address: "127.0.0.1",
     no_auth: false,
-    auth_service: "http://localhost:5053/auth",
+    auth_service: "http://localhost:5053",
     realm_public_key_modulus: undefined,
     realm_public_key_exponent: undefined,
     audience: undefined,

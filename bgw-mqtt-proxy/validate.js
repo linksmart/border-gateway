@@ -27,7 +27,7 @@ const mqttAuth = async (port, credentials, method, path = '') => {
         response = await axios({
             method: 'post',
             headers: {authorization: authorization || ""},
-            url: config.auth_service+"/bgw/authorize",
+            url: config.auth_service+"/authorize",
             data: {
                 rule: payload,
                 openidConnectProviderName: config.openidConnectProviderName || 'default'

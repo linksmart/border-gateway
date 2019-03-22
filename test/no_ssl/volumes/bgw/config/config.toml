@@ -37,8 +37,8 @@ bind_addresses = [
           [http-proxy.domains."bgw.test.eu".sc.translate_local_addresses.url_translation_map]
           "tcp://mosquitto:1883" = "tcp://bgw.test.eu:1883"
 
-      [http-proxy.domains."bgw.test.eu".auth]
-      local_address = "http://localhost:5053/auth"
+      [http-proxy.domains."bgw.test.eu".authorize]
+      local_address = "http://localhost:5053/authorize"
       no_auth = true
       keep_authorization_header = true
 

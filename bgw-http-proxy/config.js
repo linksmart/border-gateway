@@ -15,7 +15,7 @@ let config = {
     },
     domains: {},
     no_auth: false,
-    auth_service: "http://localhost:5053/auth",
+    auth_service: "http://localhost:5053",
     configurationService: undefined,
     redis_host: undefined,
     redis_port: 6379,

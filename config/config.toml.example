@@ -82,8 +82,8 @@ redis_port = 6379
           [http-proxy.domains."localhost".sc.translate_local_addresses.url_translation_map]
           "tcp://192.168.98.100:1883" = "ssl://imagon.fit.fraunhofer.de:8883"
 
-      [http-proxy.domains.localhost.auth]
-      local_address = "http://localhost:5053/auth"
+      [http-proxy.domains.localhost.authorize]
+      local_address = "http://localhost:5053/authorize"
       no_auth = true
       keep_authorization_header = true
 

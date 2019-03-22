@@ -8,7 +8,7 @@ security:
 - BasicAuth: []
 - BearerAuth: []
 paths:
-  /auth/bgw:
+  /authorize:
     post:
       summary: Post request if rule is allowed for provided credentials (Basic or Bearer)
       tags:

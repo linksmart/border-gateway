@@ -22,7 +22,7 @@ let config = {
         tls_client_cert: false
     },
     no_auth: false,
-    auth_service: "http://localhost:5053/auth",
+    auth_service: "http://localhost:5053",
     openidConnectProviderName: undefined
 };
 let configFromFile = toml.parse(fs.readFileSync('./config/config.toml'));
