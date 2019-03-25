@@ -17,14 +17,27 @@ app.use('/callback', async (req, res) => {
 
     let query = url.parse(req.url, true).query;
     logger.log('debug', 'endpoint callback called', {queryState: query && query.state});
-    if (query) {
+    if (query && query.state) {
 
-        let targetUrl = new url.URL(query.state);
+        let targetUrl;
+        try {
+            targetUrl = new url.URL(query.state);
+        }
+        catch(err)
+        {
+            logger.log('error', 'No valid URL in query parameter state');
+            res.status(404).json({error: 'Unknown location'});
+            return;
+        }
         delete query.state;
         for (let property in query) {
             targetUrl.searchParams.append(property, query[property]);
         }
         res.redirect(targetUrl.toString());
+    }
+    else
+    {
+        res.status(404).json({error: 'Unknown location'});
     }
 });
 

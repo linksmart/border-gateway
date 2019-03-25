@@ -127,7 +127,7 @@ app.post('/authenticate', async (req, res) => {
         if (username) {
             authenticationResult = await validate.getProfile(openid_connect_provider, source, username, password, auth_type);
         } else if (authorizationCode) {
-            authenticationResult = await validate.getProfile(openid_connect_provider, source, username, password, auth_type, authorizationCode, openid_connect_provider.redirect_uri/*redirectUrl.toString()*/);
+            authenticationResult = await validate.getProfile(openid_connect_provider, source, username, password, auth_type, authorizationCode, openid_connect_provider.redirect_uri);
         } else {
             authenticationResult = {
                 status: true,
@@ -205,7 +205,7 @@ app.post('/authorize', async (req, res) => {
         if (username) {
             authenticationResult = await validate.getProfile(openid_connect_provider, source, username, password, auth_type);
         } else if (authorizationCode) {
-            authenticationResult = await validate.getProfile(openid_connect_provider, source, username, password, auth_type, authorizationCode, openid_connect_provider.redirect_uri/*redirectUrl.toString()*/);
+            authenticationResult = await validate.getProfile(openid_connect_provider, source, username, password, auth_type, authorizationCode, openid_connect_provider.redirect_uri);
         } else {
             authenticationResult = {
                 status: true,
