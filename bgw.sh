@@ -28,11 +28,11 @@ if [ "$1" = "parts" ]; then
 
 elif [ "$1" = "start" ]; then
 
+    run_inspect_service bgw-auth-service 9232 &
+    run_inspect_service bgw-configuration-service 9230 &
     run_inspect_service bgw-http-proxy 9227 &
     run_inspect_service bgw-mqtt-proxy 9228 &
-    run_inspect_service bgw-configuration-service 9230 &
     run_inspect_service bgw-websocket-proxy 9231 &
-    run_inspect_service bgw-auth-service 9232 &
     run_inspect_service bgw-external-interface 9233 &
 
 else

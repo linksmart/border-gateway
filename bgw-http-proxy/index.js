@@ -20,8 +20,10 @@ app.use('/callback', async (req, res) => {
     if (query) {
 
         let targetUrl = new url.URL(query.state);
-        targetUrl.searchParams.append("code", query.code);
-
+        delete query.state;
+        for (let property in query) {
+            targetUrl.searchParams.append(property, query[property]);
+        }
         res.redirect(targetUrl.toString());
     }
 });
@@ -60,7 +62,7 @@ app.use(async (req, res) => {
             transform(transformURI)(req, res, () => proxyied_request()) : proxyied_request();
 
     } else {
-        if (response.error === 'Forbidden'  && !response.authUrl) {
+        if (response.error === 'Forbidden' && !response.authUrl) {
             res.status(403).json({error: response.error});
         } else {
             if (response.authUrl) {

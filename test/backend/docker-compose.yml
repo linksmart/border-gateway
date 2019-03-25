@@ -25,6 +25,29 @@ services:
       - GF_AUTH_ANONYMOUS_ENABLED=true
       - GF_AUTH_BASIC="Main Org."
 
+  rabbitmq:
+    image: "rabbitmq:latest"
+    container_name: "rabbitmq"
+    volumes:
+      - ./volumes/rabbitmq/rabbitmq-docker.config:/etc/rabbitmq/rabbitmq-docker.config:ro
+      - ./volumes/rabbitmq/enabled_plugins:/etc/rabbitmq/enabled_plugins
+    environment:
+      - RABBITMQ_CONFIG_FILE=/etc/rabbitmq/rabbitmq-docker
+      - "RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS=-rabbit log [{console,[{enabled,true},{level,debug}]}]"
+    restart: always
+    ports:
+      - 8183:8183
+      - 8181:8181
+      - 5671:5671
+      - 5672:5672
+    networks:
+      - backend
+    logging:
+      driver: "json-file"
+      options:
+        max-size: 10m
+        max-file: "10"
+
   mosquitto:
     image: "eclipse-mosquitto"
     container_name: "mosquitto"
