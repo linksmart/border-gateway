@@ -25,7 +25,8 @@ config.servers.forEach((srv) => {
                 host: srv.dest_address,
                 port: srv.dest_port
             },
-            ssl: options
+            ssl: options,
+            xfwd: true
         });
 
         external_interface.on('proxyReq', function (proxyReq, req, res, options) {
@@ -34,9 +35,9 @@ config.servers.forEach((srv) => {
                 host: req.headers.host,
                 x_fowarded_host: req.headers['x-forwarded-host']
             });
-            proxyReq.setHeader('x-forwarded-proto', req['x-forwarded-proto'] || 'https');
+            //proxyReq.setHeader('x-forwarded-proto', req['x-forwarded-proto'] || 'https');
             if (req.headers.host) {
-                proxyReq.setHeader('x-forwarded-host', req['x-forwarded-host'] || (req.headers.host.split(":"))[0] + ":" + srv.bind_port);
+                //proxyReq.setHeader('x-forwarded-host', req['x-forwarded-host'] || (req.headers.host.split(":"))[0] + ":" + srv.bind_port);
                 logger.log('debug', 'Host headers in request after setHeader', {
                     host: req.headers.host,
                     x_fowarded_host: req.headers['x-forwarded-host']

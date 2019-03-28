@@ -79,6 +79,7 @@ async function getProfile(openid_connect_provider, source, username, password, a
 
     let profile = {};
     let pem = getPem(realm_public_key_modulus, realm_public_key_exponent);
+    logger.log('debug', 'generated pem: '+pem,);
     if (authentication_type === 'access_token') {
 
         let decoded;
