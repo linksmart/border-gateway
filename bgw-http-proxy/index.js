@@ -78,11 +78,13 @@ app.use(async (req, res) => {
         if (response.error === 'Forbidden' && !response.authUrl) {
             res.status(403).json({error: response.error});
         } else {
-            if (response.authUrl) {
+            //config.use_basic_auth: legacy, for Composition only
+            if (response.authUrl && !config.use_basic_auth) {
                 const myURL =
                     new url.URL(response.authUrl);
                 res.redirect(myURL);
             } else {
+                res.set('WWW-Authenticate', 'Basic realm="LinkSmart Border Gateway", charset="UTF-8"');
                 res.status(401).json({error: response.error});
             }
         }
