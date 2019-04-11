@@ -13,17 +13,17 @@ if (url.includes('wss:')) {
     };
     agent = new https.Agent(agentOptions);
     client = mqtt.connect(url, {wsOptions: {agent: agent}, username: username, password: password});
-}
-else {
+} else {
     client = mqtt.connect(url, {username: username, password: password});
 }
 
 client.on('reconnect', function () {
-console.log("reconnect");
+    console.log("reconnect");
 });
 
 client.on('close', function () {
     console.log("close");
+    process.exit(1);
 });
 
 client.on('offline', function () {

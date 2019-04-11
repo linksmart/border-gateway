@@ -184,8 +184,9 @@ async function createSocketToUpstream(serverSocket, request) {
     if (serverSocket.protocol === 'mqtt') {
         serverSocket.bgwClientSocket = net.connect(clientOptions);
         serverSocket.bgwClientSocket.bgwQueue = [];
-        serverSocket.bgwClientSocket.on('close', () => {
-            logger.log("debug", "clientSocket (net) event close");
+        serverSocket.bgwClientSocket.on('close', (hadError) => {
+            logger.log("debug", "clientSocket (net) event close, hadError = "+hadError);
+            serverSocket.close(1011, "Server error. Probably target services is unreachable.");
         });
         serverSocket.bgwClientSocket.on('connect', () => {
             logger.log("debug", "clientSocket (net) event connect");

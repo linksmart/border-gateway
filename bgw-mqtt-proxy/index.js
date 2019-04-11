@@ -50,7 +50,22 @@ const clientOptions = {
 const server = net.createServer(serverOptions, (srcClient) => {
 
     const socketConnect = broker.tls ? tls.connect : net.connect;
-    const dstClient = socketConnect(clientOptions, () => {
+
+    const dstClient = socketConnect(clientOptions);
+
+    dstClient.on('error', (err) => {
+        logger.log('error', "err in dstClient", {errorName: err.name, errorMessage: err.message});
+        srcClient && srcClient.destroy(err);
+        dstClient.destroy(err);
+    });
+
+    srcClient.on('error', (err) => {
+        logger.log('error', "err in srcClient", {errorName: err.name, errorMessage: err.message});
+        dstClient && dstClient.destroy(err);
+        srcClient.destroy(err);
+    });
+
+    dstClient.on("connect", () => {
         const srcParser = mqtt.parser();
         const dstParser = mqtt.parser();
 
@@ -70,17 +85,6 @@ const server = net.createServer(serverOptions, (srcClient) => {
                 logger.log('error', "Parse error in dstParser", {error: err});
             }
         }) : dstClient.pipe(srcClient);
-
-        dstClient.on('error', (err) => {
-            logger.log('error', "err in dstClient", {error: err});
-            srcClient && srcClient.end && srcClient.end();
-            dstClient.destroy();
-        });
-        srcClient.on('error', (err) => {
-            logger.log('error', "err in srcClient", {error: err});
-            dstClient && dstClient.end && dstClient.end();
-            srcClient.destroy();
-        });
 
         const clientAddress = `${srcClient.remoteAddress}:${srcClient.remotePort}`;
         srcClient.credentials = {};
@@ -153,6 +157,10 @@ const server = net.createServer(serverOptions, (srcClient) => {
             });
         });
     });
+});
+
+server.on('error', (error) => {
+    logger.log("error", "" + config.serviceName + " server event error", {errorMessage: error.message});
 });
 
 config.bind_addresses.forEach((addr) => {

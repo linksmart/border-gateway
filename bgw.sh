@@ -7,8 +7,8 @@ function run_inspect_service {
   node --inspect=0.0.0.0:$2 ./$1/index.js || kill -KILL 0
 }
 
-# export NODE_DEBUG=cluster,net,http,fs,tls,module,timers node
-# export NODE_DEBUG=net,http,tls node
+# export NODE_DEBUG=cluster,net,http,fs,tls,module,timers
+# export NODE_DEBUG=net,http,tls
 
 echo "Starting LinkSmart Border Gateway..."
 
