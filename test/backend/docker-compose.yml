@@ -26,11 +26,13 @@ services:
       - GF_AUTH_BASIC="Main Org."
 
   rabbitmq:
-    image: "rabbitmq:latest"
+    image: "rabbitmq:3.8-rc"
     container_name: "rabbitmq"
     volumes:
       - ./volumes/rabbitmq/rabbitmq-docker.config:/etc/rabbitmq/rabbitmq-docker.config:ro
       - ./volumes/rabbitmq/enabled_plugins:/etc/rabbitmq/enabled_plugins
+      - ./volumes/rabbitmq/plugins:/opt/rabbitmq/plugins
+      - ./volumes/rabbitmq/rabbitmq-auth-backend-oauth2:/rabbitmq-auth-backend-oauth2
     environment:
       - RABBITMQ_CONFIG_FILE=/etc/rabbitmq/rabbitmq-docker
       - "RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS=-rabbit log [{console,[{enabled,true},{level,debug}]}]"
