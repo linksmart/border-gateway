@@ -79,7 +79,8 @@ app.use(async (req, res) => {
             res.status(403).json({error: response.error});
         } else {
             //config.use_basic_auth: legacy, for Composition only
-            if (response.authUrl && !config.use_basic_auth) {
+            const use_basic_auth = (req.bgw.alias && req.bgw.alias.use_basic_auth) || config.use_basic_auth;
+            if (response.authUrl && !use_basic_auth) {
                 const myURL =
                     new url.URL(response.authUrl);
                 res.redirect(myURL);
