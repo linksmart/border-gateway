@@ -51,6 +51,10 @@ const server = net.createServer(serverOptions, (srcClient) => {
 
     const socketConnect = broker.tls ? tls.connect : net.connect;
 
+    logger.log('debug', "Opening connection", {
+        clientOptionsHost: clientOptions.host,
+        clientOptionsPort: clientOptions.port
+    });
     const dstClient = socketConnect(clientOptions);
 
     dstClient.on('error', (err) => {
@@ -78,13 +82,19 @@ const server = net.createServer(serverOptions, (srcClient) => {
         });
 
 
-        config.authorize_response ? dstClient.on('data', (data) => {
-            try {
-                dstParser.parse(data)
-            } catch (err) {
-                logger.log('error', "Parse error in dstParser", {error: err});
-            }
-        }) : dstClient.pipe(srcClient);
+        if (config.authorize_response) {
+            dstClient.on('data', (data) => {
+                try {
+                    dstParser.parse(data)
+                } catch (err) {
+                    logger.log('error', "Parse error in dstParser", {error: err});
+                }
+            })
+        } else {
+
+            logger.log('debug', "Pipe dstClient to srcClient", {});
+            dstClient.pipe(srcClient);
+        }
 
         const clientAddress = `${srcClient.remoteAddress}:${srcClient.remotePort}`;
         srcClient.credentials = {};
@@ -119,7 +129,7 @@ const server = net.createServer(serverOptions, (srcClient) => {
             wrappedValidate(clientAddress, packet, srcClient.credentials).then(result => {
                 let valid = result;
                 // got final result
-                logger.log('debug', "packet validated", {command: packet.cmd});
+                logger.log('debug', "packet validated", {command: packet.cmd, result: valid});
 
                 valid.packet = valid.packet && mqtt.generate(valid.packet);
 
@@ -136,13 +146,21 @@ const server = net.createServer(serverOptions, (srcClient) => {
                     // if the packet is invalid in the case of publish or subscribe and
                     // configs for disconnecting on unauthorized is set to true, then
                     // disconnect
-                    if ((packet.cmd === 'subscribe' && config.disconnect_on_unauthorized_subscribe) ||
+                    if (
+                        (packet.cmd === 'subscribe' && config.disconnect_on_unauthorized_subscribe) ||
                         (packet.cmd === 'publish' && config.disconnect_on_unauthorized_publish)) {
-                        logger.log('info', "disconnecting client for unauthorized", {command: packet.cmd});
+                        logger.log('info', "Destroying clients because of unauthorized packet", {command: packet.cmd});
                         srcClient.destroy();
                         dstClient.destroy();
                     } else {
                         valid.packet && srcClient.write(valid.packet);
+
+                        if(packet.cmd === 'connect')
+                        {
+                            logger.log('info', "Destroying clients because of unauthorized packet", {command: packet.cmd});
+                            srcClient.destroy();
+                            dstClient.destroy();
+                        }
                     }
                 }
                 if (packet.cmd !== 'disconnect') {
