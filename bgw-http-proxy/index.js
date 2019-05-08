@@ -94,9 +94,11 @@ app.use(async (req, res) => {
 proxy.on('error', function (err, req, res) {
     logger.log('error', 'Error in proxy', {errorName: err.name, errorMessage: err.message, errorStack: err.stack});
     if (req.bgw && req.bgw.forward_address) {
+        logger.log('error', `Border Gateway could not forward your request to ${req.bgw.forward_address}` + ' ' + err.message, {});
         res && res.status(500).json({error: `Border Gateway could not forward your request to ${req.bgw.forward_address}` + ' ' + err.message});
     } else {
-        res && res.status(500).json({error: `There is a problem with the internal forward address, make sure the internal address exists and is working: `});
+        logger.log('error', `There is a problem with the internal forward address, make sure the internal address exists and is working`, {});
+        res && res.status(500).json({error: `There is a problem with the internal forward address, make sure the internal address exists and is working`});
     }
 
 });
