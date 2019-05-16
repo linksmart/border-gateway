@@ -158,6 +158,160 @@ app.post('/authenticate', async (req, res) => {
     }
 });
 
+// Replace Composition GaS
+app.post('/authorizeGUI', async (req, res) => {
+    logger.log('debug', 'POST request to authorizeGUI endpoint', {
+        body: req.body
+    });
+    if (req.body && req.body.resource && req.body.method && (typeof req.body.resource === 'string') && (typeof req.body.method === 'string')) {
+
+        let openidConnectProviderName;
+
+        if (config.openid_connect_providers[req.body.openidConnectProviderName]) {
+            openidConnectProviderName = req.body.openidConnectProviderName;
+
+        } else {
+            openidConnectProviderName = 'default';
+
+        }
+        let openid_connect_provider = config.openid_connect_providers[openidConnectProviderName];
+        let auth_type = 'password';
+        let username = undefined;
+        let password = undefined;
+        let authorizationCode = undefined;
+
+        if (req.headers && req.headers.authorization) {
+            let headerStrings = req.headers.authorization.split(' ');
+            if (headerStrings.length === 2) {
+                if ((headerStrings[0] === 'Bearer' || headerStrings[0] === 'bearer') && (username = headerStrings[1])) {
+                    auth_type = 'access_token';
+                } else if ((headerStrings[0] === 'Basic' || headerStrings[0] === 'basic') && (username = decode64(headerStrings[1]))) {
+                    let separatorPos = username.indexOf(":");
+                    password = username.substring((separatorPos + 1));
+                    username = username.substring(0, separatorPos);
+                    auth_type = 'password';
+                }
+            }
+        } else {
+            if (req.body.code) {
+                auth_type = 'authorization_code';
+                authorizationCode = req.body.code;
+            }
+        }
+
+        let source = `[source:${req.connection.remoteAddress}:${req.connection.remotePort}]`;
+
+        let authenticationResult;
+        if (username) {
+            authenticationResult = await validate.getProfile(openid_connect_provider, source, username, password, auth_type);
+        } else if (authorizationCode) {
+            authenticationResult = await validate.getProfile(openid_connect_provider, source, username, password, auth_type, authorizationCode, openid_connect_provider.redirect_uri);
+        } else {
+            authenticationResult = {
+                status: true,
+                profile: {
+                    user_id: "anonymous",
+                    rules: (openid_connect_provider.anonymous_bgw_rules && openid_connect_provider.anonymous_bgw_rules.split(" "))
+                }
+            }
+        }
+
+        let authorizationResult;
+        if (authenticationResult.status) {
+            var resource;
+            try {
+                resource = new url.URL(req.body.resource);
+                logger.log('debug', 'url create from resource',{url: resource});
+            }
+            catch(err)
+            {
+                logger.log('error', 'No valid URL as resource in body');
+                res.status(400).json({error: 'No valid URL as resource in body'});
+                return;
+            }
+            let protocol = resource.protocol.toUpperCase().split(":")[0];
+
+
+            let defaultPort = 80;
+
+            logger.log('debug', 'protocol created from resource',{protocol: protocol});
+            if (protocol === 'HTTPS')
+            {
+                defaultPort = 443;
+            }
+
+            let method = req.body.method.toUpperCase();
+            let splitHost = resource.host.split(":");
+            let host = splitHost[0];
+            let port = splitHost[1] || defaultPort;
+            let pathname = resource.pathname;
+
+            let payload = ''+protocol+'/'+method+'/'+host+'/'+port+pathname;
+            logger.log('debug', 'Payload create from resource',{payload: payload});
+            //authorizationResult = matchRules(authenticationResult.profile, req.body.rule, source);
+            authorizationResult = matchRules(authenticationResult.profile, payload, source);
+
+            if (authorizationResult.status) {
+                res.status(200).json({
+                    permission: true//,
+                    //openidConnectProviderName: openidConnectProviderName
+                });
+                //authorization failed
+            } else {
+
+                let authUrl = undefined;
+                //unauthorized: only provide authUrl in case of anonymous access
+                if (authenticationResult.profile.user_id === "anonymous") {
+
+                    //let targetPath = targetPathFromHttpPayload(req.body.rule);
+                    let targetPath = req.body.resource;
+                    if (targetPath) {
+                        authUrl = getAuthUrl(openidConnectProviderName, targetPath);
+                    }
+
+                    logger.log('debug', 'Authorization failed (anonymous)', {
+                        authUrl: authUrl
+                    });
+                }
+
+                res.status(200).json({
+                    permission: false,
+                    //openidConnectProviderName: openidConnectProviderName,
+                    //authUrl: authUrl,
+                    error: authorizationResult.error
+                });
+            }
+
+        }
+        // authentication failed
+        else {
+
+            let authUrl = undefined;
+
+            //unauthenticated: only provide authUrl in case username / password or authorization code were provided
+            if (auth_type === "authorization_code" || auth_type === "password") {
+                //let targetPath = targetPathFromHttpPayload(req.body.rule);
+                let targetPath = req.body.resource;
+                if (targetPath) {
+                    authUrl = getAuthUrl(openidConnectProviderName, targetPath);
+                }
+            }
+
+            logger.log('debug', 'Authentication failed', {
+                authUrl: authUrl
+            });
+
+            res.status(200).json({
+                permission: false,
+                //openidConnectProviderName: openidConnectProviderName,
+                //authUrl: authUrl,
+                error: authenticationResult.error
+            });
+        }
+        return;
+    }
+    res.status(400).json({permission: false, error: "no resource and method string given"});
+});
 
 app.post('/authorize', async (req, res) => {
     logger.log('debug', 'POST request to authorize endpoint', {
