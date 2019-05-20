@@ -126,9 +126,11 @@ echo "mosquitto_pub anonymous"
 command="mosquitto_pub --debug $mqttSecureParams -h $host -p $mqttPort -d -t LS/test -m \"hello there\" -q 0"
 echo "$command"
 eval "$command$"
+exitCode=$?
 
-if [ $? -ne 5 ]; then
-  echo "exit code = $?"
+# formerly exit code 5 was returned!
+if [ "$exitCode" -ne 5 ] && [ "$exitCode" -ne 0 ]; then
+  echo "exit code = $exitCode"
   exit 1
 fi
 
