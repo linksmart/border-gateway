@@ -19,23 +19,53 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/request'
+              $ref: '#/components/schemas/authorizeRequest'
 
       responses:
         '200':
-          description: Answer
+          description: Response
           content:
             application/json:
               schema:
                 oneOf:
-                - $ref: "#/components/schemas/answerTrue"
-                - $ref: "#/components/schemas/answerFalse"
+                - $ref: "#/components/schemas/authorizeResponseTrue"
+                - $ref: "#/components/schemas/authorizeResponseFalse"
         '400':
           description: Bad request
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/answerFalse"
+                $ref: "#/components/schemas/authorizeResponseFalse"
+        default:
+          description: Unexpected error
+  /authorizeGUI:
+    post:
+      summary: Post request if access to provided resource with provided method is allowed (specifically for Composition / eFactory projects)
+      tags:
+        - auth-service
+      requestBody:
+        description: Provide resource and method
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/authorizeGUIRequest'
+
+      responses:
+        '200':
+          description: Response
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/authorizeGUIResponseTrue"
+                  - $ref: "#/components/schemas/authorizeGUIResponseFalse"
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/authorizeGUIResponseFalse"
         default:
           description: Unexpected error
 components:
@@ -48,7 +78,7 @@ components:
       scheme: bearer
 
   schemas:
-    request:
+    authorizeRequest:
       required:
       - rule
       properties:
@@ -57,7 +87,7 @@ components:
         openidConnectProviderName:
           type: string
           default: default
-    answerFalse:
+    authorizeResponseFalse:
       required:
       - isAuthorized
       - error
@@ -70,7 +100,7 @@ components:
           type: string
         error:
           type: string
-    answerTrue:
+    authorizeResponseTrue:
       required:
       - isAuthorized
       - openidConnectProviderName
@@ -78,4 +108,28 @@ components:
         isAuthorized:
           type: boolean
         openidConnectProviderName:
+          type: string
+    authorizeGUIRequest:
+      required:
+        - resource
+        - method
+      properties:
+        resource:
+          type: string
+        method:
+          type: string
+    authorizeGUIResponseTrue:
+      required:
+        - permission
+      properties:
+        permission:
+          type: boolean
+    authorizeGUIResponseFalse:
+      required:
+        - permission
+        - error
+      properties:
+        permission:
+          type: boolean
+        error:
           type: string
