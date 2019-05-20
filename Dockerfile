@@ -1,4 +1,4 @@
-FROM node:latest
+FROM node:10
 
 COPY ./logger /bgw/logger
 COPY ./bgw-auth-service /bgw/bgw-auth-service
