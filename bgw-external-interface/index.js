@@ -7,7 +7,7 @@ const fs = require('fs');
 
 const options = {
     //may be necessary for Nagios (https://github.com/jpmens/check-mqtt) after switching to Node 12
-    // minVersion: "TLSv1",
+    minVersion: "TLSv1",
     key: fs.readFileSync(config.tls_key),
     cert: fs.readFileSync(config.tls_cert),
     requestCert: config.request_client_cert,
