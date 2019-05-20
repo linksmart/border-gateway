@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "2f8d79cc-467f-4e7e-bdbe-90e2efe25d5e",
+		"_postman_id": "68fc1a13-a2be-4145-adc4-6088fe7b2fe1",
 		"name": "test_border_gateway",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -100,10 +100,6 @@
 				},
 				"method": "GET",
 				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": ""
-				},
 				"url": {
 					"raw": "{{realm1_address}}/users?username=linksmart",
 					"host": [
@@ -153,10 +149,6 @@
 				},
 				"method": "GET",
 				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": ""
-				},
 				"url": {
 					"raw": "{{realm2_address}}/users?username=linksmart",
 					"host": [
@@ -335,11 +327,12 @@
 					"raw": "{\n    \"rule\": \"MQTT/#\",\n    \"openidConnectProviderName\": \"linksmart\"\n}"
 				},
 				"url": {
-					"raw": "{{url}}/authorize",
+					"raw": "{{url}}/auth/authorize",
 					"host": [
 						"{{url}}"
 					],
 					"path": [
+						"auth",
 						"authorize"
 					]
 				}
@@ -403,11 +396,12 @@
 					"raw": ""
 				},
 				"url": {
-					"raw": "{{url}}/authorize",
+					"raw": "{{url}}/auth/authorize",
 					"host": [
 						"{{url}}"
 					],
 					"path": [
+						"auth",
 						"authorize"
 					]
 				}
@@ -458,11 +452,12 @@
 					"raw": "{\n    \"rule\": \"HTTP/GET/dummy-domain/443/dummy-path\",\n    \"openidConnectProviderName\": \"linksmart\"\n}"
 				},
 				"url": {
-					"raw": "{{url}}/authorize",
+					"raw": "{{url}}/auth/authorize",
 					"host": [
 						"{{url}}"
 					],
 					"path": [
+						"auth",
 						"authorize"
 					]
 				}
@@ -600,11 +595,12 @@
 					"raw": "{\n    \"rule\": \"MQTT/#\",\n    \"openidConnectProviderName\": \"linksmart\"\n}"
 				},
 				"url": {
-					"raw": "{{url}}/authorize",
+					"raw": "{{url}}/auth/authorize",
 					"host": [
 						"{{url}}"
 					],
 					"path": [
+						"auth",
 						"authorize"
 					]
 				}
@@ -663,11 +659,12 @@
 					"raw": "{\n    \"rule\": \"MQTT/#\",\n    \"openidConnectProviderName\": \"linksmart\"\n}"
 				},
 				"url": {
-					"raw": "{{url}}/authorize",
+					"raw": "{{url}}/auth/authorize",
 					"host": [
 						"{{url}}"
 					],
 					"path": [
+						"auth",
 						"authorize"
 					]
 				}
@@ -693,10 +690,6 @@
 			"request": {
 				"method": "GET",
 				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": ""
-				},
 				"url": {
 					"raw": "{{url}}/sc",
 					"host": [
@@ -1455,10 +1448,6 @@
 			"request": {
 				"method": "DELETE",
 				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": ""
-				},
 				"url": {
 					"raw": "{{url}}/sc",
 					"host": [
@@ -1516,10 +1505,6 @@
 				},
 				"method": "GET",
 				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": ""
-				},
 				"url": {
 					"raw": "{{url}}/sc",
 					"host": [
@@ -1684,10 +1669,6 @@
 			"request": {
 				"method": "GET",
 				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": ""
-				},
 				"url": {
 					"raw": "{{url}}/sc",
 					"host": [
@@ -2163,10 +2144,6 @@
 						"value": "application/json"
 					}
 				],
-				"body": {
-					"mode": "raw",
-					"raw": ""
-				},
 				"url": {
 					"raw": "{{url}}/sc/jannis-linksmart-agent",
 					"host": [
@@ -2263,10 +2240,6 @@
 						"value": "application/json"
 					}
 				],
-				"body": {
-					"mode": "raw",
-					"raw": ""
-				},
 				"url": {
 					"raw": "{{url}}/sc/jannis-linksmart-agent?username={{default_access_token}}",
 					"host": [
