@@ -54,6 +54,10 @@ const httpAuth = async (req) => {
         protocol = req.headers['x-forwarded-proto'].toUpperCase();
     }
 
+    if (req.headers['x-forwarded-port']) {
+        port = req.headers['x-forwarded-port'];
+    }
+
     // get rid of query parameters for authorization check
     const path = req.originalUrl.split("?")[0].replace('//', '/');
     const payload = `${protocol}/${req.method}/${host}/${port}${path}`;
