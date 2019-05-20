@@ -4,7 +4,7 @@
 # Docker
 # all tests: ./run_tests.sh no_ssl nginx nginx_no_x_forward nginx_444 ei redis_1 redis_120
 
-# workaround to have jq available in Docker Toolbox for Windows
+# workaround to have jq available in git bash for Windows
 shopt -s expand_aliases
 source ~/.bashrc
 
@@ -69,11 +69,14 @@ do
     fi
 
     docker-compose up --exit-code-from tester tester
+    #docker-compose up tester
 
     #workaround until Windows 10 and most current docker-compose is available (hopefully)
-    exitCode=$(docker inspect $(docker-compose ps -q tester) | jq '.[0].State.ExitCode')
-    #if [ "$?" -ne 0 ]; then
-    if [ "$exitCode" -ne 0 ]; then
+    #exitCode=$(docker inspect $(docker-compose ps -q tester) | jq '.[0].State.ExitCode')
+    #if [ "$exitCode" -ne 0 ]; then
+
+    if [ "$?" -ne 0 ]; then
+
         notify "@jannis.warnat Tester failed for test $test"
         exit 1
     fi

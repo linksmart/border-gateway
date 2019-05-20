@@ -3,7 +3,7 @@
 CA=$1
 test=$2
 
-# workaround to have jq available in Docker Toolbox for Windows
+# workaround to have jq available in git bash for Windows
 shopt -s expand_aliases
 source ~/.bashrc
 
