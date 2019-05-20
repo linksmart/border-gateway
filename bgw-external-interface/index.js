@@ -6,6 +6,8 @@ const httpProxy = require('http-proxy');
 const fs = require('fs');
 
 const options = {
+    //may be necessary for Nagios (https://github.com/jpmens/check-mqtt) after switching to Node 12
+    // minVersion: "TLSv1",
     key: fs.readFileSync(config.tls_key),
     cert: fs.readFileSync(config.tls_cert),
     requestCert: config.request_client_cert,
@@ -91,7 +93,8 @@ config.servers.forEach((srv) => {
             });
         });
         external_interface.on('tlsClientError', (e) => logger.log('error', 'tls error,this could be a none tls connection, make sure to establish a proper tls connection, details...', {errorStack: e.stack}));
-
+        // will be relevant when updating to Node 12
+        logger.log('info', 'tls versions', {minVersion: external_interface.minVersion, maxVersion: external_interface.maxVersion, defaultMinVersion: tls.DEFAULT_MIN_VERSION, defaultMaxVersion: tls.DEFAULT_MAX_VERSION});
     }
     srv.bind_addresses.forEach((addr) => {
         external_interface.listen(srv.bind_port, addr, () =>
