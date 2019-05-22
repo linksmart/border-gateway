@@ -22,7 +22,7 @@ if (config.redis_expiration > 0) {
                 logger.log('error', 'Retry time exhausted');
                 return new Error('Retry time exhausted');
             }
-            if (options.attempt > 10) {
+            if (options.attempt > 1000) {
                 // End reconnecting with built in error
                 return undefined;
             }

@@ -22,7 +22,7 @@ if (config.configurationService && config.redis_host) {
                 logger.log('error', 'Retry time exhausted');
                 return new Error('Retry time exhausted');
             }
-            if (options.attempt > 10) {
+            if (options.attempt > 1000) {
                 // End reconnecting with built in error
                 return undefined;
             }
@@ -45,7 +45,7 @@ if (config.configurationService && config.redis_host) {
         logger.log('debug', 'redisClient is reconnecting');
     });
 
-    redisClient.on('error', function () {
+    redisClient.on('error', function (error) {
         logger.log('error', 'Error in redisClient', {error:error});
     });
 
