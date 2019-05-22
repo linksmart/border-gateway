@@ -114,8 +114,6 @@ const httpAuth = async (req) => {
 const bgwIfy = async (req) => {
         req.bgw = {};
 
-        //const public_domain = config.sub_domain_mode ?  host.includes(config.external_domain) : host === config.external_domain;
-
         logger.log('debug', 'Host headers in request', {
             host: req.headers.host,
             x_fowarded_host: req.headers['x-forwarded-host']
@@ -185,12 +183,9 @@ const bgwIfy = async (req) => {
 
         Object.assign(locations, locationsFromConfigService);
 
-        // check if subdomain mode e.g. https://rc.gateway.com or https://gateway.com/rc
-        //let local_dest =  config.sub_domain_mode ? host.split(config.external_domain).filter((e)=>e!=="")[0]:req.url.split(/\/|\?|\#/)[1];
         let urlArray = req.url.split(/\/|\?|\#/);
         let local_dest = urlArray[1];
         local_dest = local_dest && local_dest.replace(".", "");
-        //req.url =  config.sub_domain_mode ? req.url : req.url.replace(`/${local_dest}`,"");
         req.url = req.url.replace(`/${local_dest}`, "");
 
         if (locations[local_dest]) {

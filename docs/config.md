@@ -54,10 +54,6 @@ HTTP_PROXY_BIND_PORT=5050
 ```
 The usual bind port for HTTP proxy is `5050`.
 ```
-HTTP_PROXY_SUB_DOMAIN_MODE=false
-```
-When true you can use `https://alias1.bgw.com` instead of `https://bgw.com/alias1`
-```
 HTTP_PROXY_CHANGE_ORIGIN_ON={"https_req":false,"http_req":false}
 ```
 Change the origin of in the HTTP request to match the internal resource being forwarded to.
