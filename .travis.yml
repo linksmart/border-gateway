@@ -11,6 +11,10 @@ deploy:
     on:
       branch: master
   - provider: script
+    script: docker push linksmart/bgw:snapshot
+    on:
+      branch: dev
+  - provider: script
     script: docker tag linksmart/bgw linksmart/bgw:${TRAVIS_TAG} &&
       docker push linksmart/bgw:${TRAVIS_TAG}
     on:
