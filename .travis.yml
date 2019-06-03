@@ -11,7 +11,8 @@ deploy:
     on:
       branch: master
   - provider: script
-    script: docker push linksmart/bgw:snapshot
+    script: docker tag linksmart/bgw linksmart/bgw:snapshot &&
+      docker push linksmart/bgw:snapshot
     on:
       branch: dev
   - provider: script
