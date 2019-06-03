@@ -3,7 +3,6 @@ const logger = require('../logger/log')(config.serviceName, config.logLevel);
 const {transformURI, decode} = require("./translate_res");
 const axios = require("axios");
 const url = require("url");
-
 const TYPES = {
     FORWARD: 'FORWARD',
     FORWARD_W_T: 'FORWARD_W_T',
@@ -12,6 +11,7 @@ const TYPES = {
 };
 
 const httpAuth = async (req) => {
+    //const span = tracer.startSpan("httpAuth");
 
     if (config.no_auth || (req.bgw.alias && req.bgw.alias.no_auth)) {
 
@@ -112,6 +112,7 @@ const httpAuth = async (req) => {
 };
 
 const bgwIfy = async (req) => {
+        //const span = tracer.startSpan("bgwIfy");
         req.bgw = {};
 
         logger.log('debug', 'Host headers in request', {
@@ -205,6 +206,7 @@ const bgwIfy = async (req) => {
             return
         }
         req.bgw = {type: TYPES.UNKNOWN_REQUEST}
+        //span.finish();
     }
 ;
 
@@ -212,3 +214,4 @@ module.exports.httpAuth = httpAuth;
 module.exports.bgwIfy = bgwIfy;
 module.exports.REQ_TYPES = TYPES;
 module.exports.transformURI = transformURI;
+//module.exports.initTracer = initTracer;

@@ -1,6 +1,7 @@
 FROM node:12
 
 COPY ./logger /bgw/logger
+COPY ./tracer /bgw/tracer
 COPY ./bgw-auth-service /bgw/bgw-auth-service
 COPY ./bgw-external-interface /bgw/bgw-external-interface
 COPY ./bgw-http-proxy /bgw/bgw-http-proxy

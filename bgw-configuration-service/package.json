@@ -17,6 +17,8 @@
     "redis": "latest",
     "async-redis": "latest",
     "is-var-name": "latest",
-    "toml": "latest"
+    "toml": "latest",
+    "zipkin": "latest",
+    "zipkin-instrumentation-restify": "latest"
   }
 }

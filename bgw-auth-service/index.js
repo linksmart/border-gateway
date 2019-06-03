@@ -1,5 +1,6 @@
 const config = require('./config');
 const logger = require('../logger/log')(config.serviceName, config.logLevel);
+const tracer = require('../tracer/trace')(config.serviceName,config.enableDistributedTracing);
 const app = require('express')();
 const bodyParser = require('body-parser');
 const {Issuer} = require('openid-client');
@@ -8,7 +9,10 @@ const url = require('url');
 const validate = require("./validate");
 const matchRules = require('./rules');
 const decode64 = (b64) => Buffer.from(b64, 'base64').toString('utf8');
+const zipkinMiddleware = require('zipkin-instrumentation-express').expressMiddleware;
 
+// Add the Zipkin middleware
+app.use(zipkinMiddleware({tracer}));
 app.use(bodyParser.json());
 
 let issuers = {};

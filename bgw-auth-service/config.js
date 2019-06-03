@@ -23,7 +23,8 @@ let config = {
             anonymous_bgw_rules: "",
             redirect_uri: ""
         }
-    }
+    },
+    enableDistributedTracing: false
 };
 
 let configFromFile = toml.parse(fs.readFileSync('./config/config.toml'));

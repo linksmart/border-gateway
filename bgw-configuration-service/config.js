@@ -9,7 +9,8 @@ let config = {
     redis_host: undefined,
     no_auth: false,
     auth_service: "http://localhost:5053",
-    openidConnectProviderName: undefined
+    openidConnectProviderName: undefined,
+    enableDistributedTracing: false
 
 };
 //const configFromFile = require('../config/config.json');

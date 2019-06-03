@@ -26,8 +26,8 @@ services:
     - 9230:9230
     - 9231:9231
     networks:
-      - backend_backend
       - public
+      - backend_backend
     volumes:
     - "./volumes/bgw/config:/bgw/config"
 

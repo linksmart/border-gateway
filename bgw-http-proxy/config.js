@@ -20,7 +20,8 @@ let config = {
     configurationService: undefined,
     redis_host: undefined,
     redis_port: 6379,
-    openidConnectProviderName: undefined
+    openidConnectProviderName: undefined,
+    enableDistributedTracing: false
 };
 
 

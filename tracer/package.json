@@ -1,7 +1,7 @@
 {
-  "name": "bgw-auth-service",
+  "name": "logger",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "trace.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -13,18 +13,9 @@
     }
   },
   "dependencies": {
-    "body-parser": "latest",
-    "express": "latest",
-    "mqtt-match": "latest",
-    "node-fetch": "latest",
-    "jsonwebtoken": "latest",
-    "rsa-pem-from-mod-exp": "latest",
-    "redis": "latest",
-    "async-redis": "latest",
-    "toml": "latest",
-    "openid-client": "latest",
-    "nonce": "latest",
+    "winston": "latest",
     "zipkin": "latest",
+    "zipkin-transport-http": "latest",
     "zipkin-instrumentation-express": "latest",
     "zipkin-instrumentation-fetch": "latest"
   }

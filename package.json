@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "logger": "file:./logger",
+    "tracer": "file:./tracer",
     "bgw-external-interface": "file:./bgw-external-interface",
     "bgw-auth-service": "file:./bgw-auth-service",
     "bgw-http-proxy": "file:./bgw-http-proxy",

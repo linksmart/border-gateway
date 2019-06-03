@@ -1,6 +1,7 @@
 const config = require('./config');
 const logger = require('../logger/log')(config.serviceName,config.logLevel);
-const fetch = require('node-fetch');
+const tracer = require('../tracer/trace')(config.serviceName, config.enableDistributedTracing);
+const nodefetch = require('node-fetch');
 const qs = require("querystring");
 //const matchRules = require('./rules');
 const jwt = require('jsonwebtoken');
@@ -11,6 +12,10 @@ const asyncRedis = require("async-redis");
 let redisClient;
 const crypto = require('crypto');
 const algorithm = 'aes256';
+const wrapFetch = require('zipkin-instrumentation-fetch');
+const remoteServiceName = 'openidConnectProvider';
+const zipkinFetch = wrapFetch(nodefetch, {tracer, remoteServiceName});
+
 if (config.redis_expiration > 0) {
 
     redisClient = redis.createClient({
@@ -168,7 +173,7 @@ async function getProfile(openid_connect_provider, source, username, password, a
 
             try {
 
-                let result = await fetch(`${token_endpoint}`, options); // see https://www.keycloak.org/docs/3.0/securing_apps/topics/oidc/oidc-generic.html
+                let result = await zipkinFetch(`${token_endpoint}`, options); // see https://www.keycloak.org/docs/3.0/securing_apps/topics/oidc/oidc-generic.html
                 profile = await result.json();
             } catch (e) {
                 logger.log('error', 'DENIED This could be due to auth server being offline or failing',{source: source});

@@ -1,5 +1,6 @@
 const config = require('./config');
 const logger = require('../logger/log')(config.serviceName, config.logLevel);
+const tracer = require('../tracer/trace')(config.serviceName,config.enableDistributedTracing);
 const cors = require('cors');
 const app = require('express')();
 const https = require('https');
@@ -10,6 +11,10 @@ const agentHTTP = new http.Agent({});
 const agentHTTPS = new https.Agent({});
 const proxy = require('http-proxy/lib/http-proxy').createProxyServer({});
 const {httpAuth, transformURI, bgwIfy, REQ_TYPES} = require('./utils');
+const zipkinMiddleware = require('zipkin-instrumentation-express').expressMiddleware;
+
+// Add the Zipkin middleware
+app.use(zipkinMiddleware({tracer}));
 
 app.use(cors());
 

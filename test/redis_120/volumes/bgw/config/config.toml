@@ -15,6 +15,7 @@ tls_cert = "/bgw/certs/bgw.test.eu.pem"
   tls_client_cert = ""
 
 [http-proxy]
+# enableDistributedTracing = true
 configurationService = "http://localhost:5056"
 redis_host = "redis"
 
@@ -47,7 +48,11 @@ audience = "bgw_client"
 client_id = "bgw_client"
 issuer = "https://auth.fit.fraunhofer.de/kc/realms/bgw-jannis-local"
 
+[configuration-service]
+# enableDistributedTracing = true
+
 [auth-service]
+# enableDistributedTracing = true
 redis_expiration = 120
 redis_host = "redis"
 

@@ -20,6 +20,8 @@
     "http-proxy": "latest",
     "transformer-proxy": "latest",
     "axios": "latest",
-    "toml": "latest"
+    "toml": "latest",
+    "zipkin": "latest",
+    "zipkin-instrumentation-express": "latest"
   }
 }
