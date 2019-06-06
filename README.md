@@ -3,7 +3,7 @@
 [![Docker Pulls](https://img.shields.io/docker/pulls/linksmart/bgw.svg)](https://hub.docker.com/r/linksmart/bgw/tags)
 [![Build Status](https://travis-ci.com/linksmart/border-gateway.svg)](https://travis-ci.com/linksmart/border-gateway)
 
-The LinkSmart® Border Gateway provides a single point of entry into an "Internet of Things"
+The LinkSmart Border Gateway provides a single point of entry into an "Internet of Things"
 autonomous system (IoT-AS) consisting of connected devices, their supporting services and the messaging infrastructure.
 These are the main functionalities:
 
