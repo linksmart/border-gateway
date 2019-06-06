@@ -4,7 +4,7 @@
 [![Build Status](https://travis-ci.com/linksmart/border-gateway.svg)](https://travis-ci.com/linksmart/border-gateway)
 
 The LinkSmart® Border Gateway provides a single point of entry into an "Internet of Things"
-autonomous system (IoT-AS) consisting of connected devices, their supporting services and the messaging infratrukture.
+autonomous system (IoT-AS) consisting of connected devices, their supporting services and the messaging infrastructure.
 These are the main functionalities:
 
 * TLS offloading at the edge of the protected autonomous system
@@ -39,7 +39,7 @@ Border Gateway.
 
 ### Create an SSL certificate for your deployment
 
-Options could be Let´s encrypt or Fraunhofer certificates. You will need
+Options could be Let's encrypt. You will need
 the two .pem files containing the certificate itself (including chain)
 and the private key. See below on how to provide the necessary
 information in a config file.
@@ -51,9 +51,7 @@ Create a file config.toml with the following entries:
      [external-interface]
      tls_key = "/bgw/certs/<your_key>.pem"
      tls_cert = "/bgw/certs/<your_cert>.pem"
-
      [mqtt-proxy]
-
        [mqtt-proxy.broker]
        address = "demo.linksmart.eu"
        port = 8883.0
@@ -63,36 +61,24 @@ Create a file config.toml with the following entries:
        tls_ca = ""
        tls_client_key = ""
        tls_client_cert = ""
-
      [http-proxy]
        [http-proxy.domains]
          [http-proxy.domains."<your_domain_name_used_in_certificate>"]
-           [http-proxy.domains."<your_domain_name_used_in_certificate>
- "."<location>"]
+           [http-proxy.domains."<your_domain_name_used_in_certificate>"."<location>"]
            local_address = "<address_of_your_local_service>:<port>"
      [auth-service]
        [auth-service.openid_connect_providers]
          [auth-service.openid_connect_providers.default]
-         issuer = "https://auth.fit.fraunhofer.de/kc/realms/bgw-jannis
- -local"
-         authorization_endpoint = "https://auth.fit.fraunhofer.de/kc/r
- ealms/linksmart-demo/protocol/openid-connect/auth"
-         token_endpoint = "https://auth.fit.fraunhofer.de/kc/realms/li
- nksmart-demo/protocol/openid-connect/token"
+         issuer = "https://auth.fit.fraunhofer.de/kc/realms/bgw-jannis-local"
+         authorization_endpoint = "https://auth.fit.fraunhofer.de/kc/realms/linksmart-demo/protocol/openid-connect/auth"
+         token_endpoint = "https://auth.fit.fraunhofer.de/kc/realms/linksmart-demo/protocol/openid-connect/token"
          audience = "bgw_client"
          client_id = "bgw_client"
          client_secret = ""
-         jwks_uri = "https://auth.fit.fraunhofer.de/kc/realms/linksmar
- t-demo/protocol/openid-connect/certs"
-         realm_public_key_modulus = "y1lGnR7-Smc6qPxl7D4OxNX60T0UVkZu7
- O6xn4m-4QaTsweI1kgHqN8GB1ooPSQr6THNnjmIcHpMVxL4THncpaHpXn-8vMN6mKxiD6
- MPPdOUO7NpZEZpeUxvPdyLSaL5Vs3k-c2X1uQ7nphr1ZXN0SmhgARY73rMK5aAL_gjvK3
- EGqZUzeeakZdIOuWjxO58Z6HkarQLVJ6bXfM8dfUKksJp7rGK-4YBccjdnbBssb_3EsQY
- FnoeDXHWTgu8NiKEsyI6JRtbbbeV_ZlKAHMZhdN6NUInS35tvw0VX2tK5TiASihN4VyaL
- a17dQ3988HkSLU1d2niIcKyW--ykjDnzQ"
+         jwks_uri = "https://auth.fit.fraunhofer.de/kc/realms/linksmart-demo/protocol/openid-connect/certs"
+         realm_public_key_modulus = "y1lGnR7-Smc6qPxl7D4OxNX60T0UVkZu7O6xn4m-4QaTsweI1kgHqN8GB1ooPSQr6THNnjmIcHpMVxL4THncpaHpXn-8vMN6mKxiD6MPPdOUO7NpZEZpeUxvPdyLSaL5Vs3k-c2X1uQ7nphr1ZXN0SmhgARY73rMK5aAL_gjvK3EGqZUzeeakZdIOuWjxO58Z6HkarQLVJ6bXfM8dfUKksJp7rGK-4YBccjdnbBssb_3EsQYFnoeDXHWTgu8NiKEsyI6JRtbbbeV_ZlKAHMZhdN6NUInS35tvw0VX2tK5TiASihN4VyaLa17dQ3988HkSLU1d2niIcKyW--ykjDnzQ"
          realm_public_key_exponent = "AQAB"
-         redirect_uri = "https://<your_domain_name_used_in_certificate
- >:443/callback"
+         redirect_uri = "https://<your_domain_name_used_in_certificate>:443/callback"
          anonymous_bgw_rules = "HTTPS/GET/# MQTT/#"
 
 Note that anonymous access is limited to read-only for HTTP to start
