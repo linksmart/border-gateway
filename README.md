@@ -19,7 +19,7 @@ These are the main functionalities:
   (publish, subscribe etc.).
 * Access control for WebSocket connections can be defined for hostnames and ports.
 * HTTP request forwarding to internal services according to location definitions
-  (e.g. a request to https://iot.linksmart.eu/\<location\> can be forwarded to localhost or
+  (e.g. a request to `https://iot.linksmart.eu/<location>` can be forwarded to localhost or
   any other host protected by the Border Gateway on the correct port).
 * Address translation for HTTP requests, i.e. internal IoT-AS addresses in HTTP responses can be
   translated to external addresses that the requester is able to connect to.
@@ -33,5 +33,5 @@ Find the documentation here: https://docs.linksmart.eu/display/BGW
 
 [Docker]:https://hub.docker.com/r/linksmart/bgw/tags
 [Config]:docs/config.md
-[Deploy]:docs/config.md
+[Deploy]:docs/deployment.md
 
