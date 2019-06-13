@@ -24,14 +24,12 @@ These are the main functionalities:
 * Address translation for HTTP requests, i.e. internal IoT-AS addresses in HTTP responses can be
   translated to external addresses that the requester is able to connect to.
 
-## Configuration and deployment 
+## Deployment 
 
-See the [configuration page][Config].
 See the [deplyoment page][Deploy].
  
 Find the documentation here: https://docs.linksmart.eu/display/BGW
 
 [Docker]:https://hub.docker.com/r/linksmart/bgw/tags
-[Config]:docs/config.md
 [Deploy]:docs/deployment.md
 

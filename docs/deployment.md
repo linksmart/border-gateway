@@ -119,7 +119,7 @@ The BGW auth service will store keys and values in Redis like this:
 -   Key and value automatically expire after the number of seconds
     defined in `auth_service_redis_expiration`
 
-If `auth_service_redis_expiration` is set to a value greater 0 the BGW auth
+If `auth_service_redis_expiration` is set to a value greater than 0 the BGW auth
 service will always try to get an access token from Redis first before
 posting a request to the OpenID Connect provider. Make sure that the
 value `auth_service_redis_expiration` is not higher than the configured
