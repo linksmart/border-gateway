@@ -12,6 +12,7 @@ COPY ./bgw.sh /bgw
 COPY ./package.json /bgw
 
 WORKDIR /bgw
+RUN chmod -R +x *.sh
 
 EXPOSE 443 8883 9002
 

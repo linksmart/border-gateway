@@ -12,6 +12,8 @@ COPY ./bgw.sh /bgw
 COPY ./package.json /bgw
 
 WORKDIR /bgw
+RUN chmod -R +x *.sh
+
 RUN npm install
 
 EXPOSE 443 8883 9002

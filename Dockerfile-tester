@@ -34,5 +34,8 @@ RUN npm install
 WORKDIR /bgw/test/mqtt_over_websocket
 RUN npm install
 
+WORKDIR /bgw/test
+RUN chmod -R +x *.sh
+
 
 
