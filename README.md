@@ -19,28 +19,28 @@ These are the main functionalities:
   (publish, subscribe etc.).
 * Access control for WebSocket connections can be defined for hostnames and ports.
 * HTTP request forwarding to internal services according to location definitions
-  (e.g. a request to https://iot.linksmart.eu/<location> can be forwarded to localhost or
+  (e.g. a request to https://iot.linksmart.eu/\<location\> can be forwarded to localhost or
   any other host protected by the Border Gateway on the correct port).
 * Address translation for HTTP requests, i.e. internal IoT-AS addresses in HTTP responses can be
-  translated to external addresses, which the requester is able to connect to.
+  translated to external addresses that the requester is able to connect to.
 
 ## Deployment
 
 The Border Gateway can be easily deployed via [Docker container][Docker]. The basic configuration
-requires a certificate for the host and an available OpenID Connect provider.
+requires a TLS certificate for the host and an available OpenID Connect provider.
 
 ### Set up OpenID Connect provider
 
 Set up an OpenID Connect authentication provider (e.g.
 [Keycloak](https://www.keycloak.org/) as a local deployment
 or [Auth0](https://auth0.com/) a a cloud service). See
-[subpage](https://docs.linksmart.eu/display/BGW/Setting+up+Keycloak+as+an+OpenID+Connect+provider)for
+[subpage](https://docs.linksmart.eu/display/BGW/Setting+up+Keycloak+as+an+OpenID+Connect+provider) for
 an example on how to set up Keycloak as an Open ID provider for the
 Border Gateway.
 
-### Create an SSL certificate for your deployment
+### Create a TLS certificate for your deployment
 
-Options could be Let's encrypt. You will need
+Simplest option is to use Let's encrypt. You will need
 the two .pem files containing the certificate itself (including chain)
 and the private key. See below on how to provide the necessary
 information in a config file.
@@ -52,21 +52,24 @@ Create a file config.toml with the following entries:
      [external-interface]
      tls_key = "/bgw/certs/<your_key>.pem"
      tls_cert = "/bgw/certs/<your_cert>.pem"
+   
      [mqtt-proxy]
        [mqtt-proxy.broker]
        address = "demo.linksmart.eu"
-       port = 8883.0
+       port = 8883
        username = "linksmart"
        password = "demo"
        tls = true
        tls_ca = ""
        tls_client_key = ""
        tls_client_cert = ""
+     
      [http-proxy]
        [http-proxy.domains]
          [http-proxy.domains."<your_domain_name_used_in_certificate>"]
            [http-proxy.domains."<your_domain_name_used_in_certificate>"."<location>"]
            local_address = "<address_of_your_local_service>:<port>"
+     
      [auth-service]
        [auth-service.openid_connect_providers]
          [auth-service.openid_connect_providers.default]
@@ -151,13 +154,5 @@ posting a request to the OpenID Connect provider. Make sure that the
 value `auth_service_redis_expiration` is not higher than the configured
 lifespan of the access tokens!
 
-## Configuration
-
-See the [configuration page][Config].
- 
-
-
-Find the documentation here: https://docs.linksmart.eu/display/BGW
-
 [Docker]:https://hub.docker.com/r/linksmart/bgw/tags
-[Config]:docs/config.md
+
