@@ -1,46 +1,47 @@
-# Deployment
-
 The Border Gateway can be easily deployed via [Docker container][Docker]. The basic configuration
-requires a certificate for the host and an available OpenID Connect provider.
+requires a TLS certificate for the host and an available OpenID Connect provider.
 
-## Set up OpenID Connect provider
+# Set up OpenID Connect provider
 
 Set up an OpenID Connect authentication provider (e.g.
 [Keycloak](https://www.keycloak.org/) as a local deployment
 or [Auth0](https://auth0.com/) a a cloud service). See
-[subpage](https://docs.linksmart.eu/display/BGW/Setting+up+Keycloak+as+an+OpenID+Connect+provider)for
+[subpage](https://docs.linksmart.eu/display/BGW/Setting+up+Keycloak+as+an+OpenID+Connect+provider) for
 an example on how to set up Keycloak as an Open ID provider for the
 Border Gateway.
 
-## Create an SSL certificate for your deployment
+# Create a TLS certificate for your deployment
 
-Options could be Let's encrypt. You will need
+Simplest option is to use Let's encrypt. You will need
 the two .pem files containing the certificate itself (including chain)
 and the private key. See below on how to provide the necessary
 information in a config file.
 
-## Create config file
+# Create config file
 
 Create a file config.toml with the following entries:
 
      [external-interface]
      tls_key = "/bgw/certs/<your_key>.pem"
      tls_cert = "/bgw/certs/<your_cert>.pem"
+   
      [mqtt-proxy]
        [mqtt-proxy.broker]
        address = "demo.linksmart.eu"
-       port = 8883.0
+       port = 8883
        username = "linksmart"
        password = "demo"
        tls = true
        tls_ca = ""
        tls_client_key = ""
        tls_client_cert = ""
+     
      [http-proxy]
        [http-proxy.domains]
          [http-proxy.domains."<your_domain_name_used_in_certificate>"]
            [http-proxy.domains."<your_domain_name_used_in_certificate>"."<location>"]
            local_address = "<address_of_your_local_service>:<port>"
+     
      [auth-service]
        [auth-service.openid_connect_providers]
          [auth-service.openid_connect_providers.default]
@@ -60,7 +61,7 @@ Note that anonymous access is limited to read-only for HTTP to start
 with. Full anonymous access to MQTT is granted. Find out more about
 authentication and authorization in the dedicated section.
 
-## Start Docker container
+# Start Docker container
 
 Run the Border Gateway with docker-compose. Make sure the .pem files and
 the config.json is available, e.g.:
@@ -78,7 +79,7 @@ the config.json is available, e.g.:
            - "<path_to_your_config_folder>:/bgw/config"
            - "<path_to_your_certs_folder>:/bgw/certs"
 
-## Optional: Set up Redis as an access token cache
+# Optional: Set up Redis as an access token cache
 
 You can use key-value database [Redis](https://hub.docker.com/_/redis)
 to cache access tokens for connections using username / password.
@@ -119,8 +120,9 @@ The BGW auth service will store keys and values in Redis like this:
 -   Key and value automatically expire after the number of seconds
     defined in `auth_service_redis_expiration`
 
-If `auth_service_redis_expiration` is set to a value greater 0 the BGW auth
+If `auth_service_redis_expiration` is set to a value greater than 0, the BGW auth
 service will always try to get an access token from Redis first before
 posting a request to the OpenID Connect provider. Make sure that the
 value `auth_service_redis_expiration` is not higher than the configured
 lifespan of the access tokens!
+
