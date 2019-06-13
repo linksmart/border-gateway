@@ -21,4 +21,18 @@ RUN apt-get install -y mosquitto-clients
 
 RUN npm install -g newman
 
+COPY ./test /bgw/test
+COPY ./logger /bgw/logger
+COPY ./certs /bgw/certs
+
+WORKDIR /bgw/logger
+RUN npm install
+
+WORKDIR /bgw/test/generic_websocket
+RUN npm install
+
+WORKDIR /bgw/test/mqtt_over_websocket
+RUN npm install
+
+
 

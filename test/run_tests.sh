@@ -9,9 +9,9 @@ shopt -s expand_aliases
 source ~/.bashrc
 
 scriptDir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-cd $scriptDir
+cd "$scriptDir/.."
 
-docker build -t tester:latest .
+docker build -f Dockerfile-tester -t tester:latest .
 
 if [ "$?" -ne 0 ]; then
   notify "@jannis.warnat tester image could not be built"

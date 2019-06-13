@@ -17,8 +17,6 @@ services:
       - public
     links:
       - "nginx:bgw.test.eu"
-    volumes:
-    - "../..:/bgw"
     entrypoint:
       - /bgw/test/test.sh
       - /bgw/certs/CA.pem
