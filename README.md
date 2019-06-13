@@ -19,7 +19,7 @@ These are the main functionalities:
   (publish, subscribe etc.).
 * Access control for WebSocket connections can be defined for hostnames and ports.
 * HTTP request forwarding to internal services according to location definitions
-  (e.g. a request to https://iot.linksmart.eu/\<location\> can be forwarded to localhost or
+  (e.g. a request to `https://iot.linksmart.eu/<location>` can be forwarded to localhost or
   any other host protected by the Border Gateway on the correct port).
 * Address translation for HTTP requests, i.e. internal IoT-AS addresses in HTTP responses can be
   translated to external addresses that the requester is able to connect to.
@@ -148,7 +148,7 @@ The BGW auth service will store keys and values in Redis like this:
 -   Key and value automatically expire after the number of seconds
     defined in `auth_service_redis_expiration`
 
-If `auth_service_redis_expiration` is set to a value greater 0 the BGW auth
+If `auth_service_redis_expiration` is set to a value greater than 0, the BGW auth
 service will always try to get an access token from Redis first before
 posting a request to the OpenID Connect provider. Make sure that the
 value `auth_service_redis_expiration` is not higher than the configured
