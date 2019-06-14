@@ -22,7 +22,7 @@ declare -A runtimes
 
 cd "$scriptDir/$test"
 echo "current directory is $(pwd)"
-newman run -k --bail -e "postman_environment.json" -d "data.json" ../test_border_gateway.postman_collection.json
+newman run -k --bail -d "data.json" ../test_border_gateway.postman_collection.json
 
 if [ "$?" -ne 0 ]; then
   notify "@jannis.warnat Newman tests failed for test $test"

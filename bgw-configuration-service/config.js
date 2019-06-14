@@ -23,8 +23,9 @@ catch(e)
     console.log("Problem reading ./config/config.toml");
 }
 
-if(configFromFile[config.serviceName]) {
-    Object.assign(config, configFromFile[config.serviceName]);
+// carefule here!!! Uses settings of http-proxy
+if(configFromFile["http-proxy"]) {
+    Object.assign(config, configFromFile["http-proxy"]);
 }
 
 module.exports = config;
