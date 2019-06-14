@@ -8,7 +8,9 @@ const nonce = require('nonce')();
 const url = require('url');
 const validate = require("./validate");
 const matchRules = require('./rules');
+const {targetPathFromHttpPayload} = require('./utils');
 const decode64 = (b64) => Buffer.from(b64, 'base64').toString('utf8');
+
 const zipkinMiddleware = require('zipkin-instrumentation-express').expressMiddleware;
 
 // Add the Zipkin middleware
@@ -49,40 +51,6 @@ function getAuthUrl(openidConnectProviderName, targetPath) {
     });
     logger.log('debug', 'Created authUrl', {authUrl: authUrl});
     return authUrl;
-}
-
-function targetPathFromHttpPayload(payload) {
-    if (!payload.includes("HTTP") || payload.includes("#") || payload.includes("+")) {
-        return undefined;
-    }
-    let targetPath = "";
-    let splitPayload = payload.split("/");
-
-    let arrayLength = splitPayload.length;
-
-    if (arrayLength < 4) {
-        return undefined;
-    }
-
-    for (let i = 0; i < arrayLength; i++) {
-        if (i === 0) {
-            //protocol
-            targetPath += (splitPayload[i].toLowerCase() + "://");
-        }
-        //skip http method
-        else if (i === 2) {
-            //domain
-            targetPath += (splitPayload[i] + ":");
-        } else if (i === 3) {
-            //port
-            targetPath += splitPayload[i];
-        } else if (i >= 4) {
-            //path
-            targetPath += ("/" + splitPayload[i]);
-        }
-    }
-    logger.log('debug', 'targetPath from Payload', {targetPath: targetPath});
-    return targetPath;
 }
 
 app.post('/authenticate', async (req, res) => {

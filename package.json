@@ -14,7 +14,11 @@
       "ecmaVersion": 2017
     }
   },
+  "scripts": {
+    "test": "mocha"
+  },
   "dependencies": {
+    "mocha": "latest",
     "logger": "file:./logger",
     "tracer": "file:./tracer",
     "bgw-external-interface": "file:./bgw-external-interface",
@@ -26,8 +30,5 @@
   },
   "devDependencies": {
     "eslint": "latest"
-  },
-  "scripts": {
-    "test": "mocha"
   }
 }

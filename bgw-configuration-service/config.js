@@ -13,10 +13,18 @@ let config = {
     enableDistributedTracing: false
 
 };
-//const configFromFile = require('../config/config.json');
-const configFromFile = toml.parse(fs.readFileSync('./config/config.toml'));
-if(configFromFile["http-proxy"]) {
-    Object.assign(config, configFromFile["http-proxy"]);
+
+let configFromFile = {};
+try {
+    configFromFile = toml.parse(fs.readFileSync('./config/config.toml'));
+}
+catch(e)
+{
+    console.log("Problem reading ./config/config.toml");
+}
+
+if(configFromFile[config.serviceName]) {
+    Object.assign(config, configFromFile[config.serviceName]);
 }
 
 module.exports = config;

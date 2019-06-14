@@ -17,9 +17,18 @@ let config = {
     client_id: undefined,
     issuer: undefined
 };
-let configFromFile = toml.parse(fs.readFileSync('./config/config.toml'));
+
+let configFromFile = {};
+try {
+    configFromFile = toml.parse(fs.readFileSync('./config/config.toml'));
+}
+catch(e)
+{
+    console.log("Problem reading ./config/config.toml");
+}
 
 if(configFromFile[config.serviceName]) {
     Object.assign(config, configFromFile[config.serviceName]);
 }
+
 module.exports = config;
