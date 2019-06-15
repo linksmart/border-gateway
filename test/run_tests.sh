@@ -62,7 +62,7 @@ do
 
     cd "$scriptDir/$test"
     echo "current directory is $(pwd)"
-    docker-compose up -d bgw
+    docker-compose up -d bgw.test.eu
 
     if [[ $test == *"nginx"* ]]; then
       docker-compose up -d nginx
@@ -82,7 +82,7 @@ do
     fi
 
     end=$(date +%s)
-    docker-compose logs bgw &> "./lastRun.log"
+    docker-compose logs bgw.test.eu &> "./lastRun.log"
 
     docker-compose down
 

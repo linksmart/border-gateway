@@ -11,7 +11,7 @@ const options = {
     key: fs.readFileSync(config.tls_key),
     cert: fs.readFileSync(config.tls_cert),
     requestCert: config.request_client_cert,
-    rejectUnauthorized: config.request_client_cert,
+    //rejectUnauthorized: config.request_client_cert,
     ca: config.request_client_cert && config.client_ca_path && fs.readFileSync(config.client_ca_path),
     ALPNProtocols: config.enable_ALPN_mode && ['bgw_info'].concat(config.servers.map(e => e.name))
 };

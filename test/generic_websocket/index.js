@@ -1,15 +1,10 @@
 const WebSocket = require('ws');
 const logger = require('../../logger/log')("generic_websocket", "debug");
+const fs = require('fs');
 const https = require('https');
 const winston = require('winston')
 let agentOptions;
 let agent;
-
-agentOptions = {
-    rejectUnauthorized: false,
-    ca: process.argv[2]
-};
-
 
 function heartbeat() {
     logger.log("debug", "client heartbeat");
@@ -47,10 +42,17 @@ function sendPing(ws) {
 }
 
 
+let caPath = process.argv[2];
+
+agentOptions = {
+    ca: fs.readFileSync(caPath)//,
+    //rejectUnauthorized: false
+};
+
 agent = new https.Agent(agentOptions);
 let url = process.argv[3];
 logger.log('debug', 'Starting generic_websocket', {
-    ca: process.argv[2],
+    ca: caPath,
     url: url
 })
 
@@ -75,7 +77,7 @@ ws.on('close', function close() {
 
 ws.on('error', function close(error, reason) {
     logger.log('error', 'Websocket connection closed', {
-        error: error,
+        errorMessage: error.message,
         reason: reason
     });
     process.exit(1);
@@ -123,7 +125,7 @@ function sendMessage(ws, data) {
         ws.send(data, function ack(error) {
             if (error) {
                 logger.log('error', 'Error while sending message', {
-                    error: error
+                    errorMessage: error.message
                 });
             } else {
                 logger.log("debug", 'Message sent ok');

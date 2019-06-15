@@ -8,6 +8,7 @@ let config = {
     redis_expiration: 0,
     redis_port: 6379,
     redis_host: undefined,
+    openidCA: undefined,
     openid_connect_providers: {
         default: {
             issuer: "",

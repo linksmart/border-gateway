@@ -1,5 +1,5 @@
 const config = require('./config');
-const logger = require('../logger/log')(config.serviceName,config.logLevel);
+const logger = require('../logger/log')(config.serviceName, config.logLevel);
 const tracer = require('../tracer/trace')(config.serviceName, config.enableDistributedTracing);
 const nodefetch = require('node-fetch');
 const qs = require("querystring");
@@ -7,6 +7,8 @@ const qs = require("querystring");
 const jwt = require('jsonwebtoken');
 const getPem = require('rsa-pem-from-mod-exp');
 const https = require("https");
+const tls = require('tls');
+const fs = require('fs');
 const redis = require("redis");
 const asyncRedis = require("async-redis");
 let redisClient;
@@ -14,7 +16,12 @@ const crypto = require('crypto');
 const algorithm = 'aes256';
 const wrapFetch = require('zipkin-instrumentation-fetch');
 const remoteServiceName = 'openidConnectProvider';
-const zipkinFetch = wrapFetch(nodefetch, {tracer, remoteServiceName});
+let fetch;
+if (config.enableDistributedTracing) {
+    fetch = wrapFetch(nodefetch, {tracer, remoteServiceName});
+} else {
+    fetch = nodefetch;
+}
 
 if (config.redis_expiration > 0) {
 
@@ -67,10 +74,18 @@ function decrypt(encryptedHex, key) {
     return Buffer.concat([decrypted, decipher.final()]).toString();
 }
 
-//temporary workaround because of ATOS´ self-signed certificate for Keycloak
-const agent = new https.Agent({});
+let agentOptions = {};
+if (config.openidCA && fs.existsSync(config.openidCA)) {
+    agentOptions = {
+        //rejectUnauthorized: false,
+        ca: fs.readFileSync(config.openidCA)
+    };
+}
 
-async function getProfile(openid_connect_provider, source, username, password, auth_type, authorizationCode,redirectUri) {
+const agent = new https.Agent(
+    agentOptions);
+
+async function getProfile(openid_connect_provider, source, username, password, auth_type, authorizationCode, redirectUri) {
     const client_id = openid_connect_provider.client_id;
     const client_secret = openid_connect_provider.client_secret;
     const audience = openid_connect_provider.audience;
@@ -84,7 +99,7 @@ async function getProfile(openid_connect_provider, source, username, password, a
 
     let profile = {};
     let pem = getPem(realm_public_key_modulus, realm_public_key_exponent);
-    logger.log('debug', 'generated pem: '+pem,);
+    logger.log('debug', 'generated pem: ' + pem,);
     if (authentication_type === 'access_token') {
 
         let decoded;
@@ -94,9 +109,8 @@ async function getProfile(openid_connect_provider, source, username, password, a
                 issuer: issuer,
                 ignoreExpiration: false
             });
-        }
-        catch (err) {
-            logger.log('error', 'Access token is invalid',{errorName:err.name,errorMessage:err.message});
+        } catch (err) {
+            logger.log('error', 'Access token is invalid', {errorName: err.name, errorMessage: err.message});
 
             if (err.name === "TokenExpiredError") {
                 try {
@@ -105,9 +119,8 @@ async function getProfile(openid_connect_provider, source, username, password, a
                         issuer: issuer,
                         ignoreExpiration: true
                     });
-                }
-                catch (err) {
-                    logger.log('error', 'Access token is invalid',{errorName:err.name,errorMessage:err.message});
+                } catch (err) {
+                    logger.log('error', 'Access token is invalid', {errorName: err.name, errorMessage: err.message});
                     return {
                         status: false,
                         error: "Access token is invalid, error = " + err.name + ", " + err.message
@@ -117,18 +130,16 @@ async function getProfile(openid_connect_provider, source, username, password, a
                 issuedAt.setUTCSeconds(decoded.iat);
                 let expireAt = new Date(0);
                 expireAt.setUTCSeconds(decoded.exp);
-                logger.log('debug', 'Token lifespan',{issuedAt: issuedAt,expireAt: expireAt});
+                logger.log('debug', 'Token lifespan', {issuedAt: issuedAt, expireAt: expireAt});
             }
             return {
                 status: false,
                 error: "Access token is invalid, error = " + err.name + ", " + err.message
             };
         }
-        logger.log('debug', 'Decoded access token',{decoded: decoded});
+        logger.log('debug', 'Decoded access token', {decoded: decoded});
         profile.at_body = decoded;
-    }
-
-    else { // code before introducing access token functionality
+    } else { // code before introducing access token functionality
 
         let retrievedFromRedis = false;
         if (config.redis_expiration > 0 && authentication_type === 'password') {
@@ -141,14 +152,16 @@ async function getProfile(openid_connect_provider, source, username, password, a
                 const encryptedToken = await redisClient.get(redisKey);
                 const ttl = await redisClient.ttl(redisKey);
                 if (encryptedToken) {
-                    logger.log('debug', 'Retrieved access token from redis',{key: redisKey, ttl: ttl});
+                    logger.log('debug', 'Retrieved access token from redis', {key: redisKey, ttl: ttl});
                     profile.access_token = decrypt(encryptedToken, password);
                     retrievedFromRedis = true;
                 }
 
-            }
-            catch (err) {
-                logger.log('error', 'Could not retrieve access token from Redis',{errorName:err.name,errorMessage:err.message});
+            } catch (err) {
+                logger.log('error', 'Could not retrieve access token from Redis', {
+                    errorName: err.name,
+                    errorMessage: err.message
+                });
             }
         }
 
@@ -173,10 +186,13 @@ async function getProfile(openid_connect_provider, source, username, password, a
 
             try {
 
-                let result = await zipkinFetch(`${token_endpoint}`, options); // see https://www.keycloak.org/docs/3.0/securing_apps/topics/oidc/oidc-generic.html
+                let result = await fetch(`${token_endpoint}`, options); // see https://www.keycloak.org/docs/3.0/securing_apps/topics/oidc/oidc-generic.html
                 profile = await result.json();
             } catch (e) {
-                logger.log('error', 'DENIED This could be due to auth server being offline or failing',{source: source});
+                logger.log('error', 'DENIED This could be due to auth server being offline or failing', {
+                    source: source,
+                    errorMessage: e.message
+                });
                 return {
                     status: false,
                     error: `Error in contacting the openid provider, ensure the openid provider is running and your host is set correctly`
@@ -186,7 +202,7 @@ async function getProfile(openid_connect_provider, source, username, password, a
             if (!profile || !profile.access_token) {
                 let err = 'Unauthorized';
                 const res = {status: false, error: err};
-                logger.log('error', 'Invalid user credentials',{error:err, source: source});
+                logger.log('error', 'Invalid user credentials', {error: err, source: source});
                 return res;
             }
         }
@@ -197,9 +213,8 @@ async function getProfile(openid_connect_provider, source, username, password, a
                 issuer: issuer,
                 ignoreExpiration: false
             });
-        }
-        catch (err) {
-            logger.log('error', 'Access token is invalid',{errorName:err.name,errorMessage:err.message});
+        } catch (err) {
+            logger.log('error', 'Access token is invalid', {errorName: err.name, errorMessage: err.message});
             if (err.name === "TokenExpiredError") {
                 try {
                     decoded = jwt.verify(profile.access_token, pem, {
@@ -207,9 +222,8 @@ async function getProfile(openid_connect_provider, source, username, password, a
                         issuer: issuer,
                         ignoreExpiration: true
                     });
-                }
-                catch (err) {
-                    logger.log('error', 'Access token is invalid',{errorName:err.name,errorMessage:err.message});
+                } catch (err) {
+                    logger.log('error', 'Access token is invalid', {errorName: err.name, errorMessage: err.message});
                     return {
                         status: false,
                         error: "Access token is invalid, error = " + err.name + ", " + err.message
@@ -219,33 +233,33 @@ async function getProfile(openid_connect_provider, source, username, password, a
                 issuedAt.setUTCSeconds(decoded.iat);
                 let expireAt = new Date(0);
                 expireAt.setUTCSeconds(decoded.exp);
-                logger.log('debug', 'Token lifespan',{issuedAt: issuedAt,expireAt: expireAt});
+                logger.log('debug', 'Token lifespan', {issuedAt: issuedAt, expireAt: expireAt});
             }
             return {
                 status: false,
                 error: "Access token is invalid, error " + err.name + ", " + err.message
             };
         }
-        logger.log('debug', 'Successfully decoded access token',{decoded: decoded});
+        logger.log('debug', 'Successfully decoded access token', {decoded: decoded});
         let issuedAt = new Date(0);
         issuedAt.setUTCSeconds(decoded.iat);
         let expireAt = new Date(0);
         expireAt.setUTCSeconds(decoded.exp);
-        logger.log('debug', 'Token lifespan',{issuedAt: issuedAt,expireAt: expireAt});
+        logger.log('debug', 'Token lifespan', {issuedAt: issuedAt, expireAt: expireAt});
         if (!retrievedFromRedis && config.redis_expiration > 0 && authentication_type === 'password') {
             const hash = crypto.createHash('sha256');
             hash.update(token_endpoint + username + password);
             const redisKey = hash.digest('hex');
             redisClient.set(redisKey, encrypt(profile.access_token, password), 'EX', config.redis_expiration);
             const ttl = await redisClient.ttl(redisKey);
-            logger.log('debug', 'Cached access token with key',{key: redisKey, ttl: ttl});
+            logger.log('debug', 'Cached access token with key', {key: redisKey, ttl: ttl});
         }
 
         let json = Buffer.from(profile.access_token.split(".")[1], 'base64').toString('utf8');
         try {
             profile.at_body = JSON.parse(json);
         } catch (error) {
-            logger.log('error', 'Error in JSON.parse',{error: error, json: json});
+            logger.log('error', 'Error in JSON.parse', {error: error, json: json});
             return {
                 status: false,
                 error: "Cannot parse json " + error.name + ", " + error.message
@@ -272,7 +286,7 @@ async function getProfile(openid_connect_provider, source, username, password, a
             status: false,
             error: err
         };
-        logger.log('error', 'Invalid user credentials',{error: err, rule: rules, source: source});
+        logger.log('error', 'Invalid user credentials', {error: err, rule: rules, source: source});
         return res;
     }
 

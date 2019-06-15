@@ -25,30 +25,30 @@ services:
       - GF_AUTH_ANONYMOUS_ENABLED=true
       - GF_AUTH_BASIC="Main Org."
 
-#  rabbitmq:
-#    image: "rabbitmq:3.8-rc"
-#    container_name: "rabbitmq"
-#    volumes:
-#      - ./volumes/rabbitmq/rabbitmq-docker.config:/etc/rabbitmq/rabbitmq-docker.config:ro
-#      - ./volumes/rabbitmq/enabled_plugins:/etc/rabbitmq/enabled_plugins
-#      - ./volumes/rabbitmq/plugins:/opt/rabbitmq/plugins
-#      - ./volumes/rabbitmq/rabbitmq-auth-backend-oauth2:/rabbitmq-auth-backend-oauth2
-#    environment:
-#      - RABBITMQ_CONFIG_FILE=/etc/rabbitmq/rabbitmq-docker
-#      - "RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS=-rabbit log [{console,[{enabled,true},{level,debug}]}]"
-#    restart: always
-#    ports:
-#      - 8183:8183
-#      - 8181:8181
-#      - 5671:5671
-#      - 5672:5672
-#    networks:
-#      - backend
-#    logging:
-#      driver: "json-file"
-#      options:
-#        max-size: 10m
-#        max-file: "10"
+  #  rabbitmq:
+  #    image: "rabbitmq:3.8-rc"
+  #    container_name: "rabbitmq"
+  #    volumes:
+  #      - ./volumes/rabbitmq/rabbitmq-docker.config:/etc/rabbitmq/rabbitmq-docker.config:ro
+  #      - ./volumes/rabbitmq/enabled_plugins:/etc/rabbitmq/enabled_plugins
+  #      - ./volumes/rabbitmq/plugins:/opt/rabbitmq/plugins
+  #      - ./volumes/rabbitmq/rabbitmq-auth-backend-oauth2:/rabbitmq-auth-backend-oauth2
+  #    environment:
+  #      - RABBITMQ_CONFIG_FILE=/etc/rabbitmq/rabbitmq-docker
+  #      - "RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS=-rabbit log [{console,[{enabled,true},{level,debug}]}]"
+  #    restart: always
+  #    ports:
+  #      - 8183:8183
+  #      - 8181:8181
+  #      - 5671:5671
+  #      - 5672:5672
+  #    networks:
+  #      - backend
+  #    logging:
+  #      driver: "json-file"
+  #      options:
+  #        max-size: 10m
+  #        max-file: "10"
 
   mosquitto:
     image: "eclipse-mosquitto"
@@ -100,6 +100,66 @@ services:
     networks:
       - backend
 
+  postgres:
+    image: "postgres:10"
+    container_name: "postgres"
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_USER=keycloak
+      - POSTGRES_PASSWORD=keycloak
+      - POSTGRES_DB=keycloak
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - backend
+      - openid
+
+  keycloak:
+    image: "jboss/keycloak:latest"
+    container_name: "keycloak"
+    ports:
+      - 8080:8080
+    depends_on:
+      - "postgres"
+    environment:
+      - DB_VENDOR=postgres
+      - DB_ADDR=postgres
+      - DB_PORT=5432
+      - KEYCLOAK_LOGLEVEL=DEBUG
+      - DB_DATABASE=keycloak
+      - DB_USER=keycloak
+      - DB_PASSWORD=keycloak
+      - KEYCLOAK_USER=keycloak
+      - KEYCLOAK_PASSWORD=keycloak
+      - PROXY_ADDRESS_FORWARDING=true
+    networks:
+      - openid
+    volumes:
+        - "./volumes/keycloak/exports:/exports"
+        - "./volumes/keycloak/imports:/imports"
+#    command: ["-Dkeycloak.migration.action=export","-Dkeycloak.migration.provider=dir","-Dkeycloak.migration.dir=/exports"]
+
+  openid.test.eu:
+    image: "nginx"
+    container_name: "openid.test.eu"
+    ports:
+      - 443:443
+    volumes:
+      - "../../certs:/etc/nginx/certs"
+      - "./volumes/nginx/nginx.conf:/etc/nginx/nginx.conf"
+      - "./volumes/nginx/conf.d:/etc/nginx/conf.d"
+    networks:
+      - openid
+
+#  curl:
+#    image: appropriate/curl
+#    command: ["-I","-v","--insecure","https://openid.test.eu:443/auth"]
+#    networks:
+#      - backend
+#    links:
+#      - "nginx:openid.test.eu"
+
 #  jaeger:
 #    container_name: jaeger
 #    image: jaegertracing/all-in-one
@@ -112,3 +172,8 @@ services:
 networks:
   backend:
     driver: bridge
+  openid:
+    driver: bridge
+volumes:
+  pgdata:
+    external: true
