@@ -1,4 +1,4 @@
-version: '3.5'
+version: '3.3'
 services:
 
   websocket-test:
@@ -14,16 +14,16 @@ services:
         max-size: 10m
         max-file: "10"
 
-  grafana:
-    image: grafana/grafana
-    user: root
-    container_name: "grafana"
-    ports:
-      - 3000:3000
-    environment:
-      - GF_SERVER_ROOT_URL=https://localhost:444/grafana/
-      - GF_AUTH_ANONYMOUS_ENABLED=true
-      - GF_AUTH_BASIC="Main Org."
+#  grafana:
+#    image: grafana/grafana
+#    user: root
+#    container_name: "grafana"
+#    ports:
+#      - 3000:3000
+#    environment:
+#      - GF_SERVER_ROOT_URL=https://localhost:444/grafana/
+#      - GF_AUTH_ANONYMOUS_ENABLED=true
+#      - GF_AUTH_BASIC="Main Org."
 
   #  rabbitmq:
   #    image: "rabbitmq:3.8-rc"
@@ -90,15 +90,16 @@ services:
     #    volumes:
     #    - "./volumes/redis/data:/data"
     #    entrypoint: redis-server --appendonly yes
-  redis-commander:
-    container_name: redis-commander
-    image: rediscommander/redis-commander:latest
-    environment:
-      - REDIS_HOSTS=local:redis:6379
-    ports:
-      - 8089:8081
-    networks:
-      - backend
+
+#  redis-commander:
+#    container_name: redis-commander
+#    image: rediscommander/redis-commander:latest
+#    environment:
+#      - REDIS_HOSTS=local:redis:6379
+#    ports:
+#      - 8089:8081
+#    networks:
+#      - backend
 
   postgres:
     image: "postgres:10"

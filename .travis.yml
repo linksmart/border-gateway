@@ -2,7 +2,7 @@ language: minimal
 
 script:
   - docker-compose -f docker-compose.test.yml build
-  - chmod u+rwx ./test/run_tests.sh ei
+  - chmod u+rwx ./test/run_tests.sh
   - ./test/run_tests.sh ei
 
 before_deploy:
