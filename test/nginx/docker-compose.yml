@@ -1,7 +1,7 @@
 version: '3.3'
 services:
 
-  nginx:
+  bgw.test.eu:
     image: "nginx"
     volumes:
     - "../../certs:/etc/nginx/certs"
@@ -21,7 +21,7 @@ services:
       - /bgw/certs/CA.pem
       - nginx 
 
-  bgw.test.eu:
+  bgw:
     image: "linksmart/bgw:snapshot"
     command: ["parts","bgw-http-proxy","bgw-mqtt-proxy","bgw-websocket-proxy","bgw-auth-service"]
     environment:
