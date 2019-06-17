@@ -57,7 +57,7 @@ bind_addresses = [
   [auth-service.openid_connect_providers]
 
     [auth-service.openid_connect_providers.default]
-    anonymous_bgw_rules = "HTTPS/GET/bgw.test.eu/+/sc/# HTTPS/GET/bgw.test.eu/+/scc/# HTTPS/GET/bgw.test.eu/+/sccc/# HTTPS/GET/bgw.test.eu/+/configuration/locations/#"
+    anonymous_bgw_rules = "HTTP/GET/bgw/+/sc/# HTTP/GET/bgw/+/scc/# HTTP/GET/bgw/+/sccc/# HTTP/GET/bgw/+/configuration/locations/#"
     issuer = "https://openid.test.eu/auth/realms/realm1"
     authorization_endpoint = "https://openid.test.eu/auth/realms/realm1/protocol/openid-connect/auth"
     token_endpoint = "https://openid.test.eu/auth/realms/realm1/protocol/openid-connect/token"
