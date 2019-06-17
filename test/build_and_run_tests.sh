@@ -2,7 +2,7 @@
 
 # prerequisites:
 # Docker
-# all tests: ./run_tests.sh no_ssl nginx nginx_no_x_forward nginx_444 ei redis_1 redis_120
+# all tests: ./build_and_run_tests.sh no_ssl nginx nginx_no_x_forward nginx_444 ei redis_1 redis_120
 
 # workaround to have jq available in git bash for Windows
 shopt -s expand_aliases
@@ -27,18 +27,17 @@ fi
 }
 
 cd "$scriptDir/.."
-docker build -f Dockerfile-npm -t docker.linksmart.eu/bgw:npm .
+docker build -f Dockerfile-npm -t linksmart/bgw:npm .
 
 if [ "$?" -ne 0 ]; then
   notify "@jannis.warnat Intermediate image could not be built"
   exit 1
 fi
 
-docker build -f Dockerfile-test -t docker.linksmart.eu/bgw:snapshot .
-#docker build -t docker.linksmart.eu/bgw:snapshot . # Dockerfile for Bamboo
+docker build -f Dockerfile-test -t linksmart/bgw:snapshot .
 
 if [ "$?" -ne 0 ]; then
-  notify "@jannis.warnat Snapshot image could not be built"
+  notify "@jannis.warnat Image could not be built"
   exit 1
 fi
 

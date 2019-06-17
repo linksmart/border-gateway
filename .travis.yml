@@ -1,24 +1,22 @@
 language: minimal
 
 script:
-  - docker-compose -f docker-compose.test.yml build
-  - chmod u+rwx ./test/run_tests.sh
-  - ./test/run_tests.sh no_ssl ei
+  - chmod u+rwx ./test/build_and_run_tests.sh
+  - ./test/build_and_run_tests.sh no_ssl ei
 
 before_deploy:
   - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
 deploy:
   - provider: script
-    script: docker push linksmart/bgw:latest
+    script: docker tag linksmart/bgw:snapshot linksmart/bgw:latest docker push linksmart/bgw:latest
     on:
       branch: master
   - provider: script
-    script: docker tag linksmart/bgw linksmart/bgw:snapshot &&
-      docker push linksmart/bgw:snapshot
+    script: docker push linksmart/bgw:snapshot
     on:
       branch: dev
   - provider: script
-    script: docker tag linksmart/bgw linksmart/bgw:${TRAVIS_TAG} &&
+    script: docker tag linksmart/bgw:snapshot linksmart/bgw:${TRAVIS_TAG} &&
       docker push linksmart/bgw:${TRAVIS_TAG}
     on:
       tags: true

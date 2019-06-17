@@ -1,7 +1,0 @@
-version: '2.3'
-
-services:
-  bgw:
-    build:
-      context: .
-    image: linksmart/bgw

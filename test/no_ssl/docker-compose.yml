@@ -12,7 +12,7 @@ services:
       - no_ssl
 
   bgw.test.eu:
-    image: "docker.linksmart.eu/bgw:snapshot"
+    image: "linksmart/bgw:snapshot"
     command: ["parts","bgw-http-proxy","bgw-mqtt-proxy","bgw-websocket-proxy","bgw-auth-service"]
     environment:
       LOG_LEVEL: "debug"

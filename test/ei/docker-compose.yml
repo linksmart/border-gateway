@@ -12,7 +12,7 @@ services:
       - ei
 
   bgw.test.eu:
-    image: "docker.linksmart.eu/bgw:snapshot"
+    image: "linksmart/bgw:snapshot"
     environment:
       LOG_LEVEL: "debug"
     ports:

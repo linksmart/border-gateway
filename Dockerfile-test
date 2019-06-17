@@ -1,4 +1,4 @@
-FROM docker.linksmart.eu/bgw:npm
+FROM linksmart/bgw:npm
 
 COPY ./logger /bgw/logger
 COPY ./tracer /bgw/tracer

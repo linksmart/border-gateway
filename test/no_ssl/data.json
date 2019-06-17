@@ -13,7 +13,7 @@
     "secure": false,
     "ws_port": 5052,
     "mqtt_port": 5051,
-    "domain": "bgw",
+    "domain": "bgw.test.eu",
     "admin_username": "keycloak",
     "admin_password": "keycloak",
     "admin_token_endpoint": "https://openid.test.eu/auth/realms/master/protocol/openid-connect/token",
