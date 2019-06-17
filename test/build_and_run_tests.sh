@@ -45,7 +45,7 @@ fi
 cd "$scriptDir/backend"
 docker volume create --name=pgdata
 docker-compose up -d keycloak
-# sleep 60
+sleep 30
 docker-compose up -d
 
 CA=$1
