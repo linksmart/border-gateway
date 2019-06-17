@@ -137,7 +137,7 @@ services:
       - openid
     volumes:
         - "./volumes/keycloak/exports:/exports"
-        - "./volumes/keycloak/imports:/imports"
+    command: ["-Dkeycloak.migration.action=import","-Dkeycloak.migration.provider=dir","-Dkeycloak.migration.dir=/exports","-Dkeycloak.migration.strategy=IGNORE_EXISTING"]
 #    command: ["-Dkeycloak.migration.action=export","-Dkeycloak.migration.provider=dir","-Dkeycloak.migration.dir=/exports"]
 
   openid.test.eu:

@@ -1,0 +1,34 @@
+{
+  "realm" : "realm2",
+  "users" : [ {
+    "id" : "f9061537-85bc-495d-bfb6-dc6c9f8d6000",
+    "createdTimestamp" : 1560577522870,
+    "username" : "linksmart",
+    "enabled" : true,
+    "totp" : false,
+    "emailVerified" : true,
+    "attributes" : {
+      "bgw_rules" : [ "HTTPS/GET/# MQTT/#" ]
+    },
+    "credentials" : [ {
+      "type" : "password",
+      "hashedSaltedValue" : "tXXCLo7XY2xmu7IjrG3ORUPzBs2zf9UTuGb+yo57wk05L39MRZIACtXgzIdHXcKsTOMc4+amXs+sE5NJ6jTv4g==",
+      "salt" : "DIF5PRt4D/0xu2NklG2voA==",
+      "hashIterations" : 27500,
+      "counter" : 0,
+      "algorithm" : "pbkdf2-sha256",
+      "digits" : 0,
+      "period" : 0,
+      "createdDate" : 1560577529641,
+      "config" : { }
+    } ],
+    "disableableCredentialTypes" : [ "password" ],
+    "requiredActions" : [ ],
+    "realmRoles" : [ "offline_access", "uma_authorization" ],
+    "clientRoles" : {
+      "account" : [ "view-profile", "manage-account" ]
+    },
+    "notBefore" : 0,
+    "groups" : [ ]
+  } ]
+}
