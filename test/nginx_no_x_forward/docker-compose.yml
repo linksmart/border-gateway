@@ -1,7 +1,7 @@
-version: '3.5'
+version: '3.3'
 services:
 
-  nginx:
+  bgw.test.eu:
     image: "nginx"
     volumes:
     - "../../certs:/etc/nginx/certs"
@@ -15,15 +15,14 @@ services:
     image: "tester:latest"
     networks:
       - public
-    links:
-      - "nginx:bgw.test.eu"
+      - backend_openid
     entrypoint:
       - /bgw/test/test.sh
       - /bgw/certs/CA.pem
       - nginx_no_x_forward
 
   bgw:
-    image: "docker.linksmart.eu/bgw:snapshot"
+    image: "linksmart/bgw:snapshot"
     command: ["parts","bgw-http-proxy","bgw-mqtt-proxy","bgw-websocket-proxy","bgw-auth-service"]
     environment:
       LOG_LEVEL: "debug"
@@ -36,8 +35,11 @@ services:
     networks:
       - bgw
       - backend_backend
+      - backend_openid
+      - public
     volumes:
       - "./volumes/bgw/config:/bgw/config"
+      - "../../certs:/bgw/certs"
 
 networks:
   public:
@@ -45,4 +47,6 @@ networks:
   bgw:
     driver: bridge
   backend_backend:
+    external: true
+  backend_openid:
     external: true

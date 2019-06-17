@@ -2,13 +2,13 @@ language: minimal
 
 script:
   - chmod u+rwx ./test/build_and_run_tests.sh
-  - ./test/build_and_run_tests.sh ei nginx no_ssl
+  - ./test/build_and_run_tests.sh no_ssl nginx nginx_no_x_forward nginx_444 ei
 
 before_deploy:
   - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
 deploy:
   - provider: script
-    script: docker tag linksmart/bgw:snapshot linksmart/bgw:latest docker push linksmart/bgw:latest
+    script: docker tag linksmart/bgw:snapshot linksmart/bgw:latest && docker push linksmart/bgw:latest
     on:
       branch: master
   - provider: script
