@@ -9,7 +9,7 @@
     "linksmart_user_attributes_realm1": "HTTPS/GET/# HTTPS/PUT/# HTTPS/DELETE/# MQTT/# WS/CONNECT/+/+/# WS/CONNECT/+/+",
     "linksmart_user_attributes_realm2": "HTTPS/GET/# MQTT/#",
     "expectedTranslatedHttpAddress": "https://bgw.test.eu",
-    "expectedTranslatedMqttAddress": "tcp://mosquitto:1883",
+    "expectedTranslatedMqttAddress": "ssl://bgw.test.eu:8883",
     "secure": true,
     "ws_port": 9002,
     "mqtt_port": 8883,
