@@ -45,7 +45,7 @@ fi
 cd "$scriptDir/backend"
 docker volume create --name=pgdata
 docker-compose up -d keycloak
-sleep 60
+# sleep 60
 docker-compose up -d
 
 CA=$1
@@ -64,6 +64,8 @@ do
 
     cd "$scriptDir/$test"
     echo "current directory is $(pwd)"
+    echo "Keycloak status:"
+    docker logs keycloak 2>&1 | grep started
     docker-compose up -d bgw.test.eu
 
     if [[ $test == *"nginx"* ]]; then

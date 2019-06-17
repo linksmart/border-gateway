@@ -2,7 +2,7 @@ language: minimal
 
 script:
   - chmod u+rwx ./test/build_and_run_tests.sh
-  - ./test/build_and_run_tests.sh no_ssl nginx ei
+  - ./test/build_and_run_tests.sh ei nginx no_ssl
 
 before_deploy:
   - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
