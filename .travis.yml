@@ -3,7 +3,7 @@ language: minimal
 script:
   - docker-compose -f docker-compose.test.yml build
   - chmod u+rwx ./test/run_tests.sh
-  - ./test/run_tests.sh ei
+  - ./test/run_tests.sh no_ssl ei
 
 before_deploy:
   - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin

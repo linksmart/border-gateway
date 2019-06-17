@@ -1,0 +1,26 @@
+[
+  {
+    "tokenEndpoint": "https://openid.test.eu/auth/realms/realm1/protocol/openid-connect/token",
+    "username": "linksmart",
+    "password": "demo",
+    "audience": "bgw_client",
+    "client_id": "bgw_client",
+    "client_secret": "",
+    "linksmart_user_attributes_realm1": "HTTP/GET/bgw.test.eu/5050/sc MQTT/# WS/CONNECT/+/+/# WS/CONNECT/+/+ HTTP/PUT/bgw.test.eu/5050/sc/jannis-linksmart-agent HTTP/DELETE/bgw.test.eu/5050/sc/jannis-linksmart-agent",
+    "linksmart_user_attributes_realm2": "HTTP/GET/# MQTT/#",
+    "expectedTranslatedHttpAddress": "http://bgw.test.eu:5050",
+    "expectedTranslatedMqttAddress": "tcp://bgw.test.eu:1883",
+    "secure": false,
+    "ws_port": 5052,
+    "mqtt_port": 5051,
+    "domain": "bgw",
+    "admin_username": "keycloak",
+    "admin_password": "keycloak",
+    "admin_token_endpoint": "https://openid.test.eu/auth/realms/master/protocol/openid-connect/token",
+    "realm1_address": "https://openid.test.eu/auth/admin/realms/realm1",
+    "realm2_address": "https://openid.test.eu/auth/admin/realms/realm2",
+    "url": "http://bgw.test.eu:5050",
+    "realm1_token_endpoint": "https://openid.test.eu/auth/realms/realm1/protocol/openid-connect/token",
+    "realm2_token_endpoint": "https://openid.test.eu/auth/realms/realm2/protocol/openid-connect/token"
+  }
+]
