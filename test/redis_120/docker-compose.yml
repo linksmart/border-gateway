@@ -1,19 +1,18 @@
-version: '3.5'
+version: '3.3'
 services:
 
   tester:
     image: "tester:latest"
     networks:
       - public
-    links:
-      - "bgw:bgw.test.eu"
+      - backend_openid
     entrypoint:
       - /bgw/test/test.sh
       - /bgw/certs/CA.pem
       - redis_120
 
-  bgw:
-    image: "docker.linksmart.eu/bgw:snapshot"
+  bgw.test.eu:
+    image: "linksmart/bgw:snapshot"
     environment:
       LOG_LEVEL: "debug"
     ports:
@@ -24,6 +23,7 @@ services:
       - 9231:9231
     networks:
       - backend_backend
+      - backend_openid
       - public
     volumes:
       - "./volumes/bgw/config:/bgw/config"
@@ -33,4 +33,6 @@ networks:
   public:
     driver: bridge
   backend_backend:
+    external: true
+  backend_openid:
     external: true

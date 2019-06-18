@@ -41,18 +41,19 @@ redis_host = "redis"
       local_address = "http://localhost:5056"
 
 [websocket-proxy]
-ws_upstream_base_url = "ws://websocket-test:8010/"
-realm_public_key_modulus = "hF2bmoFd35rgtsXny2NFXG-M-ywZPkuonyUC8fwYQ4axSB86gPXbkkgH5LsDkpJHovMvXUgDiEJg2k0TbEfy7edtpk1e0IpqY8KKFQ-Gz_YjxXPWEsO30k11T66aczDVC1aKFDuBCQ9ExZopTehR_awHn3FAuDHTGrG8W4bMJ3z1VqcFRh5fZG3vGFvPi6J-6QpV8P82wFqMHJWeBJGUThWMNCtgi88KXf8Jz1MgvXO-NnDK_KduJBo_c6Dm5NiZjReQtKRO8TXUkhglClwHU6sOGx0IIvgQ9q5vRwWf6ou6t5_40cNYiu86GYlHH-1dimb_f6CoiTBG8-99wgfxvw"
-realm_public_key_exponent = "AQAB"
-audience = "bgw_client"
-client_id = "bgw_client"
-issuer = "https://auth.fit.fraunhofer.de/kc/realms/bgw-jannis-local"
+  ws_upstream_base_url = "ws://websocket-test:8010/"
+  issuer = "https://openid.test.eu/auth/realms/realm1"
+  audience = ["bgw_client","gui"]
+  client_id = "bgw_client"
+  realm_public_key_modulus = "wFjJA3wxFfCydn1SXzY5RjapY_fd5oulmwCNDvTSF3RxpUX8itzKm8ksarnFJZtZT3XwNMEkqNiO26HH_OgHWq3Ri6_WrufGyRT_rYgcNxOrL2ZxCTkh0fq4R8VL7CJxaBe1bydwYG5uEMqKkzCCfMM0b0ZbcwzQ5ngdjugO7xYT3IZhBe6xQgTf4FX7QB562J4IRr9D3nX445ah452TcHV05sOIjo6O6z5pgcx68qIO1Nv3pHCP0zztL5vxegw9BiL6bTIsgpfyImM9DhumuIeqev9y8Za5WmUdGc8bSpl6yOGMZYHcaQqNsiaLFWvcjm5CrplWUIIZ9xqjI08rIQ"
+  realm_public_key_exponent = "AQAB"
 
 [configuration-service]
 # enableDistributedTracing = true
 
 [auth-service]
 # enableDistributedTracing = true
+openidCA = "/bgw/certs/CA.pem"
 redis_expiration = 120
 redis_host = "redis"
 
@@ -60,23 +61,23 @@ redis_host = "redis"
 
     [auth-service.openid_connect_providers.default]
     anonymous_bgw_rules = "HTTPS/GET/bgw.test.eu/+/sc/# HTTPS/GET/bgw.test.eu/+/sc1/# HTTPS/GET/bgw.test.eu/+/sc2/# HTTPS/GET/bgw.test.eu/+/configuration/locations/#"
-    issuer = "https://auth.fit.fraunhofer.de/kc/realms/bgw-jannis-local"
-    authorization_endpoint = "https://auth.fit.fraunhofer.de/kc/realms/bgw-jannis-local/protocol/openid-connect/auth"
-    token_endpoint = "https://auth.fit.fraunhofer.de/kc/realms/bgw-jannis-local/protocol/openid-connect/token"
-    audience = "bgw_client"
+    issuer = "https://openid.test.eu/auth/realms/realm1"
+    authorization_endpoint = "https://openid.test.eu/auth/realms/realm1/protocol/openid-connect/auth"
+    token_endpoint = "https://openid.test.eu/auth/realms/realm1/protocol/openid-connect/token"
+    audience = ["bgw_client","gui"]
     client_id = "bgw_client"
-    jwks_uri = "https://auth.fit.fraunhofer.de/kc/realms/bgw-jannis-local/protocol/openid-connect/certs"
-    realm_public_key_modulus = "hF2bmoFd35rgtsXny2NFXG-M-ywZPkuonyUC8fwYQ4axSB86gPXbkkgH5LsDkpJHovMvXUgDiEJg2k0TbEfy7edtpk1e0IpqY8KKFQ-Gz_YjxXPWEsO30k11T66aczDVC1aKFDuBCQ9ExZopTehR_awHn3FAuDHTGrG8W4bMJ3z1VqcFRh5fZG3vGFvPi6J-6QpV8P82wFqMHJWeBJGUThWMNCtgi88KXf8Jz1MgvXO-NnDK_KduJBo_c6Dm5NiZjReQtKRO8TXUkhglClwHU6sOGx0IIvgQ9q5vRwWf6ou6t5_40cNYiu86GYlHH-1dimb_f6CoiTBG8-99wgfxvw"
+    jwks_uri = "https://openid.test.eu/auth/realms/realm1/protocol/openid-connect/certs"
+    realm_public_key_modulus = "wFjJA3wxFfCydn1SXzY5RjapY_fd5oulmwCNDvTSF3RxpUX8itzKm8ksarnFJZtZT3XwNMEkqNiO26HH_OgHWq3Ri6_WrufGyRT_rYgcNxOrL2ZxCTkh0fq4R8VL7CJxaBe1bydwYG5uEMqKkzCCfMM0b0ZbcwzQ5ngdjugO7xYT3IZhBe6xQgTf4FX7QB562J4IRr9D3nX445ah452TcHV05sOIjo6O6z5pgcx68qIO1Nv3pHCP0zztL5vxegw9BiL6bTIsgpfyImM9DhumuIeqev9y8Za5WmUdGc8bSpl6yOGMZYHcaQqNsiaLFWvcjm5CrplWUIIZ9xqjI08rIQ"
     realm_public_key_exponent = "AQAB"
     redirect_uri = "https://bgw.test.eu:443/callback"
 
     [auth-service.openid_connect_providers.linksmart]
     anonymous_bgw_rules = "HTTPS/GET/#"
-    issuer = "https://auth.fit.fraunhofer.de/kc/realms/bgw-dev"
-    authorization_endpoint = "https://auth.fit.fraunhofer.de/kc/realms/bgw-dev/protocol/openid-connect/auth"
-    token_endpoint = "https://auth.fit.fraunhofer.de/kc/realms/bgw-dev/protocol/openid-connect/token"
-    audience = "bgw_client"
+    issuer = "https://openid.test.eu/auth/realms/realm2"
+    authorization_endpoint = "https://openid.test.eu/auth/realms/realm2/protocol/openid-connect/auth"
+    token_endpoint = "https://openid.test.eu/auth/realms/realm2/protocol/openid-connect/token"
+    audience = ["bgw_client","gui"]
     client_id = "bgw_client"
-    jwks_uri = "https://auth.fit.fraunhofer.de/kc/realms/bgw-dev/protocol/openid-connect/certs"
-    realm_public_key_modulus = "iLadC5cb64ZdhEJrAQsGZShQtrCWCYuosInNY5988TLb90TV5z49uGxknM8BZ58p8N4-H6ngHpVw6KgxqR8NkyNDsZ4rOCNbqle74tiY5p8b6D6oWLhdJHFeOiOj9OmEKH9hFYYmFuWQVFvnO7ropzsgz4OvGCwadqjj4UvJccKAiLmbUSbGalCTnWwNRvrCMpDhW5_Dr90HDIcxQ6amATuSBMdiY9H4nPUdkQPkmF4qDfo5gbMJIGV_pBbKj8mq7Xn8hGBVryax3EeBUs8wfk1WCptlxnxWW06henmKisvLn6kguwHm4i_5XalR3sUJQzDsTuvfxUi0Phae0K1H1w"
+    jwks_uri = "https://openid.test.eu/auth/realms/realm2/protocol/openid-connect/certs"
+    realm_public_key_modulus = "-GUSMQBIkFZ6NnRwIVsRYZJri22mpAwrd2JtXosreyvhMc-o2h6W499NgFxifXZPjr6TA5WsAY7G3B5nxhl6kuegm2T4JksZtAq4Qkdlqp9QcVFM1LR5chJ2mAjXwOkUpAOBddSpngXDO1QbivNGrQxhPcy5fvGs0Ql6CYblujZ8VJ3KeOLeSWFBOAiRhvnyEbGYS0pN-2UJ6fJuYIzjbkz9RkN39ez4PPlfeq65kIxMctoMvoNp2rI3XqlJjdQsX4GxBoa8J2nJckcS1awXZhLzkt3LEfcWgVwhW8HJmpSJp4tQBZBGE2yMJT_V_AFICU-DFRcxRSpBx9O-n6DZbw"
     realm_public_key_exponent = "AQAB"
