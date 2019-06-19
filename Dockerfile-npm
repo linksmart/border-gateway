@@ -10,8 +10,10 @@ COPY ./bgw-configuration-service /bgw/bgw-configuration-service
 COPY ./bgw-websocket-proxy /bgw/bgw-websocket-proxy
 COPY ./bgw.sh /bgw
 COPY ./package.json /bgw
-COPY ./test /bgw/test
-
 WORKDIR /bgw
+RUN npm install
+COPY ./test /bgw/test
+RUN npm test
+
 RUN chmod -R +x *.sh
-RUN npm install-test
+

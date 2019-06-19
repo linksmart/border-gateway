@@ -350,7 +350,7 @@
     "enabled" : true,
     "clientAuthenticatorType" : "client-secret",
     "secret" : "d6e735a2-7554-499a-b9af-a0838ec23a1f",
-    "redirectUris" : [ "https://bgw.test.eu:443/callback", "https://bgw.test.eu:8443/callback", "https://bgw.test.eu:444/callback", "http://bgw:5050/callback", "http://bgw.test.eu:5050/callback" ],
+    "redirectUris" : [ "https://bgw-ssl:443/callback", "https://bgw-ssl:8443/callback", "https://bgw-ssl:444/callback", "http://bgw:5050/callback", "http://bgw-ssl:5050/callback" ],
     "webOrigins" : [ ],
     "notBefore" : 0,
     "bearerOnly" : false,

@@ -10,12 +10,12 @@ COPY ./bgw-configuration-service /bgw/bgw-configuration-service
 COPY ./bgw-websocket-proxy /bgw/bgw-websocket-proxy
 COPY ./bgw.sh /bgw
 COPY ./package.json /bgw
+RUN npm install
 COPY ./test /bgw/test
+RUN npm test
 
 WORKDIR /bgw
 RUN chmod -R +x *.sh
-
-RUN npm install-test
 
 EXPOSE 443 8883 9002
 

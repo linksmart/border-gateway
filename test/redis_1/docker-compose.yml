@@ -2,16 +2,16 @@ version: '3.3'
 services:
 
   tester:
-    image: "tester:latest"
+    image: "janniswarnat/tester:latest"
     networks:
       - public
-      - backend_openid
+      - openid_web
     entrypoint:
       - /bgw/test/test.sh
       - /bgw/certs/CA.pem
       - redis_1
 
-  bgw.test.eu:
+  bgw-ssl:
     image: "linksmart/bgw:snapshot"
     environment:
       LOG_LEVEL: "debug"
@@ -22,8 +22,8 @@ services:
       - 9230:9230
       - 9231:9231
     networks:
-      - backend_backend
-      - backend_openid
+      - backend_services
+      - openid_web
       - public
     volumes:
       - "./volumes/bgw/config:/bgw/config"
@@ -32,7 +32,7 @@ services:
 networks:
   public:
     driver: bridge
-  backend_backend:
+  backend_services:
     external: true
-  backend_openid:
+  openid_web:
     external: true

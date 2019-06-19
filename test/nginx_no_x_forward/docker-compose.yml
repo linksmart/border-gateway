@@ -1,7 +1,7 @@
 version: '3.3'
 services:
 
-  bgw.test.eu:
+  bgw-ssl:
     image: "nginx"
     volumes:
     - "../../certs:/etc/nginx/certs"
@@ -12,10 +12,10 @@ services:
       - bgw
 
   tester:
-    image: "tester:latest"
+    image: "janniswarnat/tester:latest"
     networks:
       - public
-      - backend_openid
+      - openid_web
     entrypoint:
       - /bgw/test/test.sh
       - /bgw/certs/CA.pem
@@ -34,8 +34,8 @@ services:
       - 9231:9231
     networks:
       - bgw
-      - backend_backend
-      - backend_openid
+      - backend_services
+      - openid_web
       - public
     volumes:
       - "./volumes/bgw/config:/bgw/config"
@@ -46,7 +46,7 @@ networks:
     driver: bridge
   bgw:
     driver: bridge
-  backend_backend:
+  backend_services:
     external: true
-  backend_openid:
+  openid_web:
     external: true

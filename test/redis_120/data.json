@@ -1,6 +1,6 @@
 [
   {
-    "tokenEndpoint": "https://openid.test.eu/auth/realms/realm1/protocol/openid-connect/token",
+    "tokenEndpoint": "https://openid-ssl/auth/realms/realm1/protocol/openid-connect/token",
     "username": "linksmart",
     "password": "demo",
     "audience": "bgw_client",
@@ -8,21 +8,21 @@
     "client_secret": "",
     "linksmart_user_attributes_realm1": "HTTPS/GET/# HTTPS/PUT/# HTTPS/DELETE/# MQTT/# WS/CONNECT/+/+/# WS/CONNECT/+/+",
     "linksmart_user_attributes_realm2": "HTTPS/GET/# MQTT/#",
-    "expectedTranslatedHttpAddress": "https://bgw.test.eu",
+    "expectedTranslatedHttpAddress": "https://bgw-ssl",
     "expectedTranslatedMqttAddress": "tcp://mosquitto:1883",
     "secure": true,
     "ws_port": 9002,
     "mqtt_port": 8883,
-    "domain": "bgw.test.eu",
+    "domain": "bgw-ssl",
     "servicesDomain": "sc",
     "useConfigService": true,
     "admin_username": "keycloak",
     "admin_password": "keycloak",
-    "admin_token_endpoint": "https://openid.test.eu/auth/realms/master/protocol/openid-connect/token",
-    "realm1_address": "https://openid.test.eu/auth/admin/realms/realm1",
-    "realm2_address": "https://openid.test.eu/auth/admin/realms/realm2",
-    "url": "https://bgw.test.eu",
-    "realm1_token_endpoint": "https://openid.test.eu/auth/realms/realm1/protocol/openid-connect/token",
-    "realm2_token_endpoint": "https://openid.test.eu/auth/realms/realm2/protocol/openid-connect/token"
+    "admin_token_endpoint": "https://openid-ssl/auth/realms/master/protocol/openid-connect/token",
+    "realm1_address": "https://openid-ssl/auth/admin/realms/realm1",
+    "realm2_address": "https://openid-ssl/auth/admin/realms/realm2",
+    "url": "https://bgw-ssl",
+    "realm1_token_endpoint": "https://openid-ssl/auth/realms/realm1/protocol/openid-connect/token",
+    "realm2_token_endpoint": "https://openid-ssl/auth/realms/realm2/protocol/openid-connect/token"
   }
 ]

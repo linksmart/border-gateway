@@ -11,7 +11,7 @@ source ~/.bashrc
 scriptDir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 cd "$scriptDir/.."
 
-docker build -f Dockerfile-tester -t tester:latest .
+docker build -f Dockerfile-tester -t janniswarnat/tester:latest .
 
 if [ "$?" -ne 0 ]; then
   notify "@jannis.warnat tester image could not be built"
@@ -41,11 +41,14 @@ if [ "$?" -ne 0 ]; then
   exit 1
 fi
 
+# Start openid (Keycloak)
+cd "$scriptDir/openid"
+docker volume create --name=pgdata
+docker-compose up -d openid-ssl
+sleep 40
+
 # Start backend (Mosquitto, Service Catalog, Redis)
 cd "$scriptDir/backend"
-docker volume create --name=pgdata
-docker-compose up -d keycloak
-sleep 40
 docker-compose up -d
 
 CA=$1
@@ -65,20 +68,17 @@ do
     cd "$scriptDir/$test"
     echo "current directory is $(pwd)"
     echo "Keycloak status:"
-    docker logs keycloak 2>&1 | grep started
+    docker logs openid_keycloak_1 2>&1 | grep started
 
-    if [[ $test == *"nginx"* ]]; then
+    if [[ $test == *"nginx"* ]] || [[ $test == *"no_ssl"* ]]; then
       docker-compose up -d bgw
     fi
 
-    docker-compose up -d bgw.test.eu
+    if [[ $test != *"no_ssl"* ]]; then
+      docker-compose up -d bgw-ssl
+    fi
 
     docker-compose up --exit-code-from tester tester
-    #docker-compose up tester
-
-    #workaround until Windows 10 and most current docker-compose is available (hopefully)
-    #exitCode=$(docker inspect $(docker-compose ps -q tester) | jq '.[0].State.ExitCode')
-    #if [ "$exitCode" -ne 0 ]; then
 
     if [ "$?" -ne 0 ]; then
 
@@ -87,7 +87,12 @@ do
     fi
 
     end=$(date +%s)
-    docker-compose logs bgw.test.eu &> "./lastRun.log"
+
+    if [[ $test == *"nginx"* ]] || [[ $test == *"no_ssl"* ]]; then
+        docker-compose logs test_bgw_1 &> "./lastRun.log"
+    else
+        docker-compose logs test_bgw-ssl_1 &>> "./lastRun.log"
+    fi
 
     docker-compose down
 
@@ -102,6 +107,11 @@ done
 # Stop backend (Mosquitto, Service Catalog, Redis)
 cd "$scriptDir/backend"
 docker-compose down
+
+# Stop openid (Keycloak)
+cd "$scriptDir/openid"
+docker-compose down
+docker volume rm pgdata
 
 printf "\n"
 echo "All tests successful :-)!"

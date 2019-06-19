@@ -342,7 +342,7 @@
     "enabled" : true,
     "clientAuthenticatorType" : "client-secret",
     "secret" : "33623f55-711f-4f6e-9ba8-2292c9888c29",
-    "redirectUris" : [ "https://bgw.test.eu:443/callback" ],
+    "redirectUris" : [ "https://bgw-ssl:443/callback" ],
     "webOrigins" : [ ],
     "notBefore" : 0,
     "bearerOnly" : false,

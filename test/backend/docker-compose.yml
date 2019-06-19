@@ -3,11 +3,12 @@ services:
 
   websocket-test:
     image: ksdn117/web-socket-test
-    container_name: "websocket-test"
+#    deploy:
+#      replicas: 1
     ports:
       - 8010:8010
     networks:
-      - backend
+      - services
     logging:
       driver: "json-file"
       options:
@@ -52,11 +53,12 @@ services:
 
   mosquitto:
     image: "eclipse-mosquitto"
-    container_name: "mosquitto"
+#    deploy:
+#      replicas: 1
     ports:
       - 1883:1883
     networks:
-      - backend
+      - services
     volumes:
       - "./volumes/mosquitto/config:/mosquitto/config"
     logging:
@@ -67,11 +69,12 @@ services:
 
   sc:
     image: "linksmart/sc:latest"
-    container_name: "sc"
+#    deploy:
+#      replicas: 1
     ports:
       - 8082:8082
     networks:
-      - backend
+      - services
     volumes:
       - "./volumes/sc/conf:/conf"
     logging:
@@ -81,12 +84,13 @@ services:
         max-file: "10"
 
   redis:
-    container_name: redis
+#    deploy:
+#      replicas: 1
     image: redis:5-alpine
     ports:
       - 6379:6379
     networks:
-      - backend
+      - services
     #    volumes:
     #    - "./volumes/redis/data:/data"
     #    entrypoint: redis-server --appendonly yes
@@ -101,66 +105,6 @@ services:
 #    networks:
 #      - backend
 
-  postgres:
-    image: "postgres:10"
-    container_name: "postgres"
-    ports:
-      - 5432:5432
-    environment:
-      - POSTGRES_USER=keycloak
-      - POSTGRES_PASSWORD=keycloak
-      - POSTGRES_DB=keycloak
-    volumes:
-      - pgdata:/var/lib/postgresql/data
-    networks:
-      - backend
-      - openid
-
-  keycloak:
-    image: "jboss/keycloak:latest"
-    container_name: "keycloak"
-    ports:
-      - 8080:8080
-    depends_on:
-      - "postgres"
-    environment:
-      - DB_VENDOR=postgres
-      - DB_ADDR=postgres
-      - DB_PORT=5432
-      - KEYCLOAK_LOGLEVEL=DEBUG
-      - DB_DATABASE=keycloak
-      - DB_USER=keycloak
-      - DB_PASSWORD=keycloak
-      - KEYCLOAK_USER=keycloak
-      - KEYCLOAK_PASSWORD=keycloak
-      - PROXY_ADDRESS_FORWARDING=true
-    networks:
-      - openid
-    volumes:
-        - "./volumes/keycloak/exports:/exports"
-    command: ["-Dkeycloak.migration.action=import","-Dkeycloak.migration.provider=dir","-Dkeycloak.migration.dir=/exports","-Dkeycloak.migration.strategy=IGNORE_EXISTING"]
-#    command: ["-Dkeycloak.migration.action=export","-Dkeycloak.migration.provider=dir","-Dkeycloak.migration.dir=/exports"]
-
-  openid.test.eu:
-    image: "nginx"
-    container_name: "openid.test.eu"
-    ports:
-      - 443:443
-    volumes:
-      - "../../certs:/etc/nginx/certs"
-      - "./volumes/nginx/nginx.conf:/etc/nginx/nginx.conf"
-      - "./volumes/nginx/conf.d:/etc/nginx/conf.d"
-    networks:
-      - openid
-
-#  curl:
-#    image: appropriate/curl
-#    command: ["-I","-v","--insecure","https://openid.test.eu:443/auth"]
-#    networks:
-#      - backend
-#    links:
-#      - "nginx:openid.test.eu"
-
 #  jaeger:
 #    container_name: jaeger
 #    image: jaegertracing/all-in-one
@@ -171,9 +115,7 @@ services:
 #      - 16686:16686
 
 networks:
-  backend:
-    driver: bridge
-  openid:
+  services:
     driver: bridge
 volumes:
   pgdata:
