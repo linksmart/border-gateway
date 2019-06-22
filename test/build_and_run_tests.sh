@@ -75,6 +75,7 @@ do
             sleep 3;
         done
 
+        echo "docker service logs test_bgw-ssl"
         docker service logs test_bgw-ssl 2>&1
 
     else
@@ -82,9 +83,13 @@ do
             echo "Waiting for bgw to be ready"
             sleep 3;
         done
-
-        docker service logs test_bgw 2>&1
     fi
+
+    echo "docker service logs test_bgw"
+    docker service logs test_bgw 2>&1
+
+    echo "docker ps -a"
+    docker ps -a
 
     cd "$scriptDir/tester"
     export TESTDIR="$test"
