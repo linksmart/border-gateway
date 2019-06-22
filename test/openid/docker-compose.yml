@@ -3,8 +3,8 @@ services:
 
   postgres:
     image: "postgres:10"
-#    deploy:
-#      replicas: 1
+    deploy:
+      replicas: 1
     ports:
       - 5432:5432
     environment:
@@ -18,8 +18,8 @@ services:
 
   keycloak:
     image: "jboss/keycloak:latest"
-#    deploy:
-#      replicas: 1
+    deploy:
+      replicas: 1
     ports:
       - 8080:8080
     depends_on:
@@ -38,14 +38,14 @@ services:
     networks:
       - backend
     volumes:
-        - "./volumes/keycloak/exports:/exports"
+      - "./volumes/keycloak/exports:/exports"
     command: ["-Dkeycloak.migration.action=import","-Dkeycloak.migration.provider=dir","-Dkeycloak.migration.dir=/exports","-Dkeycloak.migration.strategy=IGNORE_EXISTING"]
-#    command: ["-Dkeycloak.migration.action=export","-Dkeycloak.migration.provider=dir","-Dkeycloak.migration.dir=/exports"]
+  #    command: ["-Dkeycloak.migration.action=export","-Dkeycloak.migration.provider=dir","-Dkeycloak.migration.dir=/exports"]
 
   openid-ssl:
     image: "nginx"
-#    deploy:
-#      replicas: 1
+    deploy:
+      replicas: 1
     ports:
       - 443:443
     depends_on:
@@ -60,9 +60,10 @@ services:
 
 networks:
   web:
-    driver: bridge
+    driver: overlay
+    attachable: true
   backend:
-    driver: bridge
+    driver: overlay
 volumes:
   pgdata:
     external: true

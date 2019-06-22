@@ -1,19 +1,11 @@
 version: '3.3'
 services:
 
-  tester:
-    image: "janniswarnat/tester:latest"
-    networks:
-      - public
-      - openid_web
-    entrypoint:
-      - /bgw/test/test.sh
-      - /bgw/certs/CA.pem
-      - no_ssl
-
   bgw:
     image: "linksmart/bgw:snapshot"
     command: ["parts","bgw-http-proxy","bgw-mqtt-proxy","bgw-websocket-proxy","bgw-auth-service"]
+    deploy:
+      replicas: 1
     environment:
       LOG_LEVEL: "debug"
     ports:
@@ -26,14 +18,22 @@ services:
       - backend_services
       - openid_web
       - public
-    volumes:
-      - "./volumes/bgw/config:/bgw/config"
-      - "../../certs:/bgw/certs"
+    configs:
+      - source: CA.pem
+        target: "/bgw/certs/CA.pem"
+      - source: config
+        target: "/bgw/config/config.toml"
 
 networks:
   public:
-    driver: bridge
+    driver: overlay
+    attachable: true
   backend_services:
     external: true
   openid_web:
     external: true
+configs:
+  CA.pem:
+    file: "../../certs/CA.pem"
+  config:
+    file: "./volumes/bgw/config/config.toml"

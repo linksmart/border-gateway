@@ -3,26 +3,20 @@ services:
 
   bgw-ssl:
     image: "nginx"
+    deploy:
+      replicas: 1
     volumes:
-    - "../../certs:/etc/nginx/certs"
-    - "./volumes/nginx/nginx.conf:/etc/nginx/nginx.conf"
-    - "./volumes/nginx/conf.d:/etc/nginx/conf.d"
+      - "../../certs:/etc/nginx/certs"
+      - "./volumes/nginx/nginx.conf:/etc/nginx/nginx.conf"
+      - "./volumes/nginx/conf.d:/etc/nginx/conf.d"
     networks:
       - public
       - bgw
 
-  tester:
-    image: "janniswarnat/tester:latest"
-    networks:
-      - public
-      - openid_web
-    entrypoint:
-      - /bgw/test/test.sh
-      - /bgw/certs/CA.pem
-      - nginx_444 
-
   bgw:
     image: "linksmart/bgw:snapshot"
+    deploy:
+      replicas: 1
     command: ["parts","bgw-http-proxy","bgw-mqtt-proxy","bgw-websocket-proxy","bgw-auth-service"]
     environment:
       LOG_LEVEL: "debug"
@@ -37,16 +31,34 @@ services:
       - backend_services
       - openid_web
       - public
-    volumes:
-      - "./volumes/bgw/config:/bgw/config"
-      - "../../certs:/bgw/certs"
+    secrets:
+      - source: bgw-ssl.cert
+        target: "/bgw/certs/bgw-ssl.pem"
+      - source: bgw-ssl.key
+        target: "/bgw/certs/bgw-ssl_sec_key_wo_pass.pem"
+    configs:
+      - source: CA.pem
+        target: "/bgw/certs/CA.pem"
+      - source: config
+        target: "/bgw/config/config.toml"
 
 networks:
   public:
-    driver: bridge
+    driver: overlay
+    attachable: true
   bgw:
-    driver: bridge
+    driver: overlay
   backend_services:
     external: true
   openid_web:
     external: true
+secrets:
+  bgw-ssl.cert:
+    file: "../../certs/bgw-ssl.pem"
+  bgw-ssl.key:
+    file: "../../certs/bgw-ssl_sec_key_wo_pass.pem"
+configs:
+  CA.pem:
+    file: "../../certs/CA.pem"
+  config:
+    file: "./volumes/bgw/config/config.toml"

@@ -1,18 +1,10 @@
 version: '3.3'
 services:
 
-  tester:
-    image: "janniswarnat/tester:latest"
-    networks:
-      - public
-      - openid_web
-    entrypoint:
-      - /bgw/test/test.sh
-      - /bgw/certs/CA.pem
-      - redis_120
-
   bgw-ssl:
     image: "linksmart/bgw:snapshot"
+    deploy:
+      replicas: 1
     environment:
       LOG_LEVEL: "debug"
     ports:
@@ -25,14 +17,32 @@ services:
       - backend_services
       - openid_web
       - public
-    volumes:
-      - "./volumes/bgw/config:/bgw/config"
-      - "../../certs:/bgw/certs"
+    secrets:
+      - source: bgw-ssl.cert
+        target: "/bgw/certs/bgw-ssl.pem"
+      - source: bgw-ssl.key
+        target: "/bgw/certs/bgw-ssl_sec_key_wo_pass.pem"
+    configs:
+      - source: CA.pem
+        target: "/bgw/certs/CA.pem"
+      - source: config
+        target: "/bgw/config/config.toml"
 
 networks:
   public:
-    driver: bridge
+    driver: overlay
+    attachable: true
   backend_services:
     external: true
   openid_web:
     external: true
+secrets:
+  bgw-ssl.cert:
+    file: "../../certs/bgw-ssl.pem"
+  bgw-ssl.key:
+    file: "../../certs/bgw-ssl_sec_key_wo_pass.pem"
+configs:
+  CA.pem:
+    file: "../../certs/CA.pem"
+  config:
+    file: "./volumes/bgw/config/config.toml"

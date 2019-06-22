@@ -1,7 +1,6 @@
 #!/bin/bash
 
 CA=$1
-test=$2
 
 # workaround to have jq available in git bash for Windows
 shopt -s expand_aliases
@@ -10,22 +9,11 @@ source ~/.bashrc
 scriptDir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 cd $scriptDir
 
-function notify
-{
-if [ "$POST_CHAT_MESSAGE" = true ] ; then
-   cd "$scriptDir"
-  ./postChatMessage.sh "$1"
-fi
-}
-
-declare -A runtimes
-
-cd "$scriptDir/$test"
 echo "current directory is $(pwd)"
-newman run -k --bail -d "data.json" ../test_border_gateway.postman_collection.json
+echo "Test is $TESTDIR"
+newman run -k --bail -d "data.json" test_border_gateway.postman_collection.json
 
 if [ "$?" -ne 0 ]; then
-  notify "@jannis.warnat Newman tests failed for test $test"
   exit 1
 fi
 
@@ -51,15 +39,12 @@ echo "audience = $audience"
 echo "client_id = $client_id"
 echo "client_secret = $client_secret"
 
-
-../test_ws_and_mqtt.sh "$CA" "$domain" $secure "$mqttPort" "$wsPort" "$username" "$password" "$tokenEndpoint" "$audience" "$client_id" "$client_secret"
+./test_ws_and_mqtt.sh "$CA" "$domain" $secure "$mqttPort" "$wsPort" "$username" "$password" "$tokenEndpoint" "$audience" "$client_id" "$client_secret"
 
 if [ "$?" -ne 0 ]; then
-  notify "@jannis.warnat Mqtt and WebSocket tests failed for test $test"
   exit 1
 fi
 
 printf "\n"
-echo "Test $test finished successfully :-)!"
-notify "@jannis.warnat All tests successful!"
+echo "Test $TESTDIR finished successfully :-)!"
 exit 0

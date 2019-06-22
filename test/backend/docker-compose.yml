@@ -3,8 +3,8 @@ services:
 
   websocket-test:
     image: ksdn117/web-socket-test
-#    deploy:
-#      replicas: 1
+    deploy:
+      replicas: 1
     ports:
       - 8010:8010
     networks:
@@ -15,16 +15,16 @@ services:
         max-size: 10m
         max-file: "10"
 
-#  grafana:
-#    image: grafana/grafana
-#    user: root
-#    container_name: "grafana"
-#    ports:
-#      - 3000:3000
-#    environment:
-#      - GF_SERVER_ROOT_URL=https://localhost:444/grafana/
-#      - GF_AUTH_ANONYMOUS_ENABLED=true
-#      - GF_AUTH_BASIC="Main Org."
+  #  grafana:
+  #    image: grafana/grafana
+  #    user: root
+  #    container_name: "grafana"
+  #    ports:
+  #      - 3000:3000
+  #    environment:
+  #      - GF_SERVER_ROOT_URL=https://localhost:444/grafana/
+  #      - GF_AUTH_ANONYMOUS_ENABLED=true
+  #      - GF_AUTH_BASIC="Main Org."
 
   #  rabbitmq:
   #    image: "rabbitmq:3.8-rc"
@@ -53,8 +53,8 @@ services:
 
   mosquitto:
     image: "eclipse-mosquitto"
-#    deploy:
-#      replicas: 1
+    deploy:
+      replicas: 1
     ports:
       - 1883:1883
     networks:
@@ -69,8 +69,8 @@ services:
 
   sc:
     image: "linksmart/sc:latest"
-#    deploy:
-#      replicas: 1
+    deploy:
+      replicas: 1
     ports:
       - 8082:8082
     networks:
@@ -84,8 +84,8 @@ services:
         max-file: "10"
 
   redis:
-#    deploy:
-#      replicas: 1
+    deploy:
+      replicas: 1
     image: redis:5-alpine
     ports:
       - 6379:6379
@@ -116,7 +116,4 @@ services:
 
 networks:
   services:
-    driver: bridge
-volumes:
-  pgdata:
-    external: true
+    driver: overlay

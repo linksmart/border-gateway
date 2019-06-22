@@ -1,0 +1,21 @@
+version: '3.3'
+services:
+
+  tester:
+    image: "janniswarnat/tester:latest"
+    volumes:
+      - ../${TESTDIR}/data.json:/bgw/test/data.json
+    environment:
+      - TESTDIR=${TESTDIR}
+    entrypoint:
+      - /bgw/test/test.sh
+      - /bgw/certs/CA.pem
+    networks:
+      - test_public
+      - openid_web
+
+networks:
+  test_public:
+    external: true
+  openid_web:
+    external: true
