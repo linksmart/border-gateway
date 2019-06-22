@@ -74,11 +74,16 @@ do
             echo "Waiting for bgw-ssl to be ready"
             sleep 3;
         done
+
+        docker service logs test_bgw-ssl 2>&1
+
     else
         until [ -n "$(docker ps | grep bgw)" ]; do
-            echo "Waiting for bgw-ssl to be ready"
+            echo "Waiting for bgw to be ready"
             sleep 3;
         done
+
+        docker service logs test_bgw 2>&1
     fi
 
     cd "$scriptDir/tester"

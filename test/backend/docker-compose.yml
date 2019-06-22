@@ -59,8 +59,9 @@ services:
       - 1883:1883
     networks:
       - services
-    volumes:
-      - "./volumes/mosquitto/config:/mosquitto/config"
+    configs:
+      - source: mosquitto.conf
+        target: "/mosquitto/config/mosquitto.conf"
     logging:
       driver: "json-file"
       options:
@@ -75,8 +76,9 @@ services:
       - 8082:8082
     networks:
       - services
-    volumes:
-      - "./volumes/sc/conf:/conf"
+    configs:
+      - source: service-catalog.json
+        target: "/conf/service-catalog.json"
     logging:
       driver: "json-file"
       options:
@@ -91,9 +93,6 @@ services:
       - 6379:6379
     networks:
       - services
-    #    volumes:
-    #    - "./volumes/redis/data:/data"
-    #    entrypoint: redis-server --appendonly yes
 
 #  redis-commander:
 #    container_name: redis-commander
@@ -117,3 +116,8 @@ services:
 networks:
   services:
     driver: overlay
+configs:
+  mosquitto.conf:
+    file: "./mosquitto.conf"
+  service-catalog.json:
+    file: "./service-catalog.json"

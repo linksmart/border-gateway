@@ -50,13 +50,17 @@ services:
       - 443:443
     depends_on:
       - "keycloak"
-    volumes:
-      - "../../certs:/etc/nginx/certs"
-      - "./volumes/nginx/nginx.conf:/etc/nginx/nginx.conf"
-      - "./volumes/nginx/conf.d:/etc/nginx/conf.d"
     networks:
       - backend
       - web
+    secrets:
+      - source: openid-ssl.cert
+        target: "/etc/nginx/certs/openid-ssl.pem"
+      - source: openid-ssl.key
+        target: "/etc/nginx/certs/openid-ssl_sec_key_wo_pass.pem"
+    configs:
+      - source: openid-ssl.conf
+        target: "/etc/nginx/conf.d/openid-ssl.conf"
 
 networks:
   web:
@@ -67,3 +71,11 @@ networks:
 volumes:
   pgdata:
     external: true
+secrets:
+  openid-ssl.cert:
+    file: "../../certs/openid-ssl.pem"
+  openid-ssl.key:
+    file: "../../certs/openid-ssl_sec_key_wo_pass.pem"
+configs:
+  openid-ssl.conf:
+    file: "./openid-ssl.conf"

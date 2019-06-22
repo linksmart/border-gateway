@@ -1,7 +1,3 @@
-[external-interface]
-tls_key = "/bgw/certs/bgw-ssl_sec_key_wo_pass.pem"
-tls_cert = "/bgw/certs/bgw-ssl.pem"
-
 [mqtt-proxy]
 bind_addresses = [
   "0.0.0.0"

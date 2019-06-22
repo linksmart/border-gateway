@@ -45,4 +45,4 @@ configs:
   CA.pem:
     file: "../../certs/CA.pem"
   config:
-    file: "./volumes/bgw/config/config.toml"
+    file: "./config.toml"
