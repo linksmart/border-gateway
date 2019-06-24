@@ -2,7 +2,7 @@ version: '3.3'
 services:
 
   bgw:
-    image: "linksmart/bgw:test"
+    image: "localhost:5000/linksmart/bgw:test"
     command: ["parts","bgw-http-proxy","bgw-mqtt-proxy","bgw-websocket-proxy","bgw-auth-service"]
     deploy:
       replicas: 1

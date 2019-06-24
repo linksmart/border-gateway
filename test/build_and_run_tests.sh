@@ -9,20 +9,20 @@ shopt -s expand_aliases
 source ~/.bashrc
 
 scriptDir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+cd "$scriptDir/registry"
+docker-compose up -d
+
 cd "$scriptDir/.."
-
-echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-
-docker build -f Dockerfile-tester -t janniswarnat/tester:latest .
-docker push janniswarnat/tester:latest
+docker build -f Dockerfile-tester -t localhost:5000/janniswarnat/tester:latest .
+docker push localhost:5000/janniswarnat/tester:latest
 
 if [ "$?" -ne 0 ]; then
   exit 1
 fi
 
 cd "$scriptDir/.."
-docker build -t linksmart/bgw:test .
-docker push linksmart/bgw:test
+docker build -t localhost:5000/linksmart/bgw:test .
+docker push localhost:5000/linksmart/bgw:test
 
 if [ "$?" -ne 0 ]; then
   exit 1
@@ -67,20 +67,13 @@ do
 
     docker stack deploy --compose-file ./docker-compose.yml test
 
-    if [[ $test == *"no_ssl"* ]]; then
+    URL=$(jq -r '.[0].url' "data.json")
+    echo "URL = $URL"
 
-         until [ $(docker run --network=test_public --rm byrnedo/alpine-curl -s -o /dev/null -w "%{http_code}" http://bgw:5050/status) == "200" ]; do
-             echo "Waiting for bgw to be ready"
-             sleep 3;
-         done
-
-    else
-
-         until [ $(docker run --network=test_public --rm byrnedo/alpine-curl --insecure -s -o /dev/null -w "%{http_code}" https://bgw-ssl/status) == "200" ]; do
-             echo "Waiting for bgw-ssl to be ready"
-             sleep 3;
-         done
-    fi
+    until [ $(docker run --network=test_public --rm byrnedo/alpine-curl -s -o /dev/null -w "%{http_code}" "$URL"/status) == "200" ]; do
+        echo "Waiting for bgw to be ready"
+        sleep 3;
+    done
 
     cd "$scriptDir/tester"
     export TESTDIR="$test"
@@ -130,6 +123,9 @@ until [ -z "$(docker network ls --filter name=openid_web -q)" ] && [ -z "$(docke
 done
 
 docker volume rm pgdata
+
+cd "$scriptDir/registry"
+docker-compose down
 
 printf "\n"
 echo "All tests successful :-)!"

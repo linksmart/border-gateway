@@ -22,7 +22,7 @@ services:
         target: "/etc/nginx/conf.d/bgw-ssl.stream"
 
   bgw:
-    image: "linksmart/bgw:test"
+    image: "localhost:5000/linksmart/bgw:test"
     deploy:
       replicas: 1
     command: ["parts","bgw-http-proxy","bgw-mqtt-proxy","bgw-websocket-proxy","bgw-auth-service"]
