@@ -70,8 +70,8 @@ do
     URL=$(jq -r '.[0].url' "data.json")
     echo "URL = $URL"
 
-    until [ $(docker run --network=test_public --rm byrnedo/alpine-curl -s -o /dev/null -w "%{http_code}" "$URL"/status) == "200" ]; do
-        echo "Waiting for bgw to be ready"
+    until [ $(docker run --network=test_public --rm byrnedo/alpine-curl --insecure -s -o /dev/null -w "%{http_code}" "$URL"/status) == "200" ]; do
+        echo "Waiting for "$URL"/status to be ready"
         sleep 3;
     done
 
