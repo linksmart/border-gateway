@@ -2,7 +2,7 @@ version: '3.3'
 services:
 
   bgw-ssl:
-    image: "linksmart/bgw:snapshot"
+    image: "linksmart/bgw:test"
     deploy:
       replicas: 1
     environment:

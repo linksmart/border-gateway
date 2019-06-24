@@ -18,6 +18,12 @@ app.use(zipkinMiddleware({tracer}));
 
 app.use(cors());
 
+app.use('/status', async (req, res) => {
+
+    logger.log('debug', 'endpoint status called');
+    res.status(200).json({status:"ok"});
+});
+
 app.use('/callback', async (req, res) => {
 
     let query = url.parse(req.url, true).query;
