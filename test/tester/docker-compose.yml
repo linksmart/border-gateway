@@ -2,7 +2,7 @@ version: '3.3'
 services:
 
   tester:
-    image: "janniswarnat/tester:latest"
+    image: "localhost:5000/janniswarnat/tester:latest"
     volumes:
       - ../${TESTDIR}/data.json:/bgw/test/data.json
     environment:
