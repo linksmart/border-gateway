@@ -4,10 +4,6 @@
 # Docker
 # all tests: ./build_and_run_tests.sh no_ssl nginx nginx_no_x_forward nginx_444 ei redis_1 redis_120
 
-# workaround to have jq available in git bash for Windows
-shopt -s expand_aliases
-source ~/.bashrc
-
 scriptDir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 cd "$scriptDir/registry"
 docker-compose up -d
@@ -71,7 +67,7 @@ do
     echo "URL = $URL"
 
     until [ $(docker run --network=test_public --rm byrnedo/alpine-curl --insecure -s -o /dev/null -w "%{http_code}" "$URL"/status) == "200" ]; do
-        echo "Waiting for "$URL"/status to be ready"
+        echo "Waiting for $URL/status to be ready"
         sleep 3;
     done
 
@@ -105,17 +101,21 @@ do
     echo "Runtime for $test: ${runtimes[$test]}"
 done
 
+cd "$scriptDir/registry"
+docker-compose down
+
 # Stop backend (Mosquitto, Service Catalog, Redis)
 cd "$scriptDir/backend"
 docker stack rm backend
-until [ -z "$(docker network ls --filter name=backend_services -q)" ]; do
-    echo "waiting for network backend_services to be removed"
-    sleep 3;
-done
 
 # Stop openid (Keycloak)
 cd "$scriptDir/openid"
 docker stack rm openid
+
+until [ -z "$(docker network ls --filter name=backend_services -q)" ]; do
+    echo "waiting for network backend_services to be removed"
+    sleep 3;
+done
 
 until [ -z "$(docker network ls --filter name=openid_web -q)" ] && [ -z "$(docker network ls --filter name=openid_backend -q)" ]; do
     echo "Waiting for networks openid_web and openid_backend to be removed"
@@ -123,9 +123,6 @@ until [ -z "$(docker network ls --filter name=openid_web -q)" ] && [ -z "$(docke
 done
 
 docker volume rm pgdata
-
-cd "$scriptDir/registry"
-docker-compose down
 
 printf "\n"
 echo "All tests successful :-)!"

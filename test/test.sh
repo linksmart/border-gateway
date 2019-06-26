@@ -2,10 +2,6 @@
 
 CA=$1
 
-# workaround to have jq available in git bash for Windows
-shopt -s expand_aliases
-source ~/.bashrc
-
 scriptDir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 cd $scriptDir
 
