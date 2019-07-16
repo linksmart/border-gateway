@@ -1,0 +1,144 @@
+# Configuration for the external-interface microservice
+[external-interface]
+# Your certificate files
+tls_key = "/bgw/certs/<your_key>.pem"
+tls_cert = "/bgw/certs/<your_cert>.pem"
+
+  # Configuration of the TLS termination proxies for services behind the external interface
+  [[external-interface.servers]]
+  # TLS termination proxy for the http-proxy microservice
+  name = "http_proxy"
+  # default: ["0.0.0.0"]
+  bind_addresses = [
+    "0.0.0.0"
+  ]
+  # port for public access via external interface; default: 443
+  bind_port = 443
+  # port of internal microservice; default: 5050
+  dest_port = 5050
+  # host of internal microservice; default: "127.0.0.1"
+  dest_address = "127.0.0.1"
+
+  [[external-interface.servers]]
+  # TLS termination proxy for the mqtt-proxy microservice
+  name = "mqtt_proxy"
+  # default: ["0.0.0.0"]
+  bind_addresses = [
+    "0.0.0.0"
+  ]
+  # port for public access via external interface; default: 8883
+  bind_port = 8883
+  # port of internal microservice; default: 5051
+  dest_port = 5051
+  # host of internal microservice; default: "127.0.0.1"
+  dest_address = "127.0.0.1"
+
+  [[external-interface.servers]]
+  # TLS termination proxy for the websocket-proxy microservice
+  name = "websocket_proxy"
+  # default: ["0.0.0.0"]
+  bind_addresses = [
+    "0.0.0.0"
+  ]
+  # port for public access via external interface; default: 9002
+  bind_port = 9002
+  # port of internal microservice; default: 5052
+  dest_port = 5052
+  # host of internal microservice; default: "127.0.0.1"
+  dest_address = "127.0.0.1"
+
+# Configuration items for the mqtt-proxy microservice
+[mqtt-proxy]
+
+  # MQTT broker address
+  [mqtt-proxy.broker]
+  address = "demo.linksmart.eu"
+  port = 8883
+  username = "linksmart"
+  password = "demo"
+  tls = true
+  tls_ca = ""
+  tls_client_key = ""
+  tls_client_cert = ""
+
+# Configuration for the http-proxy microservice
+[http-proxy]
+# Uncomment if you want to use the configuration-service
+#configurationService = "http://localhost:5056"
+
+# Location of the redis db if you want to use access token caching
+#redis_host = "redis"
+#redis_port = 6379
+
+  # List of public addresses that http proxy is supposed to accept for forwarding
+  [http-proxy.domains]
+
+    # Configuration for public domain bgw-ssl
+    [http-proxy.domains.bgw-ssl]
+
+      # Configuration of location / path sc
+      [http-proxy.domains.bgw-ssl.sc]
+      # Local address to foward requests to
+      local_address = "http://sc:8082"
+
+        [http-proxy.domains.bgw-ssl.sc.translate_local_addresses]
+        # Do not translate certain addresses in http response
+        whitelist = [
+          "*.linksmart.eu",
+          "demo.test.eu:8080"
+        ]
+
+          # Dictionary for custom address translations
+          [http-proxy.domains.bgw-ssl.sc.translate_local_addresses.url_translation_map]
+          "tcp://127.0.0.1:1883" = "ssl://bgw-ssl:8883"
+
+      # Configuration of location / path auth (for auth-service)
+      [http-proxy.domains.bgw-ssl.auth]
+      local_address = "http://localhost:5053"
+      no_auth = true
+      keep_authorization_header = true
+
+      # Configuration of location / path configuration (for configuration-service)
+      #[http-proxy.domains.bgw-ssl.configuration]
+      #local_address = "http://localhost:5056"
+      #no_auth = true
+
+# Configuration for websocket-proxy microservce
+[websocket-proxy]
+issuer = "https://openid-ssl/auth/realms/realm1"
+audience = ["bgw_client","gui"]
+client_id = "bgw_client"
+realm_public_key_modulus = "hF2bmoFd35rgtsXny2NFXG-M-ywZPkuonyUC8fwYQ4axSB86gPXbkkgH5LsDkpJHovMvXUgDiEJg2k0TbEfy7edtpk1e0IpqY8KKFQ-Gz_YjxXPWEsO30k11T66aczDVC1aKFDuBCQ9ExZopTehR_awHn3FAuDHTGrG8W4bMJ3z1VqcFRh5fZG3vGFvPi6J-6QpV8P82wFqMHJWeBJGUThWMNCtgi88KXf8Jz1MgvXO-NnDK_KduJBo_c6Dm5NiZjReQtKRO8TXUkhglClwHU6sOGx0IIvgQ9q5vRwWf6ou6t5_40cNYiu86GYlHH-1dimb_f6CoiTBG8-99wgfxvw"
+realm_public_key_exponent = "AQAB"
+
+
+# Configuration for auth-service microservce
+[auth-service]
+
+  # List of OpenID Connect providers
+  [auth-service.openid_connect_providers]
+
+    # Configuration of default OpenID Connect provider
+    [auth-service.openid_connect_providers.default]
+    issuer = "https://openid-ssl/auth/realms/realm1"
+    authorization_endpoint = "https://openid-ssl/auth/realms/realm1/protocol/openid-connect/auth"
+    token_endpoint = "https://openid-ssl/auth/realms/realm1/protocol/openid-connect/token"
+    audience = ["bgw_client","gui"]
+    client_id = "bgw_client"
+    jwks_uri = "https://openid-ssl/auth/realms/realm1/protocol/openid-connect/certs"
+    realm_public_key_modulus = "wFjJA3wxFfCydn1SXzY5RjapY_fd5oulmwCNDvTSF3RxpUX8itzKm8ksarnFJZtZT3XwNMEkqNiO26HH_OgHWq3Ri6_WrufGyRT_rYgcNxOrL2ZxCTkh0fq4R8VL7CJxaBe1bydwYG5uEMqKkzCCfMM0b0ZbcwzQ5ngdjugO7xYT3IZhBe6xQgTf4FX7QB562J4IRr9D3nX445ah452TcHV05sOIjo6O6z5pgcx68qIO1Nv3pHCP0zztL5vxegw9BiL6bTIsgpfyImM9DhumuIeqev9y8Za5WmUdGc8bSpl6yOGMZYHcaQqNsiaLFWvcjm5CrplWUIIZ9xqjI08rIQ"
+    realm_public_key_exponent = "AQAB"
+    anonymous_bgw_rules = "HTTPS/GET/bgw-ssl/+/sc/# HTTPS/GET/bgw-ssl/+/sc1/# HTTPS/GET/bgw-ssl/+/sc2/# HTTPS/GET/bgw-ssl/+/configuration/locations/# HTTPS/+/bgw-ssl/+/grafana/#"
+    redirect_uri = "https://bgw-ssl:443/callback"
+
+    # Configuration of alternative OpenID Connect provider
+    [auth-service.openid_connect_providers.linksmart]
+    issuer = "https://openid-ssl/auth/realms/realm2"
+    authorization_endpoint = "https://openid-ssl/auth/realms/realm2/protocol/openid-connect/auth"
+    token_endpoint = "https://openid-ssl/auth/realms/realm2/protocol/openid-connect/token"
+    audience = ["bgw_client","gui"]
+    client_id = "bgw_client"
+    jwks_uri = "https://openid-ssl/auth/realms/realm2/protocol/openid-connect/certs"
+    realm_public_key_modulus = "-GUSMQBIkFZ6NnRwIVsRYZJri22mpAwrd2JtXosreyvhMc-o2h6W499NgFxifXZPjr6TA5WsAY7G3B5nxhl6kuegm2T4JksZtAq4Qkdlqp9QcVFM1LR5chJ2mAjXwOkUpAOBddSpngXDO1QbivNGrQxhPcy5fvGs0Ql6CYblujZ8VJ3KeOLeSWFBOAiRhvnyEbGYS0pN-2UJ6fJuYIzjbkz9RkN39ez4PPlfeq65kIxMctoMvoNp2rI3XqlJjdQsX4GxBoa8J2nJckcS1awXZhLzkt3LEfcWgVwhW8HJmpSJp4tQBZBGE2yMJT_V_AFICU-DFRcxRSpBx9O-n6DZbw"
+    realm_public_key_exponent = "AQAB"
+    anonymous_bgw_rules = "HTTPS/GET/bgw-ssl/+/sc/# HTTPS/GET/bgw-ssl/+/sc1/# HTTPS/GET/bgw-ssl/+/sc2/# HTTPS/GET/bgw-ssl/+/configuration/locations/# HTTPS/+/bgw-ssl/+/grafana/#"
