@@ -1,23 +1,47 @@
-const {Tracer, ExplicitContext, ConsoleRecorder, BatchRecorder} = require('zipkin');
-const { HttpLogger } = require('zipkin-transport-http');
+const logger = require('../logger/log')("tracer", "debug");
+const initTracer = require('jaeger-client').initTracer;
+const opentracing = require('opentracing');
+const PrometheusMetricsFactory = require('jaeger-client').PrometheusMetricsFactory;
+const promClient = require('prom-client');
 
-const ctxImpl = new ExplicitContext();
-const batchRecorder = new BatchRecorder({
-    logger: new HttpLogger({
-        endpoint: `http://zipkin:9411/api/v1/spans`
-    })
-});
-
-const consoleRecorder = new ConsoleRecorder((message)=>{});
-
-function trace(localServiceName,enableDistributedTracing) {
+function jaegerTrace(localServiceName,enableDistributedTracing) {
     if(enableDistributedTracing) {
-        return new Tracer({recorder: batchRecorder, ctxImpl: ctxImpl, localServiceName: localServiceName});
+
+        let config = {
+            serviceName: localServiceName,
+            sampler: {
+                type: "const",
+                param: 1,
+            },
+            reporter: {
+                // Provide the traces endpoint; this forces the client to connect directly to the Collector and send
+                // spans over HTTP
+                collectorEndpoint: 'http://jaeger:14268/api/traces',
+                logSpans: true
+                // Provide username and password if authentication is enabled in the Collector
+                // username: '',
+                // password: '',
+            },
+        };
+        let namespace = config.serviceName.replace('-','_');
+        let metrics = new PrometheusMetricsFactory(promClient, namespace);
+        let options = {
+            tags: {
+                version: '1.1.2',
+           },
+           //metrics: metrics,
+            logger: logger
+        };
+        let tracer = initTracer(config, options);
+        return tracer;
     }
     else
     {
-        return new Tracer({recorder: consoleRecorder, ctxImpl: ctxImpl, localServiceName: localServiceName});
+        const tracer = new opentracing.Tracer();
+        return tracer;
     }
-}
 
-module.exports = trace;
+}
+module.exports.jaegerTrace = jaegerTrace;
+
+

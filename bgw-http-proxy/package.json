@@ -21,7 +21,6 @@
     "transformer-proxy": "latest",
     "axios": "latest",
     "toml": "latest",
-    "zipkin": "latest",
-    "zipkin-instrumentation-express": "latest"
+    "opentracing": "latest"
   }
 }

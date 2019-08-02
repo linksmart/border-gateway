@@ -1,6 +1,6 @@
 {
   "name": "bgw",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "",
   "main": "index.js",
   "author": "",
@@ -18,15 +18,15 @@
     "test": "mocha"
   },
   "dependencies": {
-    "mocha": "latest",
-    "logger": "file:./logger",
-    "tracer": "file:./tracer",
-    "bgw-external-interface": "file:./bgw-external-interface",
     "bgw-auth-service": "file:./bgw-auth-service",
+    "bgw-configuration-service": "file:./bgw-configuration-service",
+    "bgw-external-interface": "file:./bgw-external-interface",
     "bgw-http-proxy": "file:./bgw-http-proxy",
     "bgw-mqtt-proxy": "file:./bgw-mqtt-proxy",
-    "bgw-configuration-service": "file:./bgw-configuration-service",
-    "bgw-websocket-proxy": "file:./bgw-websocket-proxy"
+    "bgw-websocket-proxy": "file:./bgw-websocket-proxy",
+    "logger": "file:./logger",
+    "mocha": "latest",
+    "tracer": "file:./tracer"
   },
   "devDependencies": {
     "eslint": "latest"

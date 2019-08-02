@@ -23,9 +23,7 @@
     "async-redis": "latest",
     "toml": "latest",
     "openid-client": "latest",
-    "nonce": "latest",
-    "zipkin": "latest",
-    "zipkin-instrumentation-express": "latest",
-    "zipkin-instrumentation-fetch": "latest"
+    "opentracing": "latest",
+    "nonce": "latest"
   }
 }

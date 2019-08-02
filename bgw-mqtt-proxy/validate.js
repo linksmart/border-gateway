@@ -1,11 +1,12 @@
 const config = require('./config');
 const logger = require('../logger/log')(config.serviceName,config.logLevel);
+const tracer = require('../tracer/trace').jaegerTrace(config.serviceName,config.enableDistributedTracing);
 const axios = require('axios');
+const opentracing  = require('opentracing');
 const {connack, suback, puback, pubrec} = require('./packet_template');
 
 const mqttAuth = async (port, credentials, method, path = '') => {
-
-    if (config.no_auth) {
+   if (config.no_auth) {
 
         return true
     }
@@ -24,7 +25,9 @@ const mqttAuth = async (port, credentials, method, path = '') => {
 
     let response;
     try {
-        response = await axios({
+        const openId = axios.create();
+
+        response = await openId.request({
             method: 'post',
             headers: {authorization: authorization || ""},
             url: config.auth_service+"/authorize",

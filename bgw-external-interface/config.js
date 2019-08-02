@@ -3,6 +3,7 @@ const fs = require('fs');
 
 let config = {
     serviceName: 'external-interface',
+    enableDistributedTracing: false,
     logLevel: process.env.LOG_LEVEL || 'info',
     tls_key: "",
     tls_cert: "",

@@ -18,6 +18,7 @@
   },
   "dependencies": {
     "http-proxy": "latest",
-    "toml": "latest"
+    "toml": "latest",
+    "opentracing": "latest"
   }
 }

@@ -23,7 +23,8 @@ let config = {
     },
     no_auth: false,
     auth_service: "http://localhost:5053",
-    openidConnectProviderName: undefined
+    openidConnectProviderName: undefined,
+    enableDistributedTracing: false
 };
 
 let configFromFile = {};

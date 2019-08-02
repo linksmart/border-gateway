@@ -369,11 +369,11 @@ wss.on('connection', function connection(serverSocket, request) {
         waitForWebSocketConnectionAndAuthorization(serverSocket, () => {
 
             if (serverSocket.protocol === 'mqtt') {
-                logger.log("debug", "serverSocket event message, forward to clientSocket (net)", {queue: serverSocket.bgwQueue})
+                logger.log("debug", "serverSocket event message, forward to clientSocket (net)", {queue: serverSocket.bgwQueue});
                 sendNetMessages(serverSocket.bgwClientSocket, serverSocket.bgwQueue);
             } else {
 
-                logger.log("debug", "serverSocket event message, forward to clientSocket (ws)", {queue: serverSocket.bgwQueue})
+                logger.log("debug", "serverSocket event message, forward to clientSocket (ws)", {queue: serverSocket.bgwQueue});
                 sendMessages(serverSocket.bgwClientSocket, serverSocket.bgwQueue);
             }
         });

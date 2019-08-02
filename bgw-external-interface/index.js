@@ -1,5 +1,7 @@
 const config = require('./config');
 const logger = require('../logger/log')(config.serviceName, config.logLevel);
+const tracer = require('../tracer/trace').jaegerTrace(config.serviceName, config.enableDistributedTracing);
+const opentracing = require('opentracing');
 const tls = require('tls');
 const net = require('net');
 const httpProxy = require('http-proxy');
@@ -33,13 +35,22 @@ config.servers.forEach((srv) => {
 
         external_interface.on('proxyReq', function (proxyReq, req, res, options) {
 
+            const rootSpan = tracer.startSpan('proxyReq');
+            rootSpan.setTag("event", "proxyReq");
+            rootSpan.setTag("http.method", req.method);
+            rootSpan.setTag("http.url", req.url);
+            let headersCarrier = {};
+            tracer.inject(rootSpan, opentracing.FORMAT_HTTP_HEADERS, headersCarrier);
+            const headersCarrierKeys = Object.keys(headersCarrier);
+            for (const key of headersCarrierKeys) {
+                proxyReq.setHeader(key, headersCarrier[key]);
+            }
             logger.log('debug', 'Host headers in request', {
                 host: req.headers.host,
                 x_fowarded_host: req.headers['x-forwarded-host']
             });
-            //proxyReq.setHeader('x-forwarded-proto', req['x-forwarded-proto'] || 'https');
+
             if (req.headers.host) {
-                //proxyReq.setHeader('x-forwarded-host', req['x-forwarded-host'] || (req.headers.host.split(":"))[0] + ":" + srv.bind_port);
                 logger.log('debug', 'Host headers in request after setHeader', {
                     host: req.headers.host,
                     x_fowarded_host: req.headers['x-forwarded-host']
@@ -58,7 +69,20 @@ config.servers.forEach((srv) => {
                     headers: req.headers
                 });
             }
+            rootSpan.finish();
         });
+
+
+        external_interface.on('proxyRes', function (proxyRes, req, res) {
+            let headersCarrier = proxyRes.headers;
+            let wireCtx = tracer.extract(opentracing.FORMAT_HTTP_HEADERS, headersCarrier);
+            let childSpan = tracer.startSpan(config.serviceName.replace('-', '_'), {childOf: wireCtx});
+            childSpan.setTag("event", "proxyRes");
+            childSpan.setTag("http.method", req.method);
+            childSpan.setTag("http.url", req.url);
+            childSpan.finish();
+        });
+
     } else {
         external_interface = tls.createServer(options, function (srcClient) {
 
@@ -93,7 +117,12 @@ config.servers.forEach((srv) => {
             });
         });
         external_interface.on('tlsClientError', (e) => logger.log('error', 'tls error,this could be a none tls connection, make sure to establish a proper tls connection, details...', {errorStack: e.stack}));
-        logger.log('info', 'tls versions', {minVersion: external_interface.minVersion, maxVersion: external_interface.maxVersion, defaultMinVersion: tls.DEFAULT_MIN_VERSION, defaultMaxVersion: tls.DEFAULT_MAX_VERSION});
+        logger.log('info', 'tls versions', {
+            minVersion: external_interface.minVersion,
+            maxVersion: external_interface.maxVersion,
+            defaultMinVersion: tls.DEFAULT_MIN_VERSION,
+            defaultMaxVersion: tls.DEFAULT_MAX_VERSION
+        });
     }
     srv.bind_addresses.forEach((addr) => {
         external_interface.listen(srv.bind_port, addr, () =>

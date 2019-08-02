@@ -1,6 +1,7 @@
 const config = require('./config');
 const logger = require('../logger/log')(config.serviceName, config.logLevel);
-const tracer = require('../tracer/trace')(config.serviceName,config.enableDistributedTracing);
+const tracer = require('../tracer/trace').jaegerTrace(config.serviceName, config.enableDistributedTracing);
+const opentracing = require('opentracing');
 const cors = require('cors');
 const app = require('express')();
 const https = require('https');
@@ -11,17 +12,13 @@ const agentHTTP = new http.Agent({});
 const agentHTTPS = new https.Agent({});
 const proxy = require('http-proxy/lib/http-proxy').createProxyServer({});
 const {httpAuth, transformURI, bgwIfy, REQ_TYPES} = require('./utils');
-const zipkinMiddleware = require('zipkin-instrumentation-express').expressMiddleware;
-
-// Add the Zipkin middleware
-app.use(zipkinMiddleware({tracer}));
 
 app.use(cors());
 
 app.use('/status', async (req, res) => {
 
     logger.log('debug', 'endpoint status called');
-    res.status(200).json({status:"ok"});
+    res.status(200).json({status: "ok"});
 });
 
 app.use('/callback', async (req, res) => {
@@ -33,9 +30,7 @@ app.use('/callback', async (req, res) => {
         let targetUrl;
         try {
             targetUrl = new url.URL(query.state);
-        }
-        catch(err)
-        {
+        } catch (err) {
             logger.log('error', 'No valid URL in query parameter state');
             res.status(404).json({error: 'Unknown location'});
             return;
@@ -45,9 +40,7 @@ app.use('/callback', async (req, res) => {
             targetUrl.searchParams.append(property, query[property]);
         }
         res.redirect(targetUrl.toString());
-    }
-    else
-    {
+    } else {
         res.status(404).json({error: 'Unknown location'});
     }
 });
@@ -55,13 +48,38 @@ app.use('/callback', async (req, res) => {
 
 app.use(async (req, res) => {
 
+    let parentHeadersCarrier = req.headers;
+    let wireCtx = tracer.extract(opentracing.FORMAT_HTTP_HEADERS, parentHeadersCarrier);
+    let childSpan = tracer.startSpan(config.serviceName.replace('-', '_'), {childOf: wireCtx});
+    childSpan.setTag("function","bgw middleware");
+    childSpan.setTag("http.method",req.method);
+    childSpan.setTag("http.url",req.url);
+    let childHeadersCarrier = {};
+    tracer.inject(childSpan, opentracing.FORMAT_HTTP_HEADERS, childHeadersCarrier);
+    const childHeadersCarrierKeys = Object.keys(childHeadersCarrier);
+    for (const key of childHeadersCarrierKeys) {
+        req.headers[key] = childHeadersCarrier[key];
+    }
+    let carrier = {};
+    tracer.inject(wireCtx, opentracing.FORMAT_HTTP_HEADERS, carrier);
+    const carrierKeys = Object.keys(carrier);
+    for (const key of carrierKeys) {
+        res.set(key,carrier[key]);
+    }
+
     await bgwIfy(req);
     if (req.bgw.type === REQ_TYPES.UNKNOWN_REQUEST) {
         res.status(404).json({error: 'Unknown location'});
+        childSpan.setTag("http.status_code",404);
+        childSpan.log({event:"error", message: 'Unknown location'});
+        childSpan.finish();
         return;
     }
     if (req.bgw.type === REQ_TYPES.INVALID_EXTERNAL_DOMAIN) {
         res.status(404).json({error: 'Invalid external domain'});
+        childSpan.setTag("http.status_code",404);
+        childSpan.log({event: "error", message: 'Invalid external domain'});
+        childSpan.finish();
         return;
     }
 
@@ -71,7 +89,7 @@ app.use(async (req, res) => {
         const is_https = req.bgw.forward_address.includes('https://');
         const {http_req, https_req} = (req.bgw.alias && req.bgw.alias.change_origin_on) || config.change_origin_on;
         const insecure = (req.bgw.alias && req.bgw.alias.insecure) || false;
-        const proxyied_options = {
+        const proxied_options = {
             target: req.bgw.forward_address || 'error',
             secure: !insecure,
             agent: is_https ? agentHTTPS : agentHTTP,
@@ -80,10 +98,10 @@ app.use(async (req, res) => {
                 (!is_https && http_req)
         };
 
-        const proxyied_request = () => proxy.web(req, res, proxyied_options);
+        const proxied_request = () => proxy.web(req, res, proxied_options);
 
         req.bgw.type === REQ_TYPES.FORWARD_W_T ?
-            transform(transformURI)(req, res, () => proxyied_request()) : proxyied_request();
+            transform(transformURI)(req, res, () => proxied_request()) : proxied_request();
 
     } else {
         if (response.error === 'Forbidden' && !response.authUrl) {
@@ -101,6 +119,7 @@ app.use(async (req, res) => {
             }
         }
     }
+    childSpan.finish();
 });
 proxy.on('error', function (err, req, res) {
     logger.log('error', 'Error in proxy', {errorName: err.name, errorMessage: err.message, errorStack: err.stack});

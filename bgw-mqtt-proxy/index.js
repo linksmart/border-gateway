@@ -1,5 +1,6 @@
 const config = require('./config');
 const logger = require('../logger/log')(config.serviceName, config.logLevel);
+const tracer = require('../tracer/trace').jaegerTrace(config.serviceName,config.enableDistributedTracing);
 const net = require('net');
 const tls = require('tls');
 const shortid = require('shortid');

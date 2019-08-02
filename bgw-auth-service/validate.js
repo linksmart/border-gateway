@@ -1,7 +1,8 @@
 const config = require('./config');
 const logger = require('../logger/log')(config.serviceName, config.logLevel);
-const tracer = require('../tracer/trace')(config.serviceName, config.enableDistributedTracing);
-const nodefetch = require('node-fetch');
+const tracer = require('../tracer/trace').jaegerTrace(config.serviceName,config.enableDistributedTracing);
+const opentracing = require('opentracing');
+const fetch = require('node-fetch');
 const qs = require("querystring");
 //const matchRules = require('./rules');
 const jwt = require('jsonwebtoken');
@@ -14,14 +15,7 @@ const asyncRedis = require("async-redis");
 let redisClient;
 const crypto = require('crypto');
 const algorithm = 'aes256';
-const wrapFetch = require('zipkin-instrumentation-fetch');
 const remoteServiceName = 'openidConnectProvider';
-let fetch;
-if (config.enableDistributedTracing) {
-    fetch = wrapFetch(nodefetch, {tracer, remoteServiceName});
-} else {
-    fetch = nodefetch;
-}
 
 if (config.redis_expiration > 0) {
 

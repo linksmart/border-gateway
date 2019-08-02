@@ -1,21 +1,17 @@
 const config = require('./config');
 const logger = require('../logger/log')(config.serviceName, config.logLevel);
-const tracer = require('../tracer/trace')(config.serviceName,config.enableDistributedTracing);
+const tracer = require('../tracer/trace').jaegerTrace(config.serviceName,config.enableDistributedTracing);
 const url = require("url");
 const restify = require('restify');
 const isVarName = require("is-var-name");
 const redis = require("redis");
 const asyncRedis = require("async-redis");
 let redisClient;
-const zipkinMiddleware = require('zipkin-instrumentation-restify').restifyMiddleware;
 
 const server = restify.createServer({
     name: 'bgw-configuration-service',
     version: '1.0.0'
 });
-
-// Add the Zipkin middleware
-server.use(zipkinMiddleware({tracer}));
 
 if (config.configurationService && config.redis_host) {
 

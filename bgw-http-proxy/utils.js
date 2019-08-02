@@ -1,5 +1,7 @@
 const config = require('./config');
 const logger = require('../logger/log')(config.serviceName, config.logLevel);
+const tracer = require('../tracer/trace').jaegerTrace(config.serviceName,config.enableDistributedTracing);
+const opentracing = require('opentracing');
 const {transformURI, decode} = require("./translate_res");
 const axios = require("axios");
 const url = require("url");
@@ -11,10 +13,15 @@ const TYPES = {
 };
 
 const httpAuth = async (req) => {
-    //const span = tracer.startSpan("httpAuth");
+    let parentHeadersCarrier = req.headers;
+    let wireCtx = tracer.extract(opentracing.FORMAT_HTTP_HEADERS, parentHeadersCarrier);
+    let childSpan = tracer.startSpan(config.serviceName.replace('-','_'), { childOf : wireCtx });
+    childSpan.setTag("function","httpAuth");
 
     if (config.no_auth || (req.bgw.alias && req.bgw.alias.no_auth)) {
 
+        childSpan.setTag("no_auth","true");
+        childSpan.finish();
         return {
             isAuthorized: true
         }
@@ -42,6 +49,8 @@ const httpAuth = async (req) => {
             method: req.method,
             headers: req.headers
         });
+        childSpan.log({event:"strange", message: 'Strange http request with empty or missing host header'});
+        childSpan.finish();
         return {
             isAuthorized: false
         }
@@ -64,7 +73,7 @@ const httpAuth = async (req) => {
     let authorization = "";
     let code;
     // Keycloak sets "Basic Og==" (decoded: ":")
-    if (req.headers.authorization && req.headers.authorization != "Basic Og==") {
+    if (req.headers.authorization && req.headers.authorization !== "Basic Og==") {
         authorization = req.headers.authorization;
     } else {
         let query = url.parse(req.originalUrl, true).query;
@@ -86,10 +95,14 @@ const httpAuth = async (req) => {
 
 
     let response;
+    let headers = {authorization: authorization};
+    let childHeadersCarrier = {};
+    tracer.inject(childSpan,opentracing.FORMAT_HTTP_HEADERS, childHeadersCarrier);
+    Object.assign(headers, childHeadersCarrier);
     try {
         response = await axios({
             method: 'post',
-            headers: {authorization: authorization},
+            headers: headers,
             url: config.auth_service + "/authorize",
             data: {
                 rule: payload,
@@ -99,6 +112,8 @@ const httpAuth = async (req) => {
         });
     } catch (error) {
         logger.log('error', 'Error in auth-service', {errorName: error.name, errorMessage: error.message});
+        childSpan.log({event: "error", message: 'Error in auth-service'});
+        childSpan.finish();
         return {
             isAuthorized: false,
             error: "Error in auth-service, " + error.name + ": " + error.message
@@ -106,7 +121,7 @@ const httpAuth = async (req) => {
     }
 
     req.headers.authorization = (req.bgw.alias && req.bgw.alias.keep_authorization_header && req.headers.authorization) || "";
-
+    childSpan.finish();
     return response.data;
 
 };
@@ -206,7 +221,6 @@ const bgwIfy = async (req) => {
             return
         }
         req.bgw = {type: TYPES.UNKNOWN_REQUEST}
-        //span.finish();
     }
 ;
 

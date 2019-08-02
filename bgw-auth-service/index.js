@@ -1,6 +1,7 @@
 const config = require('./config');
 const logger = require('../logger/log')(config.serviceName, config.logLevel);
-const tracer = require('../tracer/trace')(config.serviceName,config.enableDistributedTracing);
+const tracer = require('../tracer/trace').jaegerTrace(config.serviceName, config.enableDistributedTracing);
+const opentracing = require('opentracing');
 const app = require('express')();
 const bodyParser = require('body-parser');
 const {Issuer} = require('openid-client');
@@ -11,10 +12,6 @@ const matchRules = require('./rules');
 const {targetPathFromHttpPayload} = require('./utils');
 const decode64 = (b64) => Buffer.from(b64, 'base64').toString('utf8');
 
-const zipkinMiddleware = require('zipkin-instrumentation-express').expressMiddleware;
-
-// Add the Zipkin middleware
-app.use(zipkinMiddleware({tracer}));
 app.use(bodyParser.json());
 
 let issuers = {};
@@ -193,10 +190,8 @@ app.post('/authorizeGUI', async (req, res) => {
             var resource;
             try {
                 resource = new url.URL(req.body.resource);
-                logger.log('debug', 'url create from resource',{url: resource});
-            }
-            catch(err)
-            {
+                logger.log('debug', 'url create from resource', {url: resource});
+            } catch (err) {
                 logger.log('error', 'No valid URL as resource in body');
                 res.status(400).json({error: 'No valid URL as resource in body'});
                 return;
@@ -206,9 +201,8 @@ app.post('/authorizeGUI', async (req, res) => {
 
             let defaultPort = 80;
 
-            logger.log('debug', 'protocol created from resource',{protocol: protocol});
-            if (protocol === 'HTTPS')
-            {
+            logger.log('debug', 'protocol created from resource', {protocol: protocol});
+            if (protocol === 'HTTPS') {
                 defaultPort = 443;
             }
 
@@ -218,8 +212,8 @@ app.post('/authorizeGUI', async (req, res) => {
             let port = splitHost[1] || defaultPort;
             let pathname = resource.pathname;
 
-            let payload = ''+protocol+'/'+method+'/'+host+'/'+port+pathname;
-            logger.log('debug', 'Payload create from resource',{payload: payload});
+            let payload = '' + protocol + '/' + method + '/' + host + '/' + port + pathname;
+            logger.log('debug', 'Payload create from resource', {payload: payload});
             //authorizationResult = matchRules(authenticationResult.profile, req.body.rule, source);
             authorizationResult = matchRules(authenticationResult.profile, payload, source);
 
@@ -289,6 +283,14 @@ app.post('/authorize', async (req, res) => {
     logger.log('debug', 'POST request to authorize endpoint', {
         body: req.body
     });
+
+    let parentHeadersCarrier = req.headers;
+    let wireCtx = tracer.extract(opentracing.FORMAT_HTTP_HEADERS, parentHeadersCarrier);
+    let childSpan = tracer.startSpan(config.serviceName.replace('-', '_'), {childOf: wireCtx});
+    childSpan.setTag("http.method", req.method);
+    childSpan.setTag("http.url", req.url);
+
+
     if (req.body && req.body.rule && (typeof req.body.rule === 'string')) {
 
         let openidConnectProviderName;
@@ -401,6 +403,7 @@ app.post('/authorize', async (req, res) => {
                 error: authenticationResult.error
             });
         }
+        childSpan.finish();
         return;
     }
     res.status(400).json({isAuthorized: false, error: "no rule string given"});
