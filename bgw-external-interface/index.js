@@ -76,7 +76,7 @@ config.servers.forEach((srv) => {
         external_interface.on('proxyRes', function (proxyRes, req, res) {
             let headersCarrier = proxyRes.headers;
             let wireCtx = tracer.extract(opentracing.FORMAT_HTTP_HEADERS, headersCarrier);
-            let childSpan = tracer.startSpan(config.serviceName.replace('-', '_'), {childOf: wireCtx});
+            let childSpan = tracer.startSpan('proxyRes', {childOf: wireCtx});
             childSpan.setTag("event", "proxyRes");
             childSpan.setTag("http.method", req.method);
             childSpan.setTag("http.url", req.url);

@@ -10,7 +10,6 @@ let config = {
     bind_port: 5051,
     disconnect_on_unauthorized_publish: false,
     disconnect_on_unauthorized_subscribe: false,
-    authorize_response: false,
     broker: {
         address: "localhost",
         port: 1883,

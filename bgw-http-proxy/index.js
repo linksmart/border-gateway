@@ -50,7 +50,7 @@ app.use(async (req, res) => {
 
     let parentHeadersCarrier = req.headers;
     let wireCtx = tracer.extract(opentracing.FORMAT_HTTP_HEADERS, parentHeadersCarrier);
-    let childSpan = tracer.startSpan(config.serviceName.replace('-', '_'), {childOf: wireCtx});
+    let childSpan = tracer.startSpan('bgw middleware', {childOf: wireCtx});
     childSpan.setTag("function","bgw middleware");
     childSpan.setTag("http.method",req.method);
     childSpan.setTag("http.url",req.url);

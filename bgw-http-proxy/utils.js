@@ -15,7 +15,7 @@ const TYPES = {
 const httpAuth = async (req) => {
     let parentHeadersCarrier = req.headers;
     let wireCtx = tracer.extract(opentracing.FORMAT_HTTP_HEADERS, parentHeadersCarrier);
-    let childSpan = tracer.startSpan(config.serviceName.replace('-','_'), { childOf : wireCtx });
+    let childSpan = tracer.startSpan('httpAuth', { childOf : wireCtx });
     childSpan.setTag("function","httpAuth");
 
     if (config.no_auth || (req.bgw.alias && req.bgw.alias.no_auth)) {
@@ -127,7 +127,6 @@ const httpAuth = async (req) => {
 };
 
 const bgwIfy = async (req) => {
-        //const span = tracer.startSpan("bgwIfy");
         req.bgw = {};
 
         logger.log('debug', 'Host headers in request', {

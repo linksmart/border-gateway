@@ -286,9 +286,10 @@ app.post('/authorize', async (req, res) => {
 
     let parentHeadersCarrier = req.headers;
     let wireCtx = tracer.extract(opentracing.FORMAT_HTTP_HEADERS, parentHeadersCarrier);
-    let childSpan = tracer.startSpan(config.serviceName.replace('-', '_'), {childOf: wireCtx});
+    let childSpan = tracer.startSpan('authorize', {childOf: wireCtx});
     childSpan.setTag("http.method", req.method);
     childSpan.setTag("http.url", req.url);
+    childSpan.setTag("http.body", req.body);
 
 
     if (req.body && req.body.rule && (typeof req.body.rule === 'string')) {

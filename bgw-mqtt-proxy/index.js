@@ -1,8 +1,9 @@
 const config = require('./config');
 const logger = require('../logger/log')(config.serviceName, config.logLevel);
-const tracer = require('../tracer/trace').jaegerTrace(config.serviceName,config.enableDistributedTracing);
+const tracer = require('../tracer/trace').jaegerTrace(config.serviceName, config.enableDistributedTracing);
 const net = require('net');
 const tls = require('tls');
+const assert = require('assert');
 const shortid = require('shortid');
 const mqtt = require('mqtt-packet');
 const validate = require('./validate');
@@ -15,8 +16,6 @@ function waitUntilEmpty(packetSet, callback, counter) {
                 if (callback != null) {
                     callback();
                 }
-
-
             } else {
                 counter++;
                 if ((counter % 1000) === 0) {
@@ -28,12 +27,13 @@ function waitUntilEmpty(packetSet, callback, counter) {
         }, 5); // wait 5 miliseconds
 }
 
-async function wrappedValidate(clientAddress, packet, credentials) {
+async function wrappedValidate(clientAddress, packet, credentials, ctx) {
+    assert(ctx);
     try {
         logger.log('debug', "Validating", {packet: packet.cmd});
-        return await validate.validate(clientAddress, packet, credentials);
+        return await validate.validate(clientAddress, packet, credentials, ctx);
     } catch (err) {
-        logger.log('error', "Error when validating", {error: err});
+        logger.log('error', "Error when validating", {errorName: err.name, errorMessage: err.message});
         return {status: false};
     }
 }
@@ -78,31 +78,36 @@ const server = net.createServer(serverOptions, (srcClient) => {
             try {
                 srcParser.parse(data);
             } catch (err) {
-                logger.log('error', "Parse error in srcParser", {error: err});
+                logger.log('error', "Parse error in srcParser", {errorName: err.name, errorMessage: err.message});
             }
         });
 
+        dstClient.on('data', (data) => {
+            try {
+                dstParser.parse(data)
+            } catch (err) {
+                logger.log('error', "Parse error in dstParser", {errorName: err.name, errorMessage: err.message});
+            }
+        });
 
-        if (config.authorize_response) {
-            dstClient.on('data', (data) => {
-                try {
-                    dstParser.parse(data)
-                } catch (err) {
-                    logger.log('error', "Parse error in dstParser", {error: err});
-                }
-            })
-        } else {
-
-            logger.log('debug', "Pipe dstClient to srcClient", {});
-            dstClient.pipe(srcClient);
-        }
+        logger.log('debug', "Pipe dstClient to srcClient", {});
+        dstClient.pipe(srcClient);
 
         const clientAddress = `${srcClient.remoteAddress}:${srcClient.remotePort}`;
         srcClient.credentials = {};
         srcClient.packetSet = new Set([]);
 
+        dstParser.on('packet', (packet) => {
+            logger.log('debug', "packet event emitted on dstParser", {command: packet.cmd});
+        });
+
         srcParser.on('packet', (packet) => {
-            logger.log('debug', "packet event emitted", {command: packet.cmd});
+            logger.log('debug', "packet event emitted on srcParser", {command: packet.cmd});
+            let rootSpan = tracer.startSpan('srcClient-packet');
+            rootSpan.setTag("packet.cmd", packet.cmd);
+            rootSpan.setTag("packet.clientId", packet.clientId);
+            rootSpan.setTag("packet.topic", packet.topic);
+
             let packetID = shortid.generate();
 
             for (let key in packet) {
@@ -127,7 +132,8 @@ const server = net.createServer(serverOptions, (srcClient) => {
                 broker.password && (packet.password = broker.password);
             }
 
-            wrappedValidate(clientAddress, packet, srcClient.credentials).then(result => {
+            const ctx = rootSpan.context();
+            wrappedValidate(clientAddress, packet, srcClient.credentials, ctx).then(result => {
                 let valid = result;
                 // got final result
                 logger.log('debug', "packet validated", {command: packet.cmd, result: valid});
@@ -156,8 +162,7 @@ const server = net.createServer(serverOptions, (srcClient) => {
                     } else {
                         valid.packet && srcClient.write(valid.packet);
 
-                        if(packet.cmd === 'connect')
-                        {
+                        if (packet.cmd === 'connect') {
                             logger.log('info', "Destroying clients because of unauthorized packet", {command: packet.cmd});
                             srcClient.destroy();
                             dstClient.destroy();
@@ -169,17 +174,21 @@ const server = net.createServer(serverOptions, (srcClient) => {
 
                 }
             }).catch(err => {
-                logger.log('error', "Error when validating", {error: err});
+                logger.log('error', "Error when validating", {errorName: err.name, errorMessage: err.message});
                 if (packet.cmd !== 'disconnect') {
                     srcClient.packetSet.delete(packetID);
                 }
             });
+            rootSpan.finish();
         });
     });
 });
 
 server.on('error', (error) => {
-    logger.log("error", "" + config.serviceName + " server event error", {errorMessage: error.message});
+    logger.log("error", "" + config.serviceName + " server event error", {
+        errorName: err.name,
+        errorMessage: err.message
+    });
 });
 
 config.bind_addresses.forEach((addr) => {
