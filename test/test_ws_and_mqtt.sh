@@ -9,7 +9,7 @@ then
   mqttSecureParams="--cafile $CA"
 else
   wsProtocol="ws"
-  mqttSecureParams="--debug"
+  mqttSecureParams=""
 fi
 
 echo "cat $CA"
