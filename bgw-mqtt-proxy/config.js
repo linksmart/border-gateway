@@ -8,6 +8,7 @@ let config = {
         "127.0.0.1"
     ],
     bind_port: 5051,
+    authorize_response: false,
     disconnect_on_unauthorized_publish: false,
     disconnect_on_unauthorized_subscribe: false,
     broker: {

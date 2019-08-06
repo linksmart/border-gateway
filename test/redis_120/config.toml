@@ -3,6 +3,7 @@ tls_key = "/bgw/certs/bgw-ssl_sec_key_wo_pass.pem"
 tls_cert = "/bgw/certs/bgw-ssl.pem"
 
 [mqtt-proxy]
+authorize_response = true
 
   [mqtt-proxy.broker]
   address = "mosquitto"

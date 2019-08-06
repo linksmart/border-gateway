@@ -1,4 +1,6 @@
 [mqtt-proxy]
+authorize_response = true
+
 bind_addresses = [
   "0.0.0.0"
 ]

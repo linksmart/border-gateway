@@ -49,6 +49,7 @@ tls_cert = "/bgw/certs/<your_cert>.pem"
 
 # Configuration items for the mqtt-proxy microservice
 [mqtt-proxy]
+authorize_response = true
 
   # MQTT broker address
   [mqtt-proxy.broker]
