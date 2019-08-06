@@ -130,8 +130,8 @@ echo "$command"
 eval "$command$"
 exitCode=$?
 
-# formerly exit code 5 was returned!
-if [ "$exitCode" -ne 5 ]; then
+# formerly exit code 5 was returned! (see https://github.com/eclipse/mosquitto/issues/1285)
+if [ "$exitCode" -ne 5 ] && [ "$exitCode" -ne 0 ]; then
   echo "exit code = $exitCode"
   exit 1
 fi
