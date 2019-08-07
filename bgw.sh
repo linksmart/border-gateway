@@ -12,7 +12,7 @@ run_inspect_service() {
 # export NODE_DEBUG=net,http,tls
 
 help() {
-    cat <<End-of-message
+  cat <<End-of-message
     Usage: $0 COMMAND [ARGS]
 
     Commands:
@@ -23,38 +23,37 @@ End-of-message
 }
 
 parts() {
-     debugPort=9227
-     for var in "$@"
-     do
-        #run_service "$var" &
-        run_inspect_service "$var" $debugPort &
-        echo "Started service $var with debug port $debugPort"
-        debugPort=$((debugPort + 1))
-     done
+  debugPort=9227
+  for var in "$@"; do
+    #run_service "$var" &
+    run_inspect_service "$var" $debugPort &
+    echo "Started service $var with debug port $debugPort"
+    debugPort=$((debugPort + 1))
+  done
 }
 
 start() {
-    run_inspect_service bgw-auth-service 9232 &
-    run_inspect_service bgw-configuration-service 9230 &
-    run_inspect_service bgw-http-proxy 9227 &
-    run_inspect_service bgw-mqtt-proxy 9228 &
-    run_inspect_service bgw-websocket-proxy 9231 &
-    run_inspect_service bgw-external-interface 9233 &
+  run_inspect_service bgw-auth-service 9232 &
+  run_inspect_service bgw-configuration-service 9230 &
+  run_inspect_service bgw-http-proxy 9227 &
+  run_inspect_service bgw-mqtt-proxy 9228 &
+  run_inspect_service bgw-websocket-proxy 9231 &
+  run_inspect_service bgw-external-interface 9233 &
 }
 
 main() {
-    echo "Starting LinkSmart Border Gateway..."
+  echo "Starting LinkSmart Border Gateway..."
 
-    if [ "$1" = "parts" ]; then
-         shift
-         parts "$@"
-    elif [ "$1" = "start" ]; then
-        start
-    else
-        help
-        exit 1
-    fi
-    wait
+  if [ "$1" = "parts" ]; then
+    shift
+    parts "$@"
+  elif [ "$1" = "start" ]; then
+    start
+  else
+    help
+    exit 1
+  fi
+  wait
 }
 
 main "$@"

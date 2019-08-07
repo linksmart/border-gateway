@@ -4,7 +4,7 @@
 # Docker
 # all tests: ./build_and_run_tests.sh no_ssl nginx nginx_no_x_forward nginx_444 ei redis_1 redis_120
 
-scriptDir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+scriptDir="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
 cd "$scriptDir/registry"
 docker-compose up -d
 
@@ -40,65 +40,63 @@ docker-compose down
 
 docker stack rm test
 until [ -z "$(docker network ls --filter name=test_public -q)" ] && [ -z "$(docker network ls --filter name=test_bgw -q)" ]; do
-    echo "Waiting for network test_public and test_bgw to be removed"
-    sleep 3;
+  echo "Waiting for network test_public and test_bgw to be removed"
+  sleep 3
 done
 
 declare -A runtimes
 
 until [ -n "$(docker service logs openid_keycloak 2>&1 | grep 'Admin console listening')" ]; do
   echo "Waiting for Keycloak to be ready"
-  sleep 3;
+  sleep 3
 done
 
 echo "Keycloak status ok:"
 docker service logs openid_keycloak 2>&1 | grep 'Admin console listening'
 
-for test in "$@"
-do
-    start=$(date +%s)
+for test in "$@"; do
+  start=$(date +%s)
 
-    cd "$scriptDir/$test"
-    echo "current directory is $(pwd)"
+  cd "$scriptDir/$test"
+  echo "current directory is $(pwd)"
 
-    docker stack deploy --compose-file ./docker-compose.yml test
+  docker stack deploy --compose-file ./docker-compose.yml test
 
-    URL=$(jq -r '.[0].url' "data.json")
-    echo "URL = $URL"
+  URL=$(jq -r '.[0].url' "data.json")
+  echo "URL = $URL"
 
-    until [ $(docker run --network=test_public --rm byrnedo/alpine-curl --insecure -s -o /dev/null -w "%{http_code}" "$URL"/status) == "200" ]; do
-        echo "Waiting for $URL/status to be ready"
-        sleep 3;
-    done
+  until [ $(docker run --network=test_public --rm byrnedo/alpine-curl --insecure -s -o /dev/null -w "%{http_code}" "$URL"/status) == "200" ]; do
+    echo "Waiting for $URL/status to be ready"
+    sleep 3
+  done
 
-    cd "$scriptDir/tester"
-    export TESTDIR="$test"
-    docker-compose up --exit-code-from tester tester
+  cd "$scriptDir/tester"
+  export TESTDIR="$test"
+  docker-compose up --exit-code-from tester tester
 
-    if [ "$?" -ne 0 ]; then
+  if [ "$?" -ne 0 ]; then
 
-        exit 1
-    fi
+    exit 1
+  fi
 
-    end=$(date +%s)
+  end=$(date +%s)
 
-    cd "$scriptDir/tester"
-    docker-compose down
+  cd "$scriptDir/tester"
+  docker-compose down
 
-    cd "$scriptDir/$test"
-    docker stack rm test
+  cd "$scriptDir/$test"
+  docker stack rm test
 
-    until [ -z "$(docker network ls --filter name=test_public -q)" ] && [ -z "$(docker network ls --filter name=test_bgw -q)" ]; do
-      echo "Waiting for network test_public and test_bgw to be removed"
-      sleep 3;
-    done
+  until [ -z "$(docker network ls --filter name=test_public -q)" ] && [ -z "$(docker network ls --filter name=test_bgw -q)" ]; do
+    echo "Waiting for network test_public and test_bgw to be removed"
+    sleep 3
+  done
 
-    runtimes[$test]=$((end-start))
+  runtimes[$test]=$((end - start))
 done
 
-for test in "$@"
-do
-    echo "Runtime for $test: ${runtimes[$test]}"
+for test in "$@"; do
+  echo "Runtime for $test: ${runtimes[$test]}"
 done
 
 cd "$scriptDir/registry"
@@ -113,13 +111,13 @@ cd "$scriptDir/openid"
 docker stack rm openid
 
 until [ -z "$(docker network ls --filter name=backend_services -q)" ]; do
-    echo "waiting for network backend_services to be removed"
-    sleep 3;
+  echo "waiting for network backend_services to be removed"
+  sleep 3
 done
 
 until [ -z "$(docker network ls --filter name=openid_web -q)" ] && [ -z "$(docker network ls --filter name=openid_backend -q)" ]; do
-    echo "Waiting for networks openid_web and openid_backend to be removed"
-    sleep 3;
+  echo "Waiting for networks openid_web and openid_backend to be removed"
+  sleep 3
 done
 
 docker volume rm pgdata

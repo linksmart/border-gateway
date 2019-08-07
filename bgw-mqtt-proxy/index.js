@@ -96,7 +96,7 @@ const server = net.createServer(serverOptions, (srcClient) => {
             });
 
             dstParser.on('packet', (packet) => {
-                logger.log('debug', "packet event emitted on dstParser", {packetCommand: packet.cmd});
+                logger.log('debug', "packet event emitted on dstParser", {packet: packet});
                 let rootSpan = tracer.startSpan('dstClient-packet');
                 rootSpan.setTag("packet.cmd", packet.cmd);
                 rootSpan.setTag("packet.clientId", packet.clientId);
@@ -141,7 +141,7 @@ const server = net.createServer(serverOptions, (srcClient) => {
         }
 
         srcParser.on('packet', (packet) => {
-            logger.log('debug', "packet event emitted on srcParser", {packetCommand: packet.cmd});
+            logger.log('debug', "packet event emitted on srcParser", {packet: packet});
             let rootSpan = tracer.startSpan('srcClient-packet');
             rootSpan.setTag("packet.cmd", packet.cmd);
             rootSpan.setTag("packet.clientId", packet.clientId);

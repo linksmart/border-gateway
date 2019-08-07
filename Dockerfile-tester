@@ -1,6 +1,6 @@
 FROM debian:jessie-slim
 
-RUN apt-get update && apt-get install -y curl jq
+RUN apt-get update && apt-get install -y curl jq expect
 
 RUN apt-get install -y apt-transport-https ca-certificates gnupg2 software-properties-common
 

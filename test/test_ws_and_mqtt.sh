@@ -1,10 +1,40 @@
 #!/bin/bash
 
+function checkSubCount() {
+
+  for var in 1 2 3 4 5; do
+    subCount=$(cat ./mosquitto_sub.log | wc -l)
+
+    if [ "$subCount" -ne "$1" ]; then
+      echo "subCount is wrong: $subCount instead of $1... waiting $var seconds"
+      echo "cat mosquitto_sub.log:"
+      cat ./mosquitto_sub.log
+      sleep $var
+    else
+      echo "subCount is correct: $subCount... breaking"
+      echo "cat mosquitto_sub.log:"
+      cat ./mosquitto_sub.log
+      break
+    fi
+  done
+
+  if [ "$subCount" -ne "$1" ]; then
+    echo "subCount is wrong: $subCount instead of $1... exiting"
+    echo "cat mosquitto_sub.log:"
+    cat ./mosquitto_sub.log
+    subPid=$(ps -ef | grep mosquitto_sub | grep -v grep | awk '{print $2}')
+    echo "killing process" $subPid
+    kill $subPid
+    wait $subPid 2>/dev/null
+    rm ./mosquitto_sub.log
+    exit 1
+  fi
+}
+
 CA=$1
 
 host=$2
-if $3
-then
+if $3; then
   wsProtocol="wss"
   mqttSecureParams="--cafile $CA"
 else
@@ -24,7 +54,7 @@ audience=$9
 client_id="${10}"
 client_secret="${11}"
 
-scriptDir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+scriptDir="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
 echo "scriptDir = $scriptDir"
 cd $scriptDir
 
@@ -119,9 +149,13 @@ if [ $? -ne 0 ]; then
 fi
 
 echo "mosquitto_sub user/pass ($user/$pass) qos 2 in background"
-command="mosquitto_sub $mqttSecureParams -h $host -p $mqttPort -t LS/test -u \"$user\" -P \"$pass\" -q 2"
+command="unbuffer mosquitto_sub --debug --keepalive 3600 $mqttSecureParams -h $host -p $mqttPort -t LS/test -u $user -P $pass -q 2 &>./mosquitto_sub.log"
 echo "$command"
-mosquitto_sub $mqttSecureParams -h $host -p $mqttPort -t LS/test -u "$user" -P "$pass" -q 2 > ./mosquitto_sub.log &
+>./mosquitto_sub.log
+echo "mqttClientId = $mqttClientId"
+unbuffer mosquitto_sub --debug --keepalive 3600 $mqttSecureParams -h $host -p $mqttPort -t LS/test -u "$user" -P "$pass" -q 2 &>./mosquitto_sub.log &
+
+checkSubCount 5
 
 message="mosquitto_pub anonymous qos 0, expected exit code: 5"
 echo "$message"
@@ -136,6 +170,8 @@ if [ "$exitCode" -ne 5 ] && [ "$exitCode" -ne 0 ]; then
   exit 1
 fi
 
+checkSubCount 5
+
 message="mosquitto_pub user/pass ($user/$pass) qos 2, expected exit code: 0"
 echo "$message"
 command="mosquitto_pub $mqttSecureParams --debug -h $host -p $mqttPort -t LS/test -m \"$message\" -u \"$user\" -P \"$pass\" -q 2"
@@ -147,15 +183,18 @@ if [ $? -ne 0 ]; then
   exit 1
 fi
 
+checkSubCount 10
+
 message="mosquitto_pub user/pass ($user/$pass) qos 0 many times"
 echo "$message"
 
-for var in 1 2 3 4 5 6 7 8 9 10
-do
+for var in 1 2 3 4 5 6 7 8 9 10; do
   command="mosquitto_pub $mqttSecureParams --debug -h $host -p $mqttPort -d -t LS/test -m \"$message $var\" -u \"$user\" -P \"$pass\" -q 0"
   echo "$command"
   eval "$command$"
 done
+
+checkSubCount 30
 
 access_token=$(curl --cacert $CA --silent -d "client_id=$client_id" -d "client_secret=$client_secret" -d "username=$user" -d "password=$pass" -d "grant_type=password" -d "audience=$audience" -L "$tokenEndpoint" | jq -r ".access_token")
 echo "access token: $access_token"
@@ -171,33 +210,20 @@ if [ $? -ne 0 ]; then
   exit 1
 fi
 
+checkSubCount 35
+
 message="mosquitto_pub access token (for $user/$pass) qos 0 many times"
 echo "$message"
 
-for var in 1 2 3 4 5 6 7 8 9 10
-do
+for var in 1 2 3 4 5 6 7 8 9 10; do
   command="mosquitto_pub $mqttSecureParams --debug -h $host -p $mqttPort -t LS/test -m \"$message $var\" -u $access_token -q 0"
   echo "$command"
   eval "$command$"
 done
 
-sleep 1
-
-subPid=$(ps -ef | grep mosquitto_sub | grep -v grep | awk '{print $2}')
-echo "killing process" $subPid
-kill $subPid
-wait $subPid 2>/dev/null
-
-subCount=$(cat ./mosquitto_sub.log | wc -l)
-
-if [ $subCount -ne 22 ]; then
-  echo "subCount is wrong: $subCount instead of 22..."
-   echo "cat mosquitto_sub.log:"
-  cat ./mosquitto_sub.log
-  exit 1
-fi
+checkSubCount 55
 
 printf "\n"
 echo "Test run successful!"
+rm ./mosquitto_sub.log
 exit 0
-
