@@ -152,7 +152,6 @@ echo "mosquitto_sub user/pass ($user/$pass) qos 2 in background"
 command="unbuffer mosquitto_sub --debug --keepalive 3600 $mqttSecureParams -h $host -p $mqttPort -t LS/test -u $user -P $pass -q 2 &>./mosquitto_sub.log"
 echo "$command"
 >./mosquitto_sub.log
-echo "mqttClientId = $mqttClientId"
 unbuffer mosquitto_sub --debug --keepalive 3600 $mqttSecureParams -h $host -p $mqttPort -t LS/test -u "$user" -P "$pass" -q 2 &>./mosquitto_sub.log &
 
 checkSubCount 5
