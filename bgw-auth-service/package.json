@@ -13,6 +13,7 @@
     }
   },
   "dependencies": {
+    "axios": "latest",
     "body-parser": "latest",
     "express": "latest",
     "mqtt-match": "latest",
@@ -21,6 +22,7 @@
     "rsa-pem-from-mod-exp": "latest",
     "redis": "latest",
     "async-redis": "latest",
+    "shortid": "latest",
     "toml": "latest",
     "openid-client": "latest",
     "opentracing": "latest",

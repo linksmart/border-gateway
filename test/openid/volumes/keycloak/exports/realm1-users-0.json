@@ -1,6 +1,36 @@
 {
   "realm" : "realm1",
   "users" : [ {
+    "id" : "c8e03de4-0117-4895-a52a-a4582d6cf2a4",
+    "createdTimestamp" : 1565687763814,
+    "username" : "ei",
+    "enabled" : true,
+    "totp" : false,
+    "emailVerified" : true,
+    "attributes" : {
+      "bgw_rules" : [ "HTTPS/GET/# HTTPS/PUT/# HTTPS/DELETE/# MQTT/# WS/CONNECT/+/+/# WS/CONNECT/+/+" ]
+    },
+    "credentials" : [ {
+      "type" : "password",
+      "hashedSaltedValue" : "49+Q8IFuMNOhQdKGt7+lL/EM8cuu2pS8XGmLQMO33YCXwOI6h/gsdSsD0zZynzzJZ9GqAwac3agRJZC8Gv+mrQ==",
+      "salt" : "wyL+bx1CpPGFN/H58RRSGw==",
+      "hashIterations" : 27500,
+      "counter" : 0,
+      "algorithm" : "pbkdf2-sha256",
+      "digits" : 0,
+      "period" : 0,
+      "createdDate" : 1565687769977,
+      "config" : { }
+    } ],
+    "disableableCredentialTypes" : [ "password" ],
+    "requiredActions" : [ ],
+    "realmRoles" : [ "offline_access", "uma_authorization" ],
+    "clientRoles" : {
+      "account" : [ "view-profile", "manage-account" ]
+    },
+    "notBefore" : 0,
+    "groups" : [ ]
+  }, {
     "id" : "7831259c-9f84-46b7-9ef8-c9bb27c2759c",
     "createdTimestamp" : 1560577385775,
     "username" : "linksmart",
@@ -30,5 +60,125 @@
     },
     "notBefore" : 0,
     "groups" : [ "/write_access" ]
+  }, {
+    "id" : "be37e155-81a6-40ee-a24b-5877bcf95c95",
+    "createdTimestamp" : 1565687681351,
+    "username" : "nginx",
+    "enabled" : true,
+    "totp" : false,
+    "emailVerified" : true,
+    "attributes" : {
+      "bgw_rules" : [ "HTTPS/GET/# HTTPS/PUT/# HTTPS/DELETE/# MQTT/# WS/CONNECT/+/+/# WS/CONNECT/+/+" ]
+    },
+    "credentials" : [ {
+      "type" : "password",
+      "hashedSaltedValue" : "a6QUwFD4xqtK/OW3g3qcNLFxAUuSj3ZsoeTLJTbS7q/j2VkNQaeCjRCFKJAdQhK8o9ddJWeC6lNMOVycGLEq4Q==",
+      "salt" : "W02Wu0K7dQ5Q8H8MsenLuQ==",
+      "hashIterations" : 27500,
+      "counter" : 0,
+      "algorithm" : "pbkdf2-sha256",
+      "digits" : 0,
+      "period" : 0,
+      "createdDate" : 1565687689007,
+      "config" : { }
+    } ],
+    "disableableCredentialTypes" : [ "password" ],
+    "requiredActions" : [ ],
+    "realmRoles" : [ "offline_access", "uma_authorization" ],
+    "clientRoles" : {
+      "account" : [ "view-profile", "manage-account" ]
+    },
+    "notBefore" : 0,
+    "groups" : [ ]
+  }, {
+    "id" : "2ad58e02-03fe-42bf-b40e-608b1f9517f7",
+    "createdTimestamp" : 1565687746192,
+    "username" : "nginx_444",
+    "enabled" : true,
+    "totp" : false,
+    "emailVerified" : true,
+    "attributes" : {
+      "bgw_rules" : [ "HTTPS/GET/# HTTPS/PUT/# HTTPS/DELETE/# MQTT/# WS/CONNECT/+/+/# WS/CONNECT/+/+" ]
+    },
+    "credentials" : [ {
+      "type" : "password",
+      "hashedSaltedValue" : "Q9DPtydlioCJRSAmxb4TRs+E+Qp9lv4RVput2rxLneN+a+xgN8G97CgUHXooKLwRK2lxnMCxnuVJtHiO5h+QnQ==",
+      "salt" : "LIHH2x4qV+AHYqzAf4sUzw==",
+      "hashIterations" : 27500,
+      "counter" : 0,
+      "algorithm" : "pbkdf2-sha256",
+      "digits" : 0,
+      "period" : 0,
+      "createdDate" : 1565687750469,
+      "config" : { }
+    } ],
+    "disableableCredentialTypes" : [ "password" ],
+    "requiredActions" : [ ],
+    "realmRoles" : [ "offline_access", "uma_authorization" ],
+    "clientRoles" : {
+      "account" : [ "view-profile", "manage-account" ]
+    },
+    "notBefore" : 0,
+    "groups" : [ ]
+  }, {
+    "id" : "30d17a3a-6138-4ed7-ae28-d7189f6ab254",
+    "createdTimestamp" : 1565687722728,
+    "username" : "nginx_no_x_forward",
+    "enabled" : true,
+    "totp" : false,
+    "emailVerified" : true,
+    "attributes" : {
+      "bgw_rules" : [ "HTTP/GET/# HTTP/PUT/# HTTP/DELETE/# MQTT/# WS/CONNECT/+/+/# WS/CONNECT/+/+" ]
+    },
+    "credentials" : [ {
+      "type" : "password",
+      "hashedSaltedValue" : "298h4or2XRxhrXpUi609cmqaWOFhNOujrIPxmvomYmAB4kEXFOS1UdTuTVS36+fRxlYkyOix1kJHeDszXeuz/A==",
+      "salt" : "W1Q6yAM/qo06xSYK/HNPvw==",
+      "hashIterations" : 27500,
+      "counter" : 0,
+      "algorithm" : "pbkdf2-sha256",
+      "digits" : 0,
+      "period" : 0,
+      "createdDate" : 1565687727606,
+      "config" : { }
+    } ],
+    "disableableCredentialTypes" : [ "password" ],
+    "requiredActions" : [ ],
+    "realmRoles" : [ "offline_access", "uma_authorization" ],
+    "clientRoles" : {
+      "account" : [ "view-profile", "manage-account" ]
+    },
+    "notBefore" : 0,
+    "groups" : [ ]
+  }, {
+    "id" : "7b990d62-8943-46ff-a02c-44dbc521e810",
+    "createdTimestamp" : 1565687543944,
+    "username" : "no_ssl",
+    "enabled" : true,
+    "totp" : false,
+    "emailVerified" : true,
+    "attributes" : {
+      "bgw_rules" : [ "HTTP/GET/bgw/5050/sc MQTT/# WS/CONNECT/+/+/# WS/CONNECT/+/+ HTTP/PUT/bgw/5050/sc/jannis-linksmart-agent HTTP/DELETE/bgw/5050/sc/jannis-linksmart-agent" ]
+    },
+    "credentials" : [ {
+      "type" : "password",
+      "hashedSaltedValue" : "nJVCAfN4ACbsvu3Hy9CrxeSRk605rmaECfeHB+YhIXCY4FGFVXwN9PT53I0YqHw0yOS+mstGY9JTCy36elXeNQ==",
+      "salt" : "oD4KQzP+jRunG1lQ3QpbZA==",
+      "hashIterations" : 27500,
+      "counter" : 0,
+      "algorithm" : "pbkdf2-sha256",
+      "digits" : 0,
+      "period" : 0,
+      "createdDate" : 1565687556158,
+      "config" : { }
+    } ],
+    "disableableCredentialTypes" : [ "password" ],
+    "requiredActions" : [ ],
+    "realmRoles" : [ "offline_access", "uma_authorization" ],
+    "clientRoles" : {
+      "account" : [ "view-profile", "manage-account" ]
+    },
+    "notBefore" : 0,
+    "groups" : [ ]
   } ]
 }

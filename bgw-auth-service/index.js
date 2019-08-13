@@ -4,7 +4,6 @@ const tracer = require('../tracer/trace').jaegerTrace(config.serviceName, config
 const opentracing = require('opentracing');
 const app = require('express')();
 const bodyParser = require('body-parser');
-const {Issuer} = require('openid-client');
 const nonce = require('nonce')();
 const url = require('url');
 const validate = require("./validate");
@@ -14,31 +13,12 @@ const decode64 = (b64) => Buffer.from(b64, 'base64').toString('utf8');
 
 app.use(bodyParser.json());
 
-let issuers = {};
-let clients = {};
-
-const configuredProviders = Object.keys(config.openid_connect_providers);
-for (const key of configuredProviders) {
-    issuers[key] = new Issuer({
-        issuer: config.openid_connect_providers[key].issuer,
-        authorization_endpoint: config.openid_connect_providers[key].authorization_endpoint,
-        token_endpoint: config.openid_connect_providers[key].token_endpoint,
-        jwks_uri: config.openid_connect_providers[key].jwks_uri
-    }); // => Issuer
-    console.log('Set up issuer %s %O', issuers[key].issuer, issuers[key].metadata);
-
-    clients[key] = new issuers[key].Client({
-        client_id: config.openid_connect_providers[key].client_id,
-        client_secret: config.openid_connect_providers[key].client_secret
-    });
-}
-
 function getAuthUrl(openidConnectProviderName, targetPath) {
 
     let openid_connect_provider = config.openid_connect_providers[openidConnectProviderName];
 
 
-    authUrl = clients[openidConnectProviderName].authorizationUrl({
+    authUrl = openid_connect_provider.client.authorizationUrl({
         redirect_uri: openid_connect_provider.redirect_uri,
         audience: openid_connect_provider.audience,
         scope: "openid profile",

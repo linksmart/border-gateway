@@ -37,35 +37,27 @@ authorize_response = true
 
 [websocket-proxy]
   ws_upstream_base_url = "ws://websocket-test:8010/"
-  issuer = "https://openid-ssl/auth/realms/realm1"
+  openidCA = "/bgw/certs/CA.pem"
+  openid_configuration="https://openid-ssl/auth/realms/realm1/.well-known/openid-configuration"
   audience = ["bgw_client","gui"]
   client_id = "bgw_client"
-  realm_public_key_modulus = "wFjJA3wxFfCydn1SXzY5RjapY_fd5oulmwCNDvTSF3RxpUX8itzKm8ksarnFJZtZT3XwNMEkqNiO26HH_OgHWq3Ri6_WrufGyRT_rYgcNxOrL2ZxCTkh0fq4R8VL7CJxaBe1bydwYG5uEMqKkzCCfMM0b0ZbcwzQ5ngdjugO7xYT3IZhBe6xQgTf4FX7QB562J4IRr9D3nX445ah452TcHV05sOIjo6O6z5pgcx68qIO1Nv3pHCP0zztL5vxegw9BiL6bTIsgpfyImM9DhumuIeqev9y8Za5WmUdGc8bSpl6yOGMZYHcaQqNsiaLFWvcjm5CrplWUIIZ9xqjI08rIQ"
-  realm_public_key_exponent = "AQAB"
+  client_secret = "d6e735a2-7554-499a-b9af-a0838ec23a1f"
 
 [auth-service]
   openidCA = "/bgw/certs/CA.pem"
   [auth-service.openid_connect_providers]
 
     [auth-service.openid_connect_providers.default]
-    anonymous_bgw_rules = "HTTPS/GET/bgw-ssl/+/sc/# HTTPS/GET/bgw-ssl/+/scc/# HTTPS/GET/bgw-ssl/+/sccc/# HTTPS/GET/bgw-ssl/+/configuration/locations/#"
-    issuer = "https://openid-ssl/auth/realms/realm1"
-    authorization_endpoint = "https://openid-ssl/auth/realms/realm1/protocol/openid-connect/auth"
-    token_endpoint = "https://openid-ssl/auth/realms/realm1/protocol/openid-connect/token"
+    openid_configuration="https://openid-ssl/auth/realms/realm1/.well-known/openid-configuration"
     audience = ["bgw_client","gui"]
     client_id = "bgw_client"
-    jwks_uri = "https://openid-ssl/auth/realms/realm1/protocol/openid-connect/certs"
-    realm_public_key_modulus = "wFjJA3wxFfCydn1SXzY5RjapY_fd5oulmwCNDvTSF3RxpUX8itzKm8ksarnFJZtZT3XwNMEkqNiO26HH_OgHWq3Ri6_WrufGyRT_rYgcNxOrL2ZxCTkh0fq4R8VL7CJxaBe1bydwYG5uEMqKkzCCfMM0b0ZbcwzQ5ngdjugO7xYT3IZhBe6xQgTf4FX7QB562J4IRr9D3nX445ah452TcHV05sOIjo6O6z5pgcx68qIO1Nv3pHCP0zztL5vxegw9BiL6bTIsgpfyImM9DhumuIeqev9y8Za5WmUdGc8bSpl6yOGMZYHcaQqNsiaLFWvcjm5CrplWUIIZ9xqjI08rIQ"
-    realm_public_key_exponent = "AQAB"
+    client_secret = "d6e735a2-7554-499a-b9af-a0838ec23a1f"
     redirect_uri = "https://bgw-ssl:443/callback"
+    anonymous_bgw_rules = "HTTPS/GET/bgw-ssl/+/sc/# HTTPS/GET/bgw-ssl/+/scc/# HTTPS/GET/bgw-ssl/+/sccc/# HTTPS/GET/bgw-ssl/+/configuration/locations/#"
 
     [auth-service.openid_connect_providers.linksmart]
-    anonymous_bgw_rules = "HTTPS/GET/#"
-    issuer = "https://openid-ssl/auth/realms/realm2"
-    authorization_endpoint = "https://openid-ssl/auth/realms/realm2/protocol/openid-connect/auth"
-    token_endpoint = "https://openid-ssl/auth/realms/realm2/protocol/openid-connect/token"
+    openid_configuration="https://openid-ssl/auth/realms/realm2/.well-known/openid-configuration"
     audience = ["bgw_client","gui"]
     client_id = "bgw_client"
-    jwks_uri = "https://openid-ssl/auth/realms/realm2/protocol/openid-connect/certs"
-    realm_public_key_modulus = "-GUSMQBIkFZ6NnRwIVsRYZJri22mpAwrd2JtXosreyvhMc-o2h6W499NgFxifXZPjr6TA5WsAY7G3B5nxhl6kuegm2T4JksZtAq4Qkdlqp9QcVFM1LR5chJ2mAjXwOkUpAOBddSpngXDO1QbivNGrQxhPcy5fvGs0Ql6CYblujZ8VJ3KeOLeSWFBOAiRhvnyEbGYS0pN-2UJ6fJuYIzjbkz9RkN39ez4PPlfeq65kIxMctoMvoNp2rI3XqlJjdQsX4GxBoa8J2nJckcS1awXZhLzkt3LEfcWgVwhW8HJmpSJp4tQBZBGE2yMJT_V_AFICU-DFRcxRSpBx9O-n6DZbw"
-    realm_public_key_exponent = "AQAB"
+    client_secret = "33623f55-711f-4f6e-9ba8-2292c9888c29"
+    anonymous_bgw_rules = "HTTPS/GET/#"

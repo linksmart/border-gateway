@@ -18,7 +18,7 @@ let config = {
     use_basic_auth: false,
     auth_service: "http://localhost:5053",
     configurationService: undefined,
-    redis_host: undefined,
+    redis_host: 'redis',
     redis_port: 6379,
     openidConnectProviderName: undefined,
     enableDistributedTracing: false

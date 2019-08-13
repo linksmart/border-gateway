@@ -6,275 +6,7 @@
 	},
 	"item": [
 		{
-			"name": "Retrieve access_token for admin-cli",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"id": "3acee57d-9db4-45ef-afd7-377b61edd85e",
-						"exec": [
-							"",
-							"pm.test(\"Status code is 200\", function () {",
-							"    pm.response.to.have.status(200);",
-							"});",
-							"let json = pm.response.json();",
-							"pm.environment.set('admin_access_token', json.access_token);",
-							""
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Content-Type",
-						"name": "Content-Type",
-						"value": "application/x-www-form-urlencoded",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "urlencoded",
-					"urlencoded": [
-						{
-							"key": "grant_type",
-							"value": "password",
-							"type": "text"
-						},
-						{
-							"key": "client_id",
-							"value": "admin-cli",
-							"type": "text"
-						},
-						{
-							"key": "username",
-							"value": "{{admin_username}}",
-							"type": "text"
-						},
-						{
-							"key": "password",
-							"value": "{{admin_password}}",
-							"type": "text"
-						}
-					]
-				},
-				"url": {
-					"raw": "{{admin_token_endpoint}}",
-					"host": [
-						"{{admin_token_endpoint}}"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Get linksmart user id realm1",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"id": "4980605f-0403-42ab-baad-eee4e191e83f",
-						"exec": [
-							"pm.test(\"Status code is 200\", function () {",
-							"    pm.response.to.have.status(200);",
-							"});",
-							"let json = pm.response.json();",
-							"pm.environment.set('linksmart_user_id_realm1', json[0].id);"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"auth": {
-					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "{{admin_access_token}}",
-							"type": "string"
-						}
-					]
-				},
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "{{realm1_address}}/users?username=linksmart",
-					"host": [
-						"{{realm1_address}}"
-					],
-					"path": [
-						"users"
-					],
-					"query": [
-						{
-							"key": "username",
-							"value": "linksmart"
-						}
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Get linksmart user id realm2",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"id": "4980605f-0403-42ab-baad-eee4e191e83f",
-						"exec": [
-							"pm.test(\"Status code is 200\", function () {",
-							"    pm.response.to.have.status(200);",
-							"});",
-							"let json = pm.response.json();",
-							"pm.environment.set('linksmart_user_id_realm2', json[0].id);"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"auth": {
-					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "{{admin_access_token}}",
-							"type": "string"
-						}
-					]
-				},
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "{{realm2_address}}/users?username=linksmart",
-					"host": [
-						"{{realm2_address}}"
-					],
-					"path": [
-						"users"
-					],
-					"query": [
-						{
-							"key": "username",
-							"value": "linksmart"
-						}
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Set linksmart user attributes realm1",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"id": "4980605f-0403-42ab-baad-eee4e191e83f",
-						"exec": [
-							"pm.test(\"Status code is 204\", function () {",
-							"    pm.response.to.have.status(204);",
-							"});"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"auth": {
-					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "{{admin_access_token}}",
-							"type": "string"
-						}
-					]
-				},
-				"method": "PUT",
-				"header": [
-					{
-						"key": "Content-Type",
-						"name": "Content-Type",
-						"type": "text",
-						"value": "application/json"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"attributes\": {\n        \"bgw_rules\": [\n            \"{{linksmart_user_attributes_realm1}}\"\n        ]\n    }\n}"
-				},
-				"url": {
-					"raw": "{{realm1_address}}/users/{{linksmart_user_id_realm1}}",
-					"host": [
-						"{{realm1_address}}"
-					],
-					"path": [
-						"users",
-						"{{linksmart_user_id_realm1}}"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Set linksmart user attributes realm2",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"id": "4980605f-0403-42ab-baad-eee4e191e83f",
-						"exec": [
-							"pm.test(\"Status code is 204\", function () {",
-							"    pm.response.to.have.status(204);",
-							"});"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"auth": {
-					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "{{admin_access_token}}",
-							"type": "string"
-						}
-					]
-				},
-				"method": "PUT",
-				"header": [
-					{
-						"key": "Content-Type",
-						"name": "Content-Type",
-						"type": "text",
-						"value": "application/json"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"attributes\": {\n        \"bgw_rules\": [\n            \"{{linksmart_user_attributes_realm2}}\"\n        ]\n    }\n}"
-				},
-				"url": {
-					"raw": "{{realm2_address}}/users/{{linksmart_user_id_realm2}}",
-					"host": [
-						"{{realm2_address}}"
-					],
-					"path": [
-						"users",
-						"{{linksmart_user_id_realm2}}"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "auth-service password / linksmart / bgw-dev",
+			"name": "auth-service password / linksmart / realm2",
 			"event": [
 				{
 					"listen": "test",
@@ -340,7 +72,7 @@
 			"response": []
 		},
 		{
-			"name": "auth-service password / linksmart / bgw-dev no body",
+			"name": "auth-service password / linksmart / realm2 no body",
 			"event": [
 				{
 					"listen": "test",
@@ -409,7 +141,7 @@
 			"response": []
 		},
 		{
-			"name": "auth-service password / anonymous / bgw-dev",
+			"name": "auth-service password / anonymous / realm2",
 			"event": [
 				{
 					"listen": "test",
@@ -465,7 +197,7 @@
 			"response": []
 		},
 		{
-			"name": "Retrieve access_token for linksmart / bgw-dev",
+			"name": "Retrieve access_token for linksmart / realm2",
 			"event": [
 				{
 					"listen": "test",
@@ -527,7 +259,7 @@
 						},
 						{
 							"key": "client_secret",
-							"value": "{{client_secret}}",
+							"value": "{{realm2_client_secret}}",
 							"type": "text"
 						},
 						{
@@ -547,7 +279,7 @@
 			"response": []
 		},
 		{
-			"name": "auth-service access_token / linksmart / bgw-dev",
+			"name": "auth-service access_token / linksmart / realm2",
 			"event": [
 				{
 					"listen": "test",
@@ -608,7 +340,7 @@
 			"response": []
 		},
 		{
-			"name": "auth-service wrong access_token / linksmart / bgw-dev",
+			"name": "auth-service wrong access_token / linksmart / realm2",
 			"event": [
 				{
 					"listen": "test",
@@ -1917,7 +1649,7 @@
 			"response": []
 		},
 		{
-			"name": "Retrieve access_token for linksmart / bgw-jannis-local",
+			"name": "Retrieve access_token for linksmart / realm1",
 			"event": [
 				{
 					"listen": "test",
@@ -1976,7 +1708,7 @@
 						},
 						{
 							"key": "client_secret",
-							"value": "{{client_secret}}",
+							"value": "{{realm1_client_secret}}",
 							"type": "text"
 						},
 						{

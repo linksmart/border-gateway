@@ -22,7 +22,7 @@ username=$(jq -r '.[0].username' "data.json")
 password=$(jq -r '.[0].password' "data.json")
 audience=$(jq -r '.[0].audience' "data.json")
 client_id=$(jq -r '.[0].client_id' "data.json")
-client_secret=$(jq -r '.[0].client_secret' "data.json")
+realm1_client_secret=$(jq -r '.[0].realm1_client_secret' "data.json")
 
 echo "domain = $domain"
 echo "wsPort = $wsPort"
@@ -33,9 +33,9 @@ echo "username = $username"
 echo "password = $password"
 echo "audience = $audience"
 echo "client_id = $client_id"
-echo "client_secret = $client_secret"
+echo "realm1_client_secret = $realm1_client_secret"
 
-./test_ws_and_mqtt.sh "$CA" "$domain" $secure "$mqttPort" "$wsPort" "$username" "$password" "$tokenEndpoint" "$audience" "$client_id" "$client_secret"
+./test_ws_and_mqtt.sh "$CA" "$domain" $secure "$mqttPort" "$wsPort" "$username" "$password" "$tokenEndpoint" "$audience" "$client_id" "$realm1_client_secret"
 
 if [ "$?" -ne 0 ]; then
   exit 1

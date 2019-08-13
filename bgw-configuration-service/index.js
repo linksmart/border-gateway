@@ -13,7 +13,7 @@ const server = restify.createServer({
     version: '1.0.0'
 });
 
-if (config.configurationService && config.redis_host) {
+if (config.configurationService) {
 
     redisClient = redis.createClient({
         port: config.redis_port, host: config.redis_host,
@@ -74,7 +74,7 @@ server.use(restify.plugins.bodyParser());
 server.get('/locations:domain:location', async (req, res, next) => {
 
     logger.log('debug', 'GET request to endpoint locations');
-    if (!(config.configurationService && config.redis_host)) {
+    if (!(config.configurationService)) {
         res.send(404, "Not Found. Redis is not up and running.");
         return next();
     }
@@ -124,7 +124,7 @@ server.put('/locations:domain:location', async (req, res, next) => {
 
     logger.log('debug', 'PUT request to endpoint locations', {domain: req.query.domain, location: req.query.location});
 
-    if (!(config.configurationService && config.redis_host)) {
+    if (!(config.configurationService)) {
         res.send(404, "Not Found. Redis is not up and running.");
         return next();
     }
@@ -174,7 +174,7 @@ server.del('/locations:domain:location', async (req, res, next) => {
 
     logger.log('debug', 'DEL request to endpoint locations', {domain: req.query.domain, location: req.query.location});
 
-    if (!(config.configurationService && config.redis_host)) {
+    if (!(config.configurationService)) {
         res.send(404, "Not Found. Redis is not up and running.");
         return next();
     }

@@ -50,7 +50,7 @@ It is highly recommended to run the Border Gateway using Docker and docker-compo
 If Docker is available on your machine, you can run the Border Gateway test suite locally by cloning the repository and then running
 
 ```bash
-./test/build_and_run_tests.sh no_ssl nginx nginx_no_x_forward nginx_444 ei redis_1 redis_120
+./test/build_and_run_tests.sh no_ssl nginx nginx_no_x_forward nginx_444 ei
 ```
 
 This creates a full setup with Keycloak as an OpenID Connect provider, web servers (nginx) using self-signed TLS certificates and some backend components, then runs tests on the Border Gateway using all supported protocols for multiple configurations.

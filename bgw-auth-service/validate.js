@@ -1,6 +1,6 @@
 const config = require('./config');
 const logger = require('../logger/log')(config.serviceName, config.logLevel);
-const tracer = require('../tracer/trace').jaegerTrace(config.serviceName,config.enableDistributedTracing);
+const tracer = require('../tracer/trace').jaegerTrace(config.serviceName, config.enableDistributedTracing);
 const opentracing = require('opentracing');
 const fetch = require('node-fetch');
 const qs = require("querystring");
@@ -12,32 +12,32 @@ const tls = require('tls');
 const fs = require('fs');
 const redis = require("redis");
 const asyncRedis = require("async-redis");
+const shortid = require('shortid');
 let redisClient;
 const crypto = require('crypto');
 const algorithm = 'aes256';
 const remoteServiceName = 'openidConnectProvider';
+const bgwId = shortid.generate();
 
-if (config.redis_expiration > 0) {
-
-    redisClient = redis.createClient({
-        port: config.redis_port, host: config.redis_host,
-        retry_strategy: function (options) {
-            if (options.total_retry_time > 1000 * 60) {
-                // End reconnecting after a specific timeout and flush all commands
-                // with a individual error
-                logger.log('error', 'Retry time exhausted');
-                return new Error('Retry time exhausted');
-            }
-            if (options.attempt > 1000) {
-                // End reconnecting with built in error
-                return undefined;
-            }
-            // reconnect after
-            return Math.min(options.attempt * 100, 3000);
+redisClient = redis.createClient({
+    port: config.redis_port, host: config.redis_host,
+    retry_strategy: function (options) {
+        if (options.total_retry_time > 1000 * 60) {
+            // End reconnecting after a specific timeout and flush all commands
+            // with a individual error
+            logger.log('error', 'Retry time exhausted');
+            return new Error('Retry time exhausted');
         }
-    });
-    asyncRedis.decorate(redisClient);
-}
+        if (options.attempt > 1000) {
+            // End reconnecting with built in error
+            return undefined;
+        }
+        // reconnect after
+        return Math.min(options.attempt * 100, 3000);
+    }
+});
+asyncRedis.decorate(redisClient);
+
 
 function generateAES256KeyBuffer(key) {
     let bufferedKey = Buffer.from(key);
@@ -136,11 +136,11 @@ async function getProfile(openid_connect_provider, source, username, password, a
     } else { // code before introducing access token functionality
 
         let retrievedFromRedis = false;
-        if (config.redis_expiration > 0 && authentication_type === 'password') {
+        if (authentication_type === 'password') {
 
             try {
                 const hash = crypto.createHash('sha256');
-                hash.update(token_endpoint + username + password);
+                hash.update(bgwId + token_endpoint + username + password);
                 const redisKey = hash.digest('hex');
 
                 const encryptedToken = await redisClient.get(redisKey);
@@ -240,13 +240,19 @@ async function getProfile(openid_connect_provider, source, username, password, a
         let expireAt = new Date(0);
         expireAt.setUTCSeconds(decoded.exp);
         logger.log('debug', 'Token lifespan', {issuedAt: issuedAt, expireAt: expireAt});
-        if (!retrievedFromRedis && config.redis_expiration > 0 && authentication_type === 'password') {
+        if (!retrievedFromRedis && authentication_type === 'password') {
             const hash = crypto.createHash('sha256');
-            hash.update(token_endpoint + username + password);
+            hash.update(bgwId + token_endpoint + username + password);
             const redisKey = hash.digest('hex');
-            redisClient.set(redisKey, encrypt(profile.access_token, password), 'EX', config.redis_expiration);
-            const ttl = await redisClient.ttl(redisKey);
-            logger.log('debug', 'Cached access token with key', {key: redisKey, ttl: ttl});
+            let diff = Math.round((expireAt - Date.now()) / 1000);
+            let reduce = diff - 2;
+            let final = Math.max(diff, 0);
+            logger.log('debug', 'Cache for', {diff: diff, reduce: reduce, final: final});
+            if (final > 0) {
+                redisClient.set(redisKey, encrypt(profile.access_token, password), 'EX', final);
+                const ttl = await redisClient.ttl(redisKey);
+                logger.log('debug', 'Cached access token with key', {key: redisKey, ttl: ttl});
+            }
         }
 
         let json = Buffer.from(profile.access_token.split(".")[1], 'base64').toString('utf8');
