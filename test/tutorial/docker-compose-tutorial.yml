@@ -1,0 +1,49 @@
+version: '3.3'
+services:
+
+  tester:
+    image: "janniswarnat/tester:latest"
+    networks:
+      - public
+      - openid_web
+    volumes:
+      - "./data.json:/bgw/test/data.json"
+    entrypoint:
+      - /bgw/test/test.sh
+      - /bgw/certs/CA.pem
+
+  bgw-ssl:
+    image: "localhost:5000/linksmart/bgw:test"
+    environment:
+      LOG_LEVEL: "debug"
+    ports:
+      - 9227:9227
+      - 9228:9228
+      - 9229:9229
+      - 9230:9230
+      - 9231:9231
+    networks:
+      - backend_services
+      - openid_web
+      - public
+      - bgw
+    volumes:
+      - "./volumes/bgw/config:/bgw/config"
+      - "../../certs:/bgw/certs"
+
+  redis:
+    image: redis:5-alpine
+    ports:
+      - 6379:6379
+    networks:
+      - bgw
+
+networks:
+  public:
+    driver: bridge
+  bgw:
+    driver: bridge
+  backend_services:
+    external: true
+  openid_web:
+    external: true

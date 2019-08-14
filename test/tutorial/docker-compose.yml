@@ -7,6 +7,8 @@ services:
       replicas: 1
     environment:
       LOG_LEVEL: "debug"
+    depends_on:
+      redis
     ports:
       - 9227:9227
       - 9228:9228
@@ -17,6 +19,7 @@ services:
       - backend_services
       - openid_web
       - public
+      - bgw
     secrets:
       - source: bgw-ssl.cert
         target: "/bgw/certs/bgw-ssl.pem"
@@ -28,10 +31,22 @@ services:
       - source: config
         target: "/bgw/config/config.toml"
 
+  redis:
+    deploy:
+      replicas: 1
+    image: redis:5-alpine
+    ports:
+      - 6379:6379
+    networks:
+      - bgw
+
 networks:
   public:
     driver: overlay
     attachable: true
+  bgw:
+    driver: overlay
+    attachable: true 
   backend_services:
     external: true
   openid_web:

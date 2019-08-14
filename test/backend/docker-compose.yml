@@ -49,15 +49,6 @@ services:
         max-size: 10m
         max-file: "10"
 
-  redis:
-    deploy:
-      replicas: 1
-    image: redis:5-alpine
-    ports:
-      - 6379:6379
-    networks:
-      - services
-
 networks:
   services:
     driver: overlay

@@ -26,6 +26,8 @@ services:
     deploy:
       replicas: 1
     command: ["parts","bgw-http-proxy","bgw-mqtt-proxy","bgw-websocket-proxy","bgw-auth-service"]
+    depends_on:
+      redis
     environment:
       LOG_LEVEL: "debug"
     ports:
@@ -44,6 +46,15 @@ services:
         target: "/bgw/certs/CA.pem"
       - source: config
         target: "/bgw/config/config.toml"
+
+  redis:
+    deploy:
+      replicas: 1
+    image: redis:5-alpine
+    ports:
+      - 6379:6379
+    networks:
+      - bgw
 
 networks:
   public:
