@@ -66,6 +66,13 @@ for (const providerKey of providerKeys) {
             console.log("Could not retrieve oidc configuration for oidc provider " + providerKey);
             process.exit(1);
         } else {
+
+            if(!response.data || !response.data.issuer || !response.data.token_endpoint || !response.data.authorization_endpoint || !response.data.jwks_uri)
+            {
+                console.log("Response from oidc provider does not contain expected values " + response);
+                process.exit(1);
+            }
+
             provider.issuer = response.data.issuer;
             provider.token_endpoint = response.data.token_endpoint;
             provider.authorization_endpoint = response.data.authorization_endpoint;
