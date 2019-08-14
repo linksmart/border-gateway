@@ -7,7 +7,7 @@ services:
       replicas: 1
     command: ["parts","bgw-http-proxy","bgw-mqtt-proxy","bgw-websocket-proxy","bgw-auth-service"]
     depends_on:
-      redis
+      - redis
     environment:
       LOG_LEVEL: "debug"
     ports:
@@ -17,6 +17,7 @@ services:
       - 9230:9230
       - 9231:9231
     networks:
+      - bgw
       - backend_services
       - openid_web
       - public
@@ -39,6 +40,8 @@ networks:
   public:
     driver: overlay
     attachable: true
+  bgw:
+    driver: overlay
   backend_services:
     external: true
   openid_web:

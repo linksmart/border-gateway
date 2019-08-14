@@ -27,7 +27,7 @@ services:
       replicas: 1
     command: ["parts","bgw-http-proxy","bgw-mqtt-proxy","bgw-websocket-proxy","bgw-auth-service"]
     depends_on:
-      redis
+      - redis
     environment:
       LOG_LEVEL: "debug"
     ports:

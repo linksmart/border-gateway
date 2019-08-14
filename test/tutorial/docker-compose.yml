@@ -8,7 +8,7 @@ services:
     environment:
       LOG_LEVEL: "debug"
     depends_on:
-      redis
+      - redis
     ports:
       - 9227:9227
       - 9228:9228
