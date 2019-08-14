@@ -15,42 +15,6 @@ services:
         max-size: 10m
         max-file: "10"
 
-  #  grafana:
-  #    image: grafana/grafana
-  #    user: root
-  #    container_name: "grafana"
-  #    ports:
-  #      - 3000:3000
-  #    environment:
-  #      - GF_SERVER_ROOT_URL=https://localhost:444/grafana/
-  #      - GF_AUTH_ANONYMOUS_ENABLED=true
-  #      - GF_AUTH_BASIC="Main Org."
-
-  #  rabbitmq:
-  #    image: "rabbitmq:3.8-rc"
-  #    container_name: "rabbitmq"
-  #    volumes:
-  #      - ./volumes/rabbitmq/rabbitmq-docker.config:/etc/rabbitmq/rabbitmq-docker.config:ro
-  #      - ./volumes/rabbitmq/enabled_plugins:/etc/rabbitmq/enabled_plugins
-  #      - ./volumes/rabbitmq/plugins:/opt/rabbitmq/plugins
-  #      - ./volumes/rabbitmq/rabbitmq-auth-backend-oauth2:/rabbitmq-auth-backend-oauth2
-  #    environment:
-  #      - RABBITMQ_CONFIG_FILE=/etc/rabbitmq/rabbitmq-docker
-  #      - "RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS=-rabbit log [{console,[{enabled,true},{level,debug}]}]"
-  #    restart: always
-  #    ports:
-  #      - 8183:8183
-  #      - 8181:8181
-  #      - 5671:5671
-  #      - 5672:5672
-  #    networks:
-  #      - backend
-  #    logging:
-  #      driver: "json-file"
-  #      options:
-  #        max-size: 10m
-  #        max-file: "10"
-
   mosquitto:
     image: "eclipse-mosquitto"
     deploy:
@@ -93,25 +57,6 @@ services:
       - 6379:6379
     networks:
       - services
-
-#  redis-commander:
-#    container_name: redis-commander
-#    image: rediscommander/redis-commander:latest
-#    environment:
-#      - REDIS_HOSTS=local:redis:6379
-#    ports:
-#      - 8089:8081
-#    networks:
-#      - backend
-
-#  jaeger:
-#    container_name: jaeger
-#    image: jaegertracing/all-in-one
-#    command: ["--log-level=debug"]
-#    ports:
-#      - 6831:6831/udp
-#      - 6832:6832/udp
-#      - 16686:16686
 
 networks:
   services:

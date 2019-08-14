@@ -2,7 +2,7 @@
 
 # prerequisites:
 # Docker
-# all tests: ./build_and_run_tests.sh no_ssl nginx nginx_no_x_forward nginx_444 ei redis_1 redis_120
+# all tests: ./build_and_run_tests.sh no_ssl nginx nginx_no_x_forward nginx_444 tutorial
 
 scriptDir="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
 cd "$scriptDir/registry"

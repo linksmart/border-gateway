@@ -1,8 +1,8 @@
 [
   {
     "tokenEndpoint": "https://openid-ssl/auth/realms/realm1/protocol/openid-connect/token",
-    "username": "ei",
-    "password": "ei",
+    "username": "tutorial",
+    "password": "tutorial",
     "audience": "bgw_client",
     "client_id": "bgw_client",
     "realm1_client_secret": "d6e735a2-7554-499a-b9af-a0838ec23a1f",

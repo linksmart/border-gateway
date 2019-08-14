@@ -1,36 +1,6 @@
 {
   "realm" : "realm2",
   "users" : [ {
-    "id" : "1aa8bc27-2a3a-418e-8844-5e7b9b212603",
-    "createdTimestamp" : 1565687871181,
-    "username" : "ei",
-    "enabled" : true,
-    "totp" : false,
-    "emailVerified" : true,
-    "attributes" : {
-      "bgw_rules" : [ "HTTPS/GET/# MQTT/#" ]
-    },
-    "credentials" : [ {
-      "type" : "password",
-      "hashedSaltedValue" : "Yg1ahYeUBh02Nsci2nfSboHsRA0o0X6kqBn3dFvf95dxTRcqMwJGNi0gGaQIX0Ek/M5SQJDzBAHm39k40ydOgw==",
-      "salt" : "6k7kOQLV9Qd1jHu9ToX5fg==",
-      "hashIterations" : 27500,
-      "counter" : 0,
-      "algorithm" : "pbkdf2-sha256",
-      "digits" : 0,
-      "period" : 0,
-      "createdDate" : 1565687874801,
-      "config" : { }
-    } ],
-    "disableableCredentialTypes" : [ "password" ],
-    "requiredActions" : [ ],
-    "realmRoles" : [ "offline_access", "uma_authorization" ],
-    "clientRoles" : {
-      "account" : [ "view-profile", "manage-account" ]
-    },
-    "notBefore" : 0,
-    "groups" : [ ]
-  }, {
     "id" : "f9061537-85bc-495d-bfb6-dc6c9f8d6000",
     "createdTimestamp" : 1560577522870,
     "username" : "linksmart",
@@ -170,6 +140,36 @@
       "digits" : 0,
       "period" : 0,
       "createdDate" : 1565687613821,
+      "config" : { }
+    } ],
+    "disableableCredentialTypes" : [ "password" ],
+    "requiredActions" : [ ],
+    "realmRoles" : [ "offline_access", "uma_authorization" ],
+    "clientRoles" : {
+      "account" : [ "view-profile", "manage-account" ]
+    },
+    "notBefore" : 0,
+    "groups" : [ ]
+  }, {
+    "id" : "4e851118-42a3-4957-a170-2dfbc9192658",
+    "createdTimestamp" : 1565774113420,
+    "username" : "tutorial",
+    "enabled" : true,
+    "totp" : false,
+    "emailVerified" : true,
+    "attributes" : {
+      "bgw_rules" : [ "HTTPS/GET/# MQTT/#" ]
+    },
+    "credentials" : [ {
+      "type" : "password",
+      "hashedSaltedValue" : "1t7o3p+EvHKeVVwsaWsPGxOUSV/iXJRoUi8ffETq4Roe2s4TWaQ8c0DX+LX1wxIEmaf8q9f7X4bQsM3Ug0hs6g==",
+      "salt" : "5dv5/LhrTxRbdHuPgZM/Qw==",
+      "hashIterations" : 27500,
+      "counter" : 0,
+      "algorithm" : "pbkdf2-sha256",
+      "digits" : 0,
+      "period" : 0,
+      "createdDate" : 1565774128946,
       "config" : { }
     } ],
     "disableableCredentialTypes" : [ "password" ],
