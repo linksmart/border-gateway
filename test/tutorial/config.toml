@@ -2,6 +2,33 @@
 tls_key = "/bgw/certs/bgw-ssl_sec_key_wo_pass.pem"
 tls_cert = "/bgw/certs/bgw-ssl.pem"
 
+  [[external-interface.servers]]
+  name = "http-proxy"
+  bind_addresses = [
+    "0.0.0.0"
+  ]
+  bind_port = 8443
+  dest_port = 5050
+  dest_address = "127.0.0.1"
+
+  [[external-interface.servers]]
+  name = "mqtt-proxy"
+  bind_addresses = [
+    "0.0.0.0"
+  ]
+  bind_port = 8883
+  dest_port = 5051
+  dest_address = "127.0.0.1"
+
+  [[external-interface.servers]]
+  name = "websocket-proxy"
+  bind_addresses = [
+    "0.0.0.0"
+  ]
+  bind_port = 9002
+  dest_port = 5052
+  dest_address = "127.0.0.1"
+
 [mqtt-proxy]
 authorize_response = true
 
