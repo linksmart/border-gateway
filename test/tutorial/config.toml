@@ -25,10 +25,9 @@ authorize_response = true
       local_address = "http://sc:8082"
 
         [http-proxy.domains."bgw-ssl".sc.translate_local_addresses]
-        whitelist = [
-          "*.linksmart.eu",
-          "demo.test.eu:8080"
-        ]
+
+          [http-proxy.domains."bgw-ssl".sc.translate_local_addresses.url_translation_map]
+          "tcp://mosquitto:1883" = "ssl://bgw-ssl:8883"
 
       [http-proxy.domains."bgw-ssl".auth]
       local_address = "http://localhost:5053"
@@ -52,8 +51,8 @@ authorize_response = true
     audience = ["bgw_client","gui"]
     client_id = "bgw_client"
     client_secret = "d6e735a2-7554-499a-b9af-a0838ec23a1f"
-    redirect_uri = "https://bgw-ssl:443/callback"
-    anonymous_bgw_rules = "HTTPS/GET/bgw-ssl/+/sc/# HTTPS/GET/bgw-ssl/+/scc/# HTTPS/GET/bgw-ssl/+/sccc/# HTTPS/GET/bgw-ssl/+/configuration/locations/#"
+    redirect_uri = "https://bgw-ssl:8443/callback"
+    anonymous_bgw_rules = "HTTPS/GET/#"
 
     [auth-service.openid_connect_providers.linksmart]
     openid_configuration="https://openid-ssl/auth/realms/realm2/.well-known/openid-configuration"

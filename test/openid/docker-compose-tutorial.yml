@@ -3,8 +3,6 @@ services:
 
   postgres:
     image: "postgres:10"
-    deploy:
-      replicas: 1
     ports:
       - 5432:5432
     environment:
@@ -18,8 +16,6 @@ services:
 
   keycloak:
     image: "jboss/keycloak:6.0.1"
-    deploy:
-      replicas: 1
     ports:
       - 8080:8080
     depends_on:
@@ -44,38 +40,22 @@ services:
 
   openid-ssl:
     image: "nginx"
-    deploy:
-      replicas: 1
     ports:
       - 443:443
     depends_on:
       - "keycloak"
+    volumes:
+      - "../../certs:/etc/nginx/certs"
+      - "./openid-ssl.conf:/etc/nginx/conf.d/openid-ssl.conf"
     networks:
       - backend
       - web
-    secrets:
-      - source: openid-ssl.cert
-        target: "/etc/nginx/certs/openid-ssl.pem"
-      - source: openid-ssl.key
-        target: "/etc/nginx/certs/openid-ssl_sec_key_wo_pass.pem"
-    configs:
-      - source: openid-ssl.conf
-        target: "/etc/nginx/conf.d/openid-ssl.conf"
 
 networks:
   web:
-    driver: overlay
-    attachable: true
+    driver: bridge
   backend:
-    driver: overlay
+    driver: bridge
 volumes:
   pgdata:
     external: true
-secrets:
-  openid-ssl.cert:
-    file: "../../certs/openid-ssl.pem"
-  openid-ssl.key:
-    file: "../../certs/openid-ssl_sec_key_wo_pass.pem"
-configs:
-  openid-ssl.conf:
-    file: "./openid-ssl.conf"

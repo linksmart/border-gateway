@@ -2,18 +2,29 @@ version: '3.3'
 services:
 
   bgw-ssl:
-    image: "linksmart/bgw:test"
+    image: "linksmart/bgw:latest"
     environment:
       LOG_LEVEL: "debug"
+    depends_on:
+      - redis
     ports:
       - 8443:443
+      - 8883:8883
+      - 9002:9002
+      - 9227:9227
+      - 9228:9228
+      - 9229:9229
+      - 9230:9230
+      - 9231:9231
+      - 9232:9232
+      - 9233:9233
     networks:
       - backend_services
       - openid_web
       - public
       - bgw
     volumes:
-      - "./volumes/bgw/config:/bgw/config"
+      - "./config.toml:/bgw/config/config.toml"
       - "../../certs:/bgw/certs"
 
   redis:
