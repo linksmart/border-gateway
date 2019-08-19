@@ -52,6 +52,10 @@ authorize_response = true
       local_address = "http://sc:8082"
 
         [http-proxy.domains."bgw-ssl".sc.translate_local_addresses]
+        whitelist = [
+          "*.linksmart.eu",
+          "demo.test.eu:8080"
+        ]
 
           [http-proxy.domains."bgw-ssl".sc.translate_local_addresses.url_translation_map]
           "tcp://mosquitto:1883" = "ssl://bgw-ssl:8883"
