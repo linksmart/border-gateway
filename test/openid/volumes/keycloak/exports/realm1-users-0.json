@@ -8,7 +8,7 @@
     "totp" : false,
     "emailVerified" : true,
     "attributes" : {
-      "bgw_rules" : [ "HTTPS/GET/# HTTPS/PUT/# HTTPS/DELETE/# MQTT/# WS/CONNECT/websocket-test/8010/#" ]
+      "bgw_rules" : [ "HTTPS/GET/# HTTPS/PUT/# HTTPS/DELETE/# MQTT/# WS/CONNECT/+/+/#" ]
     },
     "credentials" : [ {
       "type" : "password",
@@ -38,7 +38,7 @@
     "totp" : false,
     "emailVerified" : true,
     "attributes" : {
-      "bgw_rules" : [ "HTTPS/GET/# HTTPS/PUT/# HTTPS/DELETE/# MQTT/# WS/CONNECT/websocket-test/8010/#" ]
+      "bgw_rules" : [ "HTTPS/GET/# HTTPS/PUT/# HTTPS/DELETE/# MQTT/# WS/CONNECT/+/+/#" ]
     },
     "credentials" : [ {
       "type" : "password",
@@ -68,7 +68,7 @@
     "totp" : false,
     "emailVerified" : true,
     "attributes" : {
-      "bgw_rules" : [ "HTTPS/GET/# HTTPS/PUT/# HTTPS/DELETE/# MQTT/# WS/CONNECT/websocket-test/8010/#" ]
+      "bgw_rules" : [ "HTTPS/GET/# HTTPS/PUT/# HTTPS/DELETE/# MQTT/# WS/CONNECT/+/+/#" ]
     },
     "credentials" : [ {
       "type" : "password",
@@ -98,7 +98,7 @@
     "totp" : false,
     "emailVerified" : true,
     "attributes" : {
-      "bgw_rules" : [ "HTTP/GET/# HTTP/PUT/# HTTP/DELETE/# MQTT/# WS/CONNECT/websocket-test/8010/#" ]
+      "bgw_rules" : [ "HTTP/GET/# HTTP/PUT/# HTTP/DELETE/# MQTT/# WS/CONNECT/+/+/#" ]
     },
     "credentials" : [ {
       "type" : "password",
@@ -128,7 +128,7 @@
     "totp" : false,
     "emailVerified" : true,
     "attributes" : {
-      "bgw_rules" : [ "HTTP/GET/bgw/5050/sc MQTT/# WS/CONNECT/websocket-test/8010/# HTTP/PUT/bgw/5050/sc/jannis-linksmart-agent HTTP/DELETE/bgw/5050/sc/jannis-linksmart-agent" ]
+      "bgw_rules" : [ "HTTP/GET/bgw/5050/sc MQTT/# WS/CONNECT/+/+/# HTTP/PUT/bgw/5050/sc/jannis-linksmart-agent HTTP/DELETE/bgw/5050/sc/jannis-linksmart-agent" ]
     },
     "credentials" : [ {
       "type" : "password",
@@ -158,7 +158,7 @@
     "totp" : false,
     "emailVerified" : true,
     "attributes" : {
-      "bgw_rules" : [ "HTTPS/GET/# HTTPS/PUT/# HTTPS/DELETE/# MQTT/# WS/CONNECT/websocket-test/8010/#" ]
+      "bgw_rules" : [ "HTTPS/GET/# HTTPS/PUT/# HTTPS/DELETE/# MQTT/# WS/CONNECT/+/+/#" ]
     },
     "credentials" : [ {
       "type" : "password",

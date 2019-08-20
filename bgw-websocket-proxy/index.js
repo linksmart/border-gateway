@@ -46,7 +46,8 @@ const wsAuth = async (serverSocket, request) => {
 
         let payload;
         let upstreamURL = new url.URL((config.ws_upstream_base_url.replace(/\/$/, "")) + (url.parse(request.url).pathname || ""));
-        payload = `WS/CONNECT/${upstreamURL.hostname}/${upstreamURL.port}${upstreamURL.pathname}/#`.replace(/\/$/, "");
+        payload = `WS/CONNECT/${upstreamURL.hostname}/${upstreamURL.port}${upstreamURL.pathname}/#`;
+        payload = payload.replace("//","/");
         logger.log('debug', 'Payload:', {payload: payload});
 
         let authHeader = undefined;
@@ -133,8 +134,6 @@ function waitForWebSocketConnectionAndAuthorization(socket, callback) {
                 if (callback != null) {
                     callback();
                 }
-                return;
-
             } else {
                 waitForWebSocketConnectionAndAuthorization(socket, callback);
             }
@@ -149,7 +148,6 @@ function waitForWebSocketConnection(socket, callback) {
                 if (callback != null) {
                     callback();
                 }
-                return;
 
             } else {
                 waitForWebSocketConnection(socket, callback);
@@ -165,8 +163,6 @@ function waitForNetSocketConnection(socket, callback) {
                 if (callback != null) {
                     callback();
                 }
-                return;
-
             } else {
                 waitForNetSocketConnection(socket, callback);
             }
@@ -301,7 +297,8 @@ function verifyClient(info) {
     if (info.req.headers["sec-websocket-protocol"] === "mqtt") {
         payload = `WS/CONNECT/${config.mqtt_proxy_host}/${config.mqtt_proxy_port}/#`;
     } else {
-        payload = `WS/CONNECT/${upstreamURL.hostname}/${upstreamURL.port}${upstreamURL.pathname}/#`.replace(/\/$/, "");
+        payload = `WS/CONNECT/${upstreamURL.hostname}/${upstreamURL.port}${upstreamURL.pathname}/#`;
+        payload = payload.replace("//","/");
     }
     logger.log('debug', 'Payload:', {payload: payload});
     let profile = {};
