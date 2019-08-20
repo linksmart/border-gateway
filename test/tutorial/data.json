@@ -7,8 +7,6 @@
     "client_id": "bgw_client",
     "realm1_client_secret": "d6e735a2-7554-499a-b9af-a0838ec23a1f",
     "realm2_client_secret": "33623f55-711f-4f6e-9ba8-2292c9888c29",
-    "linksmart_user_attributes_realm1": "HTTPS/GET/# HTTPS/PUT/# HTTPS/DELETE/# MQTT/# WS/CONNECT/+/+/# WS/CONNECT/+/+",
-    "linksmart_user_attributes_realm2": "HTTPS/GET/# MQTT/#",
     "expectedTranslatedHttpAddress": "https://bgw-ssl:8443",
     "expectedTranslatedMqttAddress": "ssl://bgw-ssl:8883",
     "secure": true,
