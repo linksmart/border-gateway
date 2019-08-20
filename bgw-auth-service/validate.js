@@ -4,7 +4,6 @@ const tracer = require('../tracer/trace').jaegerTrace(config.serviceName, config
 const opentracing = require('opentracing');
 const fetch = require('node-fetch');
 const qs = require("querystring");
-//const matchRules = require('./rules');
 const jwt = require('jsonwebtoken');
 const getPem = require('rsa-pem-from-mod-exp');
 const https = require("https");

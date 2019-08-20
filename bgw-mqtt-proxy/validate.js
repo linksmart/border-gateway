@@ -74,7 +74,7 @@ module.exports = {
 
             switch (packet.cmd) {
                 case 'connect':
-                    const canCON = await mqttAuth(port, key, 'CON', '', childSpan.context());
+                    const canCON = await mqttAuth(port, key, 'CON', '#', childSpan.context());
                     const hasWill = packet.will && packet.will.topic;
                     const canPUB = !hasWill || (hasWill && await mqttAuth(port, key, 'PUB', packet.will.topic, childSpan.context()));
                     result = canCON && canPUB;

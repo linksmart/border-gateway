@@ -194,7 +194,6 @@ app.post('/authorizeGUI', async (req, res) => {
 
             let payload = '' + protocol + '/' + method + '/' + host + '/' + port + pathname;
             logger.log('debug', 'Payload create from resource', {payload: payload});
-            //authorizationResult = matchRules(authenticationResult.profile, req.body.rule, source);
             authorizationResult = matchRules(authenticationResult.profile, payload, source);
 
             if (authorizationResult.status) {
