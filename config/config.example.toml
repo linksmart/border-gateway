@@ -64,9 +64,6 @@ authorize_response = true
 
 # Configuration for the http-proxy microservice
 [http-proxy]
-# Uncomment if you want to use the configuration-service
-#configurationService = "http://localhost:5056"
-
 # Location of the redis db if you want to use access token caching
 #redis_host = "redis"
 #redis_port = 6379
@@ -98,11 +95,6 @@ authorize_response = true
       local_address = "http://localhost:5053"
       no_auth = true
       keep_authorization_header = true
-
-      # Configuration of location / path configuration (for configuration-service)
-      #[http-proxy.domains.bgw-ssl.configuration]
-      #local_address = "http://localhost:5056"
-      #no_auth = true
 
 # Configuration for websocket-proxy microservce
 [websocket-proxy]

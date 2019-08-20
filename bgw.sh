@@ -33,12 +33,11 @@ parts() {
 }
 
 start() {
-  run_inspect_service bgw-auth-service 9232 &
-  run_inspect_service bgw-configuration-service 9230 &
-  run_inspect_service bgw-http-proxy 9227 &
-  run_inspect_service bgw-mqtt-proxy 9228 &
-  run_inspect_service bgw-websocket-proxy 9231 &
-  run_inspect_service bgw-external-interface 9233 &
+  run_inspect_service bgw-auth-service 9227 &
+  run_inspect_service bgw-http-proxy 9228 &
+  run_inspect_service bgw-mqtt-proxy 9229 &
+  run_inspect_service bgw-websocket-proxy 9230 &
+  run_inspect_service bgw-external-interface 9231 &
 }
 
 main() {

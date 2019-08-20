@@ -39,7 +39,6 @@ Find a commented configuration example [here][Configuration]. Also have a look u
 Border Gateway consists of a number of optional Node.js-based microservices:
 
 * bgw-auth-service: Handles access to the OpenID Connect provider.
-* bgw-configuration-service: Allows online configuration of some configuration items.
 * bgw-external-interface: Handles TLS offloading.
 * bgw-http-proxy: Handles connections to HTTP based services / REST APIs.
 * bgw-mqtt-proxy: Handles connections to MQTT brokers.
