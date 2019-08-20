@@ -46,7 +46,7 @@ const wsAuth = async (serverSocket, request) => {
 
         let payload;
         let upstreamURL = new url.URL((config.ws_upstream_base_url.replace(/\/$/, "")) + (url.parse(request.url).pathname || ""));
-        payload = `WS/CONNECT/${upstreamURL.hostname}/${upstreamURL.port}${upstreamURL.pathname}`.replace(/\/$/, "");
+        payload = `WS/CONNECT/${upstreamURL.hostname}/${upstreamURL.port}${upstreamURL.pathname}/#`.replace(/\/$/, "");
         logger.log('debug', 'Payload:', {payload: payload});
 
         let authHeader = undefined;
@@ -299,9 +299,9 @@ function verifyClient(info) {
     let upstreamURL = new url.URL((config.ws_upstream_base_url.replace(/\/$/, "")) + (url.parse(info.req.url).pathname || ""));
 
     if (info.req.headers["sec-websocket-protocol"] === "mqtt") {
-        payload = `WS/CONNECT/${config.mqtt_proxy_host}/${config.mqtt_proxy_port}`;
+        payload = `WS/CONNECT/${config.mqtt_proxy_host}/${config.mqtt_proxy_port}/#`;
     } else {
-        payload = `WS/CONNECT/${upstreamURL.hostname}/${upstreamURL.port}${upstreamURL.pathname}`.replace(/\/$/, "");
+        payload = `WS/CONNECT/${upstreamURL.hostname}/${upstreamURL.port}${upstreamURL.pathname}/#`.replace(/\/$/, "");
     }
     logger.log('debug', 'Payload:', {payload: payload});
     let profile = {};
