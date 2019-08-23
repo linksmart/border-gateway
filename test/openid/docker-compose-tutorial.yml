@@ -58,4 +58,3 @@ networks:
     driver: bridge
 volumes:
   pgdata:
-    external: true

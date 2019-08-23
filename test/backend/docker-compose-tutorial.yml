@@ -49,6 +49,3 @@ services:
 networks:
   services:
     driver: bridge
-volumes:
-  pgdata:
-    external: true
