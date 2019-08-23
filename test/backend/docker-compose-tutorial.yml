@@ -1,0 +1,49 @@
+version: '3.3'
+services:
+
+  websocket-test:
+    image: ksdn117/web-socket-test
+    ports:
+      - 8010:8010
+    networks:
+      - services
+    logging:
+      driver: "json-file"
+      options:
+        max-size: 10m
+        max-file: "10"
+
+  mosquitto:
+    image: "eclipse-mosquitto"
+    ports:
+      - 1883:1883
+    networks:
+      - services
+    volumes:
+      - "./mosquitto.conf:/mosquitto/config/mosquitto.conf"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: 10m
+        max-file: "10"
+
+  sc:
+    image: "linksmart/sc:latest"
+    ports:
+      - 8082:8082
+    networks:
+      - services
+    volumes:
+      - "./service-catalog.json:/conf/service-catalog.json"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: 10m
+        max-file: "10"
+
+networks:
+  services:
+    driver: bridge
+volumes:
+  pgdata:
+    external: true
