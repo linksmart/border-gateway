@@ -43,10 +43,12 @@ authorize_response = true
   tls_client_cert = ""
 
 [http-proxy]
-
   [http-proxy.domains]
 
     [http-proxy.domains."bgw-ssl"]
+
+      [http-proxy.domains."bgw-ssl".helloworld]
+      local_address = "http://helloworld-express-app:8080"
 
       [http-proxy.domains."bgw-ssl".sc]
       local_address = "http://sc:8082"

@@ -41,6 +41,11 @@ services:
         max-size: 10m
         max-file: "10"
 
+  helloworld-express-app:
+    image: "janniswarnat/helloworld-express-app:latest"
+    networks:
+      - services
+
 networks:
   services:
     driver: bridge
