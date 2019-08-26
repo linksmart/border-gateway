@@ -1,37 +1,58 @@
+# Configuration for the external-interface microservice
 [external-interface]
+# Certificate files
 tls_key = "/bgw/certs/bgw-ssl_sec_key_wo_pass.pem"
 tls_cert = "/bgw/certs/bgw-ssl.pem"
 
+  # Configuration of the TLS termination proxies for services behind the external interface
   [[external-interface.servers]]
+  # TLS termination proxy for the http-proxy microservice
   name = "http-proxy"
+  # default: ["0.0.0.0"]
   bind_addresses = [
     "0.0.0.0"
   ]
+  # port for public access via external interface; default: 443
   bind_port = 8443
+  # port of internal microservice; default: 5050
   dest_port = 5050
+  # host of internal microservice; default: "127.0.0.1"
   dest_address = "127.0.0.1"
 
   [[external-interface.servers]]
+  # TLS termination proxy for the mqtt-proxy microservice
   name = "mqtt-proxy"
+  # default: ["0.0.0.0"]
   bind_addresses = [
     "0.0.0.0"
   ]
+  # port for public access via external interface; default: 8883
   bind_port = 8883
+  # port of internal microservice; default: 5051
   dest_port = 5051
+  # host of internal microservice; default: "127.0.0.1"
   dest_address = "127.0.0.1"
 
   [[external-interface.servers]]
+  # TLS termination proxy for the websocket-proxy microservice
   name = "websocket-proxy"
+  # default: ["0.0.0.0"]
   bind_addresses = [
     "0.0.0.0"
   ]
+  # port for public access via external interface; default: 9002
   bind_port = 9002
+  # port of internal microservice; default: 5052
   dest_port = 5052
+  # host of internal microservice; default: "127.0.0.1"
   dest_address = "127.0.0.1"
 
+# Configuration items for the mqtt-proxy microservice
 [mqtt-proxy]
+# Set this to true if you want the mqtt-proxy to authorize mqtt responses
 authorize_response = true
 
+  # MQTT broker address
   [mqtt-proxy.broker]
   address = "mosquitto"
   port = 1883
@@ -42,43 +63,61 @@ authorize_response = true
   tls_client_key = ""
   tls_client_cert = ""
 
+# Configuration for the http-proxy microservice
 [http-proxy]
+# Set access information to redis for access token caching. Default is redis:6379
+redis_host = "redis"
+redis_port = 6379
+
+  # List of public addresses that http proxy is supposed to accept for forwarding
   [http-proxy.domains]
 
+    # Configuration for public domain bgw-ssl
     [http-proxy.domains."bgw-ssl"]
 
+      # Configuration of location / path helloworld
       [http-proxy.domains."bgw-ssl".helloworld]
+      # Local address to foward requests to
       local_address = "http://helloworld-express-app:8080"
 
+      # Configuration of location / path sc
       [http-proxy.domains."bgw-ssl".sc]
+      # Local address to foward requests to
       local_address = "http://sc:8082"
 
         [http-proxy.domains."bgw-ssl".sc.translate_local_addresses]
+        # Do not translate certain addresses in http response
         whitelist = [
           "*.linksmart.eu",
           "demo.test.eu:8080"
         ]
 
+          # Dictionary for custom address translations
           [http-proxy.domains."bgw-ssl".sc.translate_local_addresses.url_translation_map]
           "tcp://mosquitto:1883" = "ssl://bgw-ssl:8883"
 
+      # Configuration of location / path auth (for auth-service)
       [http-proxy.domains."bgw-ssl".auth]
       local_address = "http://localhost:5053"
       no_auth = true
       keep_authorization_header = true
 
+# Configuration for websocket-proxy microservce
 [websocket-proxy]
-  ws_upstream_base_url = "ws://websocket-test:8010/"
-  openidCA = "/bgw/certs/CA.pem"
-  openid_configuration="https://openid-ssl/auth/realms/realm1/.well-known/openid-configuration"
-  audience = ["bgw_client","gui"]
-  client_id = "bgw_client"
-  client_secret = "d6e735a2-7554-499a-b9af-a0838ec23a1f"
+ws_upstream_base_url = "ws://websocket-test:8010/"
+openidCA = "/bgw/certs/CA.pem"
+openid_configuration="https://openid-ssl/auth/realms/realm1/.well-known/openid-configuration"
+audience = ["bgw_client","gui"]
+client_id = "bgw_client"
+client_secret = "d6e735a2-7554-499a-b9af-a0838ec23a1f"
 
+# Configuration for auth-service microservce
 [auth-service]
   openidCA = "/bgw/certs/CA.pem"
+  # List of OpenID Connect providers
   [auth-service.openid_connect_providers]
 
+    # Configuration of default OpenID Connect provider
     [auth-service.openid_connect_providers.default]
     openid_configuration="https://openid-ssl/auth/realms/realm1/.well-known/openid-configuration"
     audience = ["bgw_client","gui"]
@@ -87,6 +126,7 @@ authorize_response = true
     redirect_uri = "https://bgw-ssl:8443/callback"
     anonymous_bgw_rules = "HTTPS/GET/#"
 
+    # Configuration of alternative OpenID Connect provider
     [auth-service.openid_connect_providers.linksmart]
     openid_configuration="https://openid-ssl/auth/realms/realm2/.well-known/openid-configuration"
     audience = ["bgw_client","gui"]
