@@ -26,13 +26,17 @@ These are the main functionalities:
 
 Find the complete documentation [here][Documentation].
 
+## Tutorial
+
+It is recommended to take twenty minutes to do the [tutorial][Tutorial] to get a better understanding about possible configurations and use cases.
+
 ## Deployment 
 
 See the [deployment page][Deploy].
 
 ## Configuration
 
-Find a commented configuration example [here][Configuration]. Also have a look under `/test` for example configurations.
+Find a commented configuration example in the [tutorial][Tutorial] (raw file [here][Configuration]). Also have a look under `/test` for more example configurations.
 
 ## Development
 
@@ -55,7 +59,8 @@ If Docker is available on your machine, you can run the Border Gateway test suit
 This creates a full setup with Keycloak as an OpenID Connect provider, web servers (nginx) using self-signed TLS certificates and some backend components, then runs tests on the Border Gateway using all supported protocols for multiple configurations.
 
 [Documentation]: https://docs.linksmart.eu/display/BGW
+[Tutorial]: https://docs.linksmart.eu/display/BGW/Tutorial
 [Docker]:https://hub.docker.com/r/linksmart/bgw/tags
 [Deploy]:https://docs.linksmart.eu/display/BGW/Deployment
-[Configuration]: https://raw.githubusercontent.com/linksmart/border-gateway/master/config/config.example.toml
+[Configuration]: https://raw.githubusercontent.com/linksmart/border-gateway/master/test/tutorial/config.toml
 
