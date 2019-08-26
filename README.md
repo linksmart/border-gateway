@@ -58,6 +58,10 @@ If Docker is available on your machine, you can run the Border Gateway test suit
 
 This creates a full setup with Keycloak as an OpenID Connect provider, web servers (nginx) using self-signed TLS certificates and some backend components, then runs tests on the Border Gateway using all supported protocols for multiple configurations.
 
+## Contribute
+
+Feel free to create an issue or pull request in GitHub in case you want to contribute to the software.
+
 [Documentation]: https://docs.linksmart.eu/display/BGW
 [Tutorial]: https://docs.linksmart.eu/display/BGW/Tutorial
 [Docker]:https://hub.docker.com/r/linksmart/bgw/tags
