@@ -20,14 +20,14 @@ csl: ./ieee-internet-of-things-journal.csl
 
 # Summary
 
-The system architecture of an Internet of Things (IoT) application typically comprises
-multiple devices, device gateways and services communicating through a variety of protocols. It is a
+The system architecture of an Internet of Things (IoT) application typically comprises of
+multiple devices, device gateways and services communicating via a variety of protocols. It is a
 challenging task to ensure that remote access to any system component is only allowed
 in case the communication is properly encrypted, authenticated, authorized and accounted for.
  
-``Border Gateway`` offers a single entry point into a local IoT network using
+The ``Border Gateway`` offers a single entry point into a local IoT network using
 an extensible micro services architecture implemented for Node.js. Currently the common protocols HTTP,
-MQTT and WebSocket are supported. Border Gateway only allows TLS-encrypted connections, authenticates
+MQTT and WebSocket are supported. The Border Gateway only allows TLS-encrypted connections, authenticates
 each connection attempt against an OpenID Connect provider, performs a more fine-grained authorization
 using a simple rule format and eventually forwards the request to the target service in the protected IoT
 network.
@@ -41,7 +41,9 @@ projects funded by the European Union, notably MONICA (@monica), COMPOSITION (@c
 
 # Acknowledgements
 
-The original prototype of Border Gateway was developed in a master thesis by Mohammad Alhareeqi advised
+The original prototype of the Border Gateway was developed in a master thesis by Mohammad Alhareeqi advised
 by Raphael Ahrens, José Ángel Carvajal Soto and Farshid Tavakolizadeh.
 
 # References
+
+
