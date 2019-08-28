@@ -1,7 +1,7 @@
 {
 	"info": {
-		"_postman_id": "68fc1a13-a2be-4145-adc4-6088fe7b2fe1",
-		"name": "test_border_gateway",
+		"_postman_id": "beae7578-56b0-4802-85e9-ec9604752183",
+		"name": "test_border_gateway copy",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
@@ -423,12 +423,13 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{url}}/sc",
+					"raw": "{{url}}/sc/main_broker",
 					"host": [
 						"{{url}}"
 					],
 					"path": [
-						"sc"
+						"sc",
+						"main_broker"
 					]
 				}
 			},
@@ -464,12 +465,13 @@
 				"method": "DELETE",
 				"header": [],
 				"url": {
-					"raw": "{{url}}/sc",
+					"raw": "{{url}}/sc/main_broker",
 					"host": [
 						"{{url}}"
 					],
 					"path": [
-						"sc"
+						"sc",
+						"main_broker"
 					]
 				}
 			},
@@ -521,12 +523,13 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{url}}/sc",
+					"raw": "{{url}}/sc/main_broker",
 					"host": [
 						"{{url}}"
 					],
 					"path": [
-						"sc"
+						"sc",
+						"main_broker"
 					]
 				}
 			},
@@ -576,13 +579,13 @@
 					"raw": ""
 				},
 				"url": {
-					"raw": "{{url}}/sc/jannis-linksmart-agent",
+					"raw": "{{url}}/sc/helloworld",
 					"host": [
 						"{{url}}"
 					],
 					"path": [
 						"sc",
-						"jannis-linksmart-agent"
+						"helloworld"
 					]
 				}
 			},
@@ -632,16 +635,16 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"id\": \"jannis-linksmart-agent\",\n    \"name\": \"_linksmart-la.tcp_\",\n    \"description\": \"The instantiation of an LinkSmart(R) IoT Agent. A service for Stream Mining and Machine Learning management.\",\n    \"meta\": {},\n    \"apis\": {\n        \"Agent MQTT API\": \"tcp://{{domain}}:1883\",\n        \"Agent RESTful API\": \"http://imagon:8319/\",\n        \"sc\": \"http://sc:8082\",\n        \"api1\": \"https://demo.linksmart.eu/api\",\n        \"api2\": \"http://demo.test.eu:8080\",\n        \"some_service\": \"http://some_service:8081\"\n    },\n    \"docs\": [\n        {\n            \"description\": \"Open API V2\",\n            \"apis\": [\n                \"Agent RESTful API\"\n            ],\n            \"type\": \"application/json\",\n            \"url\": \"http://imagon:8319/swagger-ui.html\"\n        }\n    ],\n    \"ttl\": 86400\n}"
+					"raw": "{\n    \"name\": \"helloworld\",\n    \"description\": \"helloworld-express-app\",\n    \"apis\": {\n    \t\"HTTP\": \"http://helloworld-express-app:8080\",\n        \"Agent MQTT API\": \"tcp://{{domain}}:1883\",\n        \"Agent RESTful API\": \"http://imagon:8319/\",\n        \"sc\": \"http://sc:8082\",\n        \"api1\": \"https://demo.linksmart.eu/api\",\n        \"api2\": \"http://demo.test.eu:8080\",\n        \"some_service\": \"http://some_service:8081\"\n    },\n    \"docs\": [\n        {\n            \"description\": \"Open API V2\",\n            \"apis\": [\n                \"Agent RESTful API\"\n            ],\n            \"type\": \"application/json\",\n            \"url\": \"http://imagon:8319/swagger-ui.html\"\n        }\n    ],\n    \"ttl\": 86400\n}"
 				},
 				"url": {
-					"raw": "{{url}}/sc/jannis-linksmart-agent",
+					"raw": "{{url}}/sc/helloworld",
 					"host": [
 						"{{url}}"
 					],
 					"path": [
 						"sc",
-						"jannis-linksmart-agent"
+						"helloworld"
 					]
 				}
 			},
@@ -805,13 +808,13 @@
 					"raw": ""
 				},
 				"url": {
-					"raw": "{{url}}/sc/jannis-linksmart-agent",
+					"raw": "{{url}}/sc/helloworld",
 					"host": [
 						"{{url}}"
 					],
 					"path": [
 						"sc",
-						"jannis-linksmart-agent"
+						"helloworld"
 					]
 				}
 			},
@@ -849,16 +852,16 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"id\": \"jannis-linksmart-agent\",\n    \"name\": \"_linksmart-la.tcp_\",\n    \"description\": \"The instantiation of an LinkSmart(R) IoT Agent. A service for Stream Mining and Machine Learning management.\",\n    \"meta\": {},\n    \"apis\": {\n        \"Agent MQTT API\": \"tcp://{{domain}}:1883\",\n        \"Agent RESTful API\": \"http://imagon:8319/\",\n        \"sc\": \"http://sc:8082\",\n        \"api1\": \"https://demo.linksmart.eu/api\",\n        \"api2\": \"http://demo.test.eu:8080\",\n        \"some_service\": \"http://some_service:8081\"\n    },\n    \"docs\": [\n        {\n            \"description\": \"Open API V2\",\n            \"apis\": [\n                \"Agent RESTful API\"\n            ],\n            \"type\": \"application/json\",\n            \"url\": \"http://imagon:8319/swagger-ui.html\"\n        }\n    ],\n    \"ttl\": 86400\n}"
+					"raw": "{\n    \"name\": \"helloworld\",\n    \"description\": \"helloworld-express-app\",\n    \"apis\": {\n    \t\"HTTP\": \"http://helloworld-express-app:8080\",\n        \"Agent MQTT API\": \"tcp://{{domain}}:1883\",\n        \"Agent RESTful API\": \"http://imagon:8319/\",\n        \"sc\": \"http://sc:8082\",\n        \"api1\": \"https://demo.linksmart.eu/api\",\n        \"api2\": \"http://demo.test.eu:8080\",\n        \"some_service\": \"http://some_service:8081\"\n    },\n    \"docs\": [\n        {\n            \"description\": \"Open API V2\",\n            \"apis\": [\n                \"Agent RESTful API\"\n            ],\n            \"type\": \"application/json\",\n            \"url\": \"http://imagon:8319/swagger-ui.html\"\n        }\n    ],\n    \"ttl\": 86400\n}"
 				},
 				"url": {
-					"raw": "{{url}}/sc/jannis-linksmart-agent?username={{username}}&password={{password}}",
+					"raw": "{{url}}/sc/helloworld?username={{username}}&password={{password}}",
 					"host": [
 						"{{url}}"
 					],
 					"path": [
 						"sc",
-						"jannis-linksmart-agent"
+						"helloworld"
 					],
 					"query": [
 						{
@@ -909,13 +912,13 @@
 					"raw": ""
 				},
 				"url": {
-					"raw": "{{url}}/sc/jannis-linksmart-agent?username={{username}}&password={{password}}",
+					"raw": "{{url}}/sc/helloworld?username={{username}}&password={{password}}",
 					"host": [
 						"{{url}}"
 					],
 					"path": [
 						"sc",
-						"jannis-linksmart-agent"
+						"helloworld"
 					],
 					"query": [
 						{
@@ -1056,13 +1059,13 @@
 					"raw": "{\n    \"name\": \"_linksmart-gost.tcp_\",\n    \"description\": \"GOST API\",\n    \"meta\": {},\n    \"ttl\": 86400,\n    \"apis\": {\n        \"v1.0\": \"http://192.168.99.100:8080/v1.0/\"\n    }\n}"
 				},
 				"url": {
-					"raw": "{{url}}/sc/jannis-linksmart-agent",
+					"raw": "{{url}}/sc/helloworld",
 					"host": [
 						"{{url}}"
 					],
 					"path": [
 						"sc",
-						"jannis-linksmart-agent"
+						"helloworld"
 					]
 				}
 			},
@@ -1110,13 +1113,13 @@
 					"raw": "{\n    \"name\": \"_linksmart-gost.tcp_\",\n    \"description\": \"GOST API\",\n    \"meta\": {},\n    \"ttl\": 86400,\n    \"apis\": {\n        \"v1.0\": \"http://192.168.99.100:8080/v1.0/\"\n    }\n}"
 				},
 				"url": {
-					"raw": "{{url}}/sc/jannis-linksmart-agent",
+					"raw": "{{url}}/sc/helloworld",
 					"host": [
 						"{{url}}"
 					],
 					"path": [
 						"sc",
-						"jannis-linksmart-agent"
+						"helloworld"
 					]
 				}
 			},
@@ -1160,13 +1163,13 @@
 					}
 				],
 				"url": {
-					"raw": "{{url}}/sc/jannis-linksmart-agent",
+					"raw": "{{url}}/sc/helloworld",
 					"host": [
 						"{{url}}"
 					],
 					"path": [
 						"sc",
-						"jannis-linksmart-agent"
+						"helloworld"
 					]
 				}
 			},
@@ -1207,13 +1210,13 @@
 					"raw": "{\n    \"name\": \"_linksmart-gost.tcp_\",\n    \"description\": \"GOST API\",\n    \"meta\": {},\n    \"ttl\": 86400,\n    \"apis\": {\n        \"v1.0\": \"http://192.168.99.100:8080/v1.0/\"\n    }\n}"
 				},
 				"url": {
-					"raw": "{{url}}/sc/jannis-linksmart-agent?username={{default_access_token}}",
+					"raw": "{{url}}/sc/helloworld?username={{default_access_token}}",
 					"host": [
 						"{{url}}"
 					],
 					"path": [
 						"sc",
-						"jannis-linksmart-agent"
+						"helloworld"
 					],
 					"query": [
 						{
@@ -1256,13 +1259,13 @@
 					}
 				],
 				"url": {
-					"raw": "{{url}}/sc/jannis-linksmart-agent?username={{default_access_token}}",
+					"raw": "{{url}}/sc/helloworld?username={{default_access_token}}",
 					"host": [
 						"{{url}}"
 					],
 					"path": [
 						"sc",
-						"jannis-linksmart-agent"
+						"helloworld"
 					],
 					"query": [
 						{

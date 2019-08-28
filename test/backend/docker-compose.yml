@@ -49,6 +49,13 @@ services:
         max-size: 10m
         max-file: "10"
 
+  helloworld-express-app:
+    image: "janniswarnat/helloworld-express-app:latest"
+    deploy:
+      replicas: 1
+    networks:
+      - services
+
 networks:
   services:
     driver: overlay

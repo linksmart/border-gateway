@@ -34,7 +34,7 @@ bind_addresses = [
         ]
 
           [http-proxy.domains.bgw.sc.translate_local_addresses.url_translation_map]
-          "tcp://mosquitto:1883" = "tcp://mosquitto:1883"
+          "tcp://mosquitto:1883" = "ssl://bgw-ssl:8883"
 
       [http-proxy.domains.bgw.auth]
       local_address = "http://localhost:5053"
