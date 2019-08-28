@@ -15,9 +15,7 @@
 			"brokerURI": "tcp://mosquitto:1883",
 			"regTopics": [],
 			"willTopics": [],
-			"qos": 1,
-			"username": "linksmart",
-			"password": "demo"
+			"qos": 1
 		},
 		"commonRegTopics": ["LS/v2/+/+/service",
 		"LS/v2/+/+/service/+"],

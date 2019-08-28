@@ -60,9 +60,9 @@ client.on('message', function (topic, message) {
 });
 
 client.on('connect', function () {
-    client.subscribe('Test', function (err) {
+    client.subscribe('tutorial', function (err) {
         if (!err) {
-            client.publish('Test', 'Message via Websocket proxy')
+            client.publish('tutorial', 'Message via Websocket proxy')
         }
     })
 })

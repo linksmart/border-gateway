@@ -1,36 +1,6 @@
 {
   "realm" : "realm1",
   "users" : [ {
-    "id" : "7831259c-9f84-46b7-9ef8-c9bb27c2759c",
-    "createdTimestamp" : 1560577385775,
-    "username" : "linksmart",
-    "enabled" : true,
-    "totp" : false,
-    "emailVerified" : true,
-    "attributes" : {
-      "bgw_rules" : [ "HTTPS/GET/# HTTPS/PUT/# HTTPS/DELETE/# MQTT/# WS/CONNECT/+/+/#" ]
-    },
-    "credentials" : [ {
-      "type" : "password",
-      "hashedSaltedValue" : "cz4yyh1KfKmKjVI652RPeGMCi5ReatyJ8AthmjnXm8nRcqnMk/LEO8wf+OHTXxJcAKDV9lCi7FN8/NVIQR6gIA==",
-      "salt" : "4W44YsiXobczh1g0bAp0ZQ==",
-      "hashIterations" : 27500,
-      "counter" : 0,
-      "algorithm" : "pbkdf2-sha256",
-      "digits" : 0,
-      "period" : 0,
-      "createdDate" : 1560577397550,
-      "config" : { }
-    } ],
-    "disableableCredentialTypes" : [ "password" ],
-    "requiredActions" : [ ],
-    "realmRoles" : [ "offline_access", "uma_authorization" ],
-    "clientRoles" : {
-      "account" : [ "view-profile", "manage-account" ]
-    },
-    "notBefore" : 0,
-    "groups" : [ "/write_access" ]
-  }, {
     "id" : "be37e155-81a6-40ee-a24b-5877bcf95c95",
     "createdTimestamp" : 1565687681351,
     "username" : "nginx",
@@ -38,7 +8,7 @@
     "totp" : false,
     "emailVerified" : true,
     "attributes" : {
-      "bgw_rules" : [ "HTTPS/GET/# HTTPS/PUT/# HTTPS/DELETE/# MQTT/# WS/CONNECT/+/+/#" ]
+      "bgw_rules" : [ "HTTPS/GET/# HTTPS/PUT/# HTTPS/DELETE/# MQTT/CON/mosquitto/1883/# MQTT/+/mosquitto/1883/tutorial WS/CONNECT/+/+/#" ]
     },
     "credentials" : [ {
       "type" : "password",
@@ -68,7 +38,7 @@
     "totp" : false,
     "emailVerified" : true,
     "attributes" : {
-      "bgw_rules" : [ "HTTPS/GET/# HTTPS/PUT/# HTTPS/DELETE/# MQTT/# WS/CONNECT/+/+/#" ]
+      "bgw_rules" : [ "HTTPS/GET/# HTTPS/PUT/# HTTPS/DELETE/# MQTT/CON/mosquitto/1883/# MQTT/+/mosquitto/1883/tutorial WS/CONNECT/+/+/#" ]
     },
     "credentials" : [ {
       "type" : "password",
@@ -98,7 +68,7 @@
     "totp" : false,
     "emailVerified" : true,
     "attributes" : {
-      "bgw_rules" : [ "HTTP/GET/# HTTP/PUT/# HTTP/DELETE/# MQTT/# WS/CONNECT/+/+/#" ]
+      "bgw_rules" : [ "HTTP/GET/# HTTP/PUT/# HTTP/DELETE/# MQTT/CON/mosquitto/1883/# MQTT/+/mosquitto/1883/tutorial WS/CONNECT/+/+/#" ]
     },
     "credentials" : [ {
       "type" : "password",
@@ -128,7 +98,7 @@
     "totp" : false,
     "emailVerified" : true,
     "attributes" : {
-      "bgw_rules" : [ "HTTP/GET/bgw/5050/sc/helloworld MQTT/# WS/CONNECT/+/+/# HTTP/PUT/bgw/5050/sc/helloworld HTTP/DELETE/bgw/5050/sc/helloworld" ]
+      "bgw_rules" : [ "HTTP/GET/bgw/5050/sc/helloworld MQTT/CON/mosquitto/1883/# MQTT/+/mosquitto/1883/tutorial WS/CONNECT/+/+/# HTTP/PUT/bgw/5050/sc/helloworld HTTP/DELETE/bgw/5050/sc/helloworld" ]
     },
     "credentials" : [ {
       "type" : "password",
@@ -158,7 +128,7 @@
     "totp" : false,
     "emailVerified" : true,
     "attributes" : {
-      "bgw_rules" : [ "HTTPS/GET/# HTTPS/PUT/# HTTPS/DELETE/# MQTT/# WS/CONNECT/+/+/#" ]
+      "bgw_rules" : [ "HTTPS/+/bgw-ssl/8443/sc/main_broker HTTPS/+/bgw-ssl/8443/sc/helloworld MQTT/CON/mosquitto/1883/# MQTT/+/mosquitto/1883/tutorial WS/CONNECT/+/+/#" ]
     },
     "credentials" : [ {
       "type" : "password",
