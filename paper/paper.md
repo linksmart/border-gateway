@@ -13,7 +13,7 @@ authors:
   - name: Mohammad Alhareeqi
     affiliation: 1
 affiliations:
- - name: Fraunhofer Institute for Applied Information Technology FIT
+ - name: Fraunhofer Institute for Applied Information Technology (FIT)
    index: 1
 date: 26 August 2019
 bibliography: ./paper.bib
@@ -31,7 +31,7 @@ Border Gateway offers a single entry point into a local IoT network using
 an extensible micro services architecture implemented in Node.js JavaScript. Currently the widely used protocols HTTP,
 MQTT v3.1.1 (@mqtt) and WebSocket (@rfc6455) are supported. Border Gateway only allows TLS-encrypted connections, authenticates
 each connection attempt against an OpenID Connect provider (@oidc), performs a more fine-grained authorization
-using a simple rule format and eventually forwards the request to the target service in the protected IoT
+using a simple rule format (@bgwdocs) and eventually forwards the request to the target service in the protected IoT
 network.
 
 The software has recently been deployed and improved in several Horizon 2020 research and innovation
