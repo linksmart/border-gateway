@@ -69,19 +69,21 @@ function checkSubCount() {
   fi
 }
 
-CA=$1
+CA=$1/CA.pem
+clientCert=$1/client.pem
+clientKey=$1/client.key
 
 host=$2
 if $3; then
   wsProtocol="wss"
-  mqttSecureParams="--cafile $CA"
+  mqttSecureParams="--cafile $CA --cert $clientCert --key $clientKey"
 else
   wsProtocol="ws"
   mqttSecureParams=""
 fi
 
-echo "cat $CA"
-cat "$CA"
+#echo "cat $CA"
+#cat "$CA"
 
 mqttPort=$4
 wsPort=$5
@@ -245,7 +247,7 @@ testWebsockets="./mqtt_over_websocket/index.js"
 testWebsocketsGeneric="./generic_websocket/index.js"
 
 echo "generic websockets anonymous"
-node "$testWebsocketsGeneric" "$CA" "$wsProtocol://$host:$wsPort/"
+node "$testWebsocketsGeneric" "$CA" "$clientCert" "$clientKey" "$wsProtocol://$host:$wsPort/"
 
 if [ $? -ne 1 ]; then
   echo "exit code = $?"
@@ -253,7 +255,7 @@ if [ $? -ne 1 ]; then
 fi
 
 echo "generic websockets wrong token"
-node "$testWebsocketsGeneric" "$CA" "$wsProtocol://$host:$wsPort/?access_token=123"
+node "$testWebsocketsGeneric" "$CA" "$clientCert" "$clientKey" "$wsProtocol://$host:$wsPort/?access_token=123"
 
 if [ $? -ne 1 ]; then
   echo "exit code = $?"
@@ -261,7 +263,7 @@ if [ $? -ne 1 ]; then
 fi
 
 echo "generic websockets wrong password"
-node "$testWebsocketsGeneric" "$CA" "$wsProtocol://$host:$wsPort/?basic_auth=123"
+node "$testWebsocketsGeneric" "$CA" "$clientCert" "$clientKey" "$wsProtocol://$host:$wsPort/?basic_auth=123"
 
 if [ $? -ne 1 ]; then
   echo "exit code = $?"
@@ -270,7 +272,7 @@ fi
 
 echo "generic websockets correct password"
 basedPassword=$(echo -n "$user:$pass" | base64)
-node "$testWebsocketsGeneric" "$CA" "$wsProtocol://$host:$wsPort/?basic_auth=$basedPassword"
+node "$testWebsocketsGeneric" "$CA" "$clientCert" "$clientKey" "$wsProtocol://$host:$wsPort/?basic_auth=$basedPassword"
 
 if [ $? -ne 0 ]; then
   echo "exit code = $?"
@@ -281,7 +283,7 @@ access_token=$(curl --cacert $CA --silent -d "client_id=$client_id" -d "client_s
 echo "access_token: $access_token"
 
 echo "generic websockets correct token"
-node "$testWebsocketsGeneric" "$CA" "$wsProtocol://$host:$wsPort/?access_token=$access_token"
+node "$testWebsocketsGeneric" "$CA" "$clientCert" "$clientKey" "$wsProtocol://$host:$wsPort/?access_token=$access_token"
 
 if [ $? -ne 0 ]; then
   echo "exit code = $?"
@@ -289,15 +291,15 @@ if [ $? -ne 0 ]; then
 fi
 
 echo "MQTT over websockets with user/pass qos 2"
-node "$testWebsockets" "$CA" "$wsProtocol"://"$host:$wsPort/?access_token=$access_token" $user $pass 2
-
+node "$testWebsockets" "$CA" "$clientCert" "$clientKey" "$wsProtocol"://"$host:$wsPort/?access_token=$access_token" $user $pass 2
+echo "exit code = $?"
 if [ $? -ne 0 ]; then
   echo "exit code = $?"
   exit 1
 fi
 
 echo "MQTT over websockets with user/pass qos 0"
-node "$testWebsockets" "$CA" "$wsProtocol"://"$host:$wsPort/?access_token=$access_token" $user $pass 0
+node "$testWebsockets" "$CA" "$clientCert" "$clientKey" "$wsProtocol"://"$host:$wsPort/?access_token=$access_token" $user $pass 0
 
 if [ $? -ne 0 ]; then
   echo "exit code = $?"
@@ -305,7 +307,7 @@ if [ $? -ne 0 ]; then
 fi
 
 echo "MQTT over websockets with user/pass qos 0 anonymous"
-node "$testWebsockets" "$CA" "$wsProtocol"://"$host:$wsPort/?access_token=$access_token" anonymous anonymous 0
+node "$testWebsockets" "$CA" "$clientCert" "$clientKey" "$wsProtocol"://"$host:$wsPort/?access_token=$access_token" anonymous anonymous 0
 
 if [ $? -ne 1 ]; then
   echo "exit code = $?"
@@ -316,7 +318,7 @@ access_token=$(curl --cacert $CA --silent -d "client_id=$client_id" -d "client_s
 echo "access_token: $access_token"
 
 echo "MQTT over websockets with user/pass qos 2"
-node "$testWebsockets" "$CA" "$wsProtocol"://"$host:$wsPort/?access_token=$access_token" $access_token "" 2
+node "$testWebsockets" "$CA" "$clientCert" "$clientKey" "$wsProtocol"://"$host:$wsPort/?access_token=$access_token" $access_token "" 2
 
 if [ $? -ne 0 ]; then
   echo "exit code = $?"
@@ -324,7 +326,7 @@ if [ $? -ne 0 ]; then
 fi
 
 echo "MQTT over websockets with user/pass qos 0"
-node "$testWebsockets" "$CA" "$wsProtocol"://"$host:$wsPort/?access_token=$access_token" $access_token "" 0
+node "$testWebsockets" "$CA" "$clientCert" "$clientKey" "$wsProtocol"://"$host:$wsPort/?access_token=$access_token" $access_token "" 0
 
 if [ $? -ne 0 ]; then
   echo "exit code = $?"

@@ -1,13 +1,13 @@
 #!/bin/bash
 
-CA=$1
+CA=$1/CA.pem
 
 scriptDir="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
 cd $scriptDir
 
 echo "current directory is $(pwd)"
 echo "Test is $TESTDIR"
-newman run -k --bail -d "data.json" test_border_gateway.postman_collection.json
+newman run -k --bail --ssl-client-cert $1/client.pem --ssl-client-key $1/client.key -d "data.json" test_border_gateway.postman_collection.json
 
 if [ "$?" -ne 0 ]; then
   exit 1
@@ -35,7 +35,7 @@ echo "audience = $audience"
 echo "client_id = $client_id"
 echo "realm1_client_secret = $realm1_client_secret"
 
-./test_ws_and_mqtt.sh "$CA" "$domain" $secure "$mqttPort" "$wsPort" "$username" "$password" "$tokenEndpoint" "$audience" "$client_id" "$realm1_client_secret"
+./test_ws_and_mqtt.sh "$1" "$domain" $secure "$mqttPort" "$wsPort" "$username" "$password" "$tokenEndpoint" "$audience" "$client_id" "$realm1_client_secret"
 
 if [ "$?" -ne 0 ]; then
   exit 1

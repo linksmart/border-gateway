@@ -43,17 +43,23 @@ function sendPing(ws) {
 
 
 let caPath = process.argv[2];
+let clientCertPath = process.argv[3];
+let clientCertKey = process.argv[4];
 
 agentOptions = {
-    ca: fs.readFileSync(caPath)//,
+    ca: fs.readFileSync(caPath),
+    cert: fs.readFileSync(clientCertPath),
+    key: fs.readFileSync(clientCertKey),
     //rejectUnauthorized: false
 };
 
 agent = new https.Agent(agentOptions);
-let url = process.argv[3];
+let url = process.argv[5];
 logger.log('debug', 'Starting generic_websocket', {
     ca: caPath,
-    url: url
+    url: url,
+    cert: clientCertPath,
+    key: clientCertKey
 })
 
 let ws;

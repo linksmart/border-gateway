@@ -3,6 +3,9 @@
 # Certificate files
 tls_key = "/bgw/certs/bgw-ssl_sec_key_wo_pass.pem"
 tls_cert = "/bgw/certs/bgw-ssl.pem"
+# Choose if you want to use client certificates
+request_client_cert = false
+client_ca_path = "/bgw/certs/CA.pem"
 
   # Configuration of the TLS termination proxies for services behind the external interface
   [[external-interface.servers]]

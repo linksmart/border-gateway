@@ -1,16 +1,31 @@
 const mqtt = require('mqtt')
+const logger = require('../../logger/log')("mqtt_over_websocket", "debug");
 const https = require('https');
 const fs = require('fs');
-const url = process.argv[3];
-const username = process.argv[4];
-const password = process.argv[5];
-const qos = process.argv[6];
+const ca = process.argv[2];
+const cert = process.argv[3];
+const key = process.argv[4];
+const url = process.argv[5];
+const username = process.argv[6];
+const password = process.argv[7];
+const qos = process.argv[8];
+
+logger.log('debug', 'Starting mqtt_over_websocket', {
+    ca: ca,
+    cert: cert,
+    key: key,
+    url: url,
+    username: username,
+    password: password
+});
 
 let client
 if (url.includes('wss:')) {
     agentOptions = {
         //rejectUnauthorized: false,
-        ca: fs.readFileSync(process.argv[2])
+        ca: fs.readFileSync(ca),
+        cert: fs.readFileSync(cert),
+        key: fs.readFileSync(key)
     };
     agent = new https.Agent(agentOptions);
     client = mqtt.connect(url, {wsOptions: {agent: agent}, username: username, password: password});
