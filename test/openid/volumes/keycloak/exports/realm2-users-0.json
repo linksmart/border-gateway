@@ -8,7 +8,7 @@
     "totp" : false,
     "emailVerified" : true,
     "attributes" : {
-      "bgw_rules" : [ "HTTPS/GET/# MQTT/" ]
+      "bgw_rules" : [ "HTTPS/GET/# MQTT/CON/mosquitto/1883/#" ]
     },
     "credentials" : [ {
       "type" : "password",
