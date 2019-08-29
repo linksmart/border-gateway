@@ -38,7 +38,7 @@
     "totp" : false,
     "emailVerified" : true,
     "attributes" : {
-      "bgw_rules" : [ "HTTPS/GET/# MQTT/CON/mosquitto/1883/# MQTT/+/mosquitto/1883/tutorial" ]
+      "bgw_rules" : [ "HTTPS/GET/# MQTT/CON/mosquitto/1883/# MQTT/+/mosquitto/1883/tutorial MQTT/SUB/mosquitto/1883/subonly" ]
     },
     "credentials" : [ {
       "type" : "password",
@@ -68,7 +68,7 @@
     "totp" : false,
     "emailVerified" : true,
     "attributes" : {
-      "bgw_rules" : [ "HTTP/GET/# MQTT/CON/mosquitto/1883/# MQTT/+/mosquitto/1883/tutorial" ]
+      "bgw_rules" : [ "HTTP/GET/# MQTT/CON/mosquitto/1883/# MQTT/+/mosquitto/1883/tutorial MQTT/SUB/mosquitto/1883/subonly" ]
     },
     "credentials" : [ {
       "type" : "password",
@@ -98,7 +98,7 @@
     "totp" : false,
     "emailVerified" : true,
     "attributes" : {
-      "bgw_rules" : [ "HTTP/GET/# MQTT/CON/mosquitto/1883/# MQTT/+/mosquitto/1883/tutorial" ]
+      "bgw_rules" : [ "HTTP/GET/# MQTT/CON/mosquitto/1883/# MQTT/+/mosquitto/1883/tutorial MQTT/SUB/mosquitto/1883/subonly" ]
     },
     "credentials" : [ {
       "type" : "password",
@@ -128,7 +128,7 @@
     "totp" : false,
     "emailVerified" : true,
     "attributes" : {
-      "bgw_rules" : [ "HTTPS/+/bgw-ssl/8443/sc/main_broker HTTPS/+/bgw-ssl/8443/sc/helloworld MQTT/CON/mosquitto/1883/# MQTT/+/mosquitto/1883/tutorial" ]
+      "bgw_rules" : [ "HTTPS/+/bgw-ssl/8443/sc/main_broker HTTPS/+/bgw-ssl/8443/sc/helloworld MQTT/CON/mosquitto/1883/# MQTT/+/mosquitto/1883/tutorial MQTT/SUB/mosquitto/1883/subonly" ]
     },
     "credentials" : [ {
       "type" : "password",

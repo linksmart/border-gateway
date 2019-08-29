@@ -33,12 +33,11 @@ function checkLog() {
     fi
   done
 
-  killSub
-
   if [ "$logOccurence" -lt 1 ]; then
     echo "logOccurence is wrong: number of occurences of $1 in log is less than 1"
     echo "cat mosquitto_sub.log:"
     cat ./mosquitto_sub.log
+    killSub
     exit 1
   fi
 }
@@ -104,6 +103,7 @@ echo "$command"
 unbuffer mosquitto_sub --debug --keepalive 3600 $mqttSecureParams -h $host -p $mqttPort -t tutorial &>./mosquitto_sub.log &
 
 checkLog "Connection Refused: not authorised."
+killSub
 
 echo "mosquitto_sub user/pass ($user/$pass) qos 2 in background, other topic"
 command="unbuffer mosquitto_sub --debug --keepalive 3600 $mqttSecureParams -h $host -p $mqttPort -t other -u $user -P $pass -q 2 &>./mosquitto_sub.log &"
@@ -112,6 +112,31 @@ echo "$command"
 unbuffer mosquitto_sub --debug --keepalive 3600 $mqttSecureParams -h $host -p $mqttPort -t other -u "$user" -P "$pass" -q 2 &>./mosquitto_sub.log &
 
 checkLog "Subscribed (mid: 1): 128"
+killSub
+
+echo "mosquitto_sub user/pass ($user/$pass) qos 2 in background, subonly topic"
+command="unbuffer mosquitto_sub --debug --keepalive 3600 $mqttSecureParams -h $host -p $mqttPort -t subonly -u $user -P $pass -q 2 &>./mosquitto_sub.log &"
+echo "$command"
+>./mosquitto_sub.log
+unbuffer mosquitto_sub --debug --keepalive 3600 $mqttSecureParams -h $host -p $mqttPort -t subonly -u "$user" -P "$pass" -q 2 &>./mosquitto_sub.log &
+
+checkLog "Subscribed (mid: 1): 2"
+checkSubCount 5
+
+message="mosquitto_pub user/pass ($user/$pass) qos 2, subonly topic, expected exit code: 0"
+echo "$message"
+command="mosquitto_pub $mqttSecureParams --debug -h $host -p $mqttPort -t subonly -m \"$message\" -u \"$user\" -P \"$pass\" -q 2"
+echo "$command"
+eval "$command$"
+
+if [ $? -ne 0 ]; then
+  echo "exit code = $?"
+  killSub
+  exit 1
+fi
+
+checkSubCount 5
+killSub
 
 echo "mosquitto_sub user/pass ($user/$pass) qos 2 in background"
 command="unbuffer mosquitto_sub --debug --keepalive 3600 $mqttSecureParams -h $host -p $mqttPort -t tutorial -u $user -P $pass -q 2 &>./mosquitto_sub.log &"
