@@ -56,7 +56,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"rule\": \"MQTT/#\",\n    \"openidConnectProviderName\": \"linksmart\"\n}"
+					"raw": "{\n    \"rule\": \"MQTT/CON/mosquitto/1883/#\",\n    \"openidConnectProviderName\": \"linksmart\"\n}"
 				},
 				"url": {
 					"raw": "{{url}}/auth/authorize",
@@ -324,7 +324,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"rule\": \"MQTT/#\",\n    \"openidConnectProviderName\": \"linksmart\"\n}"
+					"raw": "{\n    \"rule\": \"MQTT/CON/mosquitto/1883/#\",\n    \"openidConnectProviderName\": \"linksmart\"\n}"
 				},
 				"url": {
 					"raw": "{{url}}/auth/authorize",
@@ -388,7 +388,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"rule\": \"MQTT/#\",\n    \"openidConnectProviderName\": \"linksmart\"\n}"
+					"raw": "{\n    \"rule\": \"MQTT/CON/mosquitto/1883/#\",\n    \"openidConnectProviderName\": \"linksmart\"\n}"
 				},
 				"url": {
 					"raw": "{{url}}/auth/authorize",
