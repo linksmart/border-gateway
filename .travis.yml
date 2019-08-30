@@ -20,3 +20,8 @@ deploy:
       docker push linksmart/bgw:${TRAVIS_TAG}
     on:
       tags: true
+
+notifications:
+  email:
+    on_success: always
+    on_failure: always
