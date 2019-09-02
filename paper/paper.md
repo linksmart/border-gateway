@@ -37,7 +37,8 @@ basic security measures (like authentication and authorization) to each componen
  
 To address security concerns for an IoT AS centrally, LinkSmart Border Gateway offers a single entry point into the system providing basic security mechanisms for all components behind it. It is implemented in Node.js JavaScript based on an extensible microservices architecture; see figure \ref{arch}. The microservices are described as follows:
 
-* **External interface service** is the facade for the other Border Gateway microservices and allows only TLS-encrypted connections on configurable ports and forwards valid requests to the proxy services (see below). It can be configured to also demand X.509 client certificates.
+* **External interface service** is the facade for the other Border Gateway microservices and allows only TLS-encrypted connections from outside the IoT AS on configurable ports and forwards valid requests to the proxy services (see below).
+If mTLS is activated it also authenticates the client with the X.509 certificate of the client
 * **Auth service** is asked by the proxy services for a decision about whether a request is to be allowed or rejected for a specific user. The user credentials must be provided in an HTTP authorization header using basic authentication [@rfc7617] or bearer token [@rfc6750]. These are then authenticated against an OpenID Connect (OIDC) provider [@oidc] and additionally a more fine-grained authorization using a simple rule format (see below) is performed. The authorization rule definitions must be maintained as user attributes in the backend of the OIDC provider and need to be added as a custom claim to the provider's access tokens. The implementation of this is OIDC provider specific and has been tested and documented for Keycloak [@keycloak] and Auth0 [@auth0] (see @bgwdocs). Access tokens are being cached in a Redis database [@redis] for the duration of their lifespan.
 * **HTTP proxy service** supports multiple ways to provide credentials for a request, notably basic authentication and bearer token in an HTTP authorization header. It asks the Auth service whether the request is allowed and either rejects the request or forwards it to the target service behind Border Gateway. The HTTP response is scanned for service or component addresses internal to the IoT AS which are then translated into external addresses to be accessible from outside Border Gateway.
 * **MQTT proxy service** supports MQTT v3.1.1 [@mqtt]. Credentials can be provided in the standard fields username and password of an MQTT CONNECT package. It is also possible to provide an OIDC access token in the username field. Again, the Auth service is queried to decide whether to forward or reject the request.
@@ -63,3 +64,5 @@ projects funded by the European Union, namely in the domains smart city [@monica
 We acknowledge contributions from Raphael Ahrens, José Ángel Carvajal Soto and Farshid Tavakolizadeh during the design and development of this project.
 
 # References
+
+
