@@ -51,7 +51,7 @@ The format of the authorization rules maintained in the OIDC provider's backend 
   * Port
   * Topic (in case of MQTT) / Path (in case of HTTP)
   
-The rule ``HTTPS/GET/demo.linksmart.eu/443/example`` would allow the user GET-only access on endpoint ``https://demo.linksmart.eu/example`` while rule ``MQTT/+/mosquitto/1883/example`` would allow publication and subscription rights to topic ``example`` on an MQTT broker running at ``mosquitto:1883``. Note that path-based authorization rules are currently not supported for the WebSocket proxy.
+The rule ``HTTPS/GET/demo.linksmart.eu/443/example`` would allow the user GET-only access on endpoint ``https://demo.linksmart.eu/example`` while rule ``MQTT/+/mosquitto/1883/example`` would allow publication and subscription rights to topic ``example`` on an MQTT broker running at ``mosquitto:1883``. Note that authorization for the WebSocket proxy is currently only perfomed on connection establishment and not on the level of individual messages.
 
 Border Gateway could be extended with additional proxy microservices to support additional protocols in a straightfoward manner.
 
