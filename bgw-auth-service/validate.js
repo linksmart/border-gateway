@@ -1,13 +1,10 @@
 const config = require('./config');
 const logger = require('../logger/log')(config.serviceName, config.logLevel);
-const tracer = require('../tracer/trace').jaegerTrace(config.serviceName, config.enableDistributedTracing);
-const opentracing = require('opentracing');
 const fetch = require('node-fetch');
 const qs = require("querystring");
 const jwt = require('jsonwebtoken');
 const getPem = require('rsa-pem-from-mod-exp');
 const https = require("https");
-const tls = require('tls');
 const fs = require('fs');
 const redis = require("redis");
 const asyncRedis = require("async-redis");
@@ -15,7 +12,6 @@ const shortid = require('shortid');
 let redisClient;
 const crypto = require('crypto');
 const algorithm = 'aes256';
-const remoteServiceName = 'openidConnectProvider';
 const bgwId = shortid.generate();
 
 redisClient = redis.createClient({
@@ -292,11 +288,10 @@ async function getProfile(openid_connect_provider, source, username, password, a
     profile.user_id = profile.at_body.preferred_username || profile.at_body.sub;
     profile.rules = rules;
 
-    const res = {
+    let res = {
         status: true,
         profile: profile
     };
-
     return res;
 }
 

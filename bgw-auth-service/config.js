@@ -53,7 +53,7 @@ if (config.openidCA && fs.existsSync(config.openidCA)) {
 const agent = new https.Agent(
     agentOptions);
 
-const providerKeys = Object.keys(config.openid_connect_providers)
+const providerKeys = Object.keys(config.openid_connect_providers);
 for (const providerKey of providerKeys) {
     const provider = config.openid_connect_providers[providerKey];
 
@@ -78,10 +78,7 @@ for (const providerKey of providerKeys) {
             provider.authorization_endpoint = response.data.authorization_endpoint;
             provider.jwks_uri = response.data.jwks_uri;
 
-            let issuer = {};
-            let client = {};
-
-            issuer = new Issuer({
+            let issuer = new Issuer({
                 issuer: provider.issuer,
                 authorization_endpoint: provider.authorization_endpoint,
                 token_endpoint: provider.token_endpoint,

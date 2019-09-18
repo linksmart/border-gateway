@@ -2,7 +2,6 @@ const config = require('./config');
 const logger = require('../logger/log')(config.serviceName,config.logLevel);
 const url = require("url");
 const domainMatch = require('domain-match');
-const bs36 = require('base-x')('0123456789abcdefghijklmnopqrstuvwxyz');
 
 const checkUrl = /(https?|tcp|ssl|mqtt):\/\/([\-\:\_\.\w\d]*)/g;
 

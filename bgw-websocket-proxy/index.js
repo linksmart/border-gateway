@@ -352,7 +352,7 @@ wss.on('close', function close() {
     logger.log("debug", "sever event close");
 });
 
-wss.on('connection', function connection(serverSocket, request) {
+wss.on('connection', async function connection(serverSocket, request) {
     logger.log("debug", "server event connection");
 
     serverSocket.isAlive = true;
@@ -405,13 +405,13 @@ wss.on('connection', function connection(serverSocket, request) {
     if (config.no_auth) {
         serverSocket.bgwAuthorized = true;
         logger.log("debug", "Authorized because of no_auth");
-        createSocketToUpstream(serverSocket, request);
+        await createSocketToUpstream(serverSocket, request);
     } else {
-        wsAuth(serverSocket, request).then(result => {
+        wsAuth(serverSocket, request).then(async result => {
             if (result) {
                 serverSocket.bgwAuthorized = true;
                 logger.log("debug", "Authorized because of auth-service");
-                createSocketToUpstream(serverSocket, request);
+                await createSocketToUpstream(serverSocket, request);
             } else {
                 logger.log("debug", "Not Authorized, terminating.");
 

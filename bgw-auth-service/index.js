@@ -18,7 +18,7 @@ function getAuthUrl(openidConnectProviderName, targetPath) {
     let openid_connect_provider = config.openid_connect_providers[openidConnectProviderName];
 
 
-    authUrl = openid_connect_provider.client.authorizationUrl({
+    let authUrl = openid_connect_provider.client.authorizationUrl({
         redirect_uri: openid_connect_provider.redirect_uri,
         audience: openid_connect_provider.audience,
         scope: "openid profile",
@@ -167,7 +167,7 @@ app.post('/authorizeGUI', async (req, res) => {
 
         let authorizationResult;
         if (authenticationResult.status) {
-            var resource;
+            let resource;
             try {
                 resource = new url.URL(req.body.resource);
                 logger.log('debug', 'url create from resource', {url: resource});

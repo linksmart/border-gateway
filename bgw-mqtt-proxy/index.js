@@ -110,7 +110,7 @@ const server = net.createServer(serverOptions, (srcClient) => {
                         subscriptions: [{
                             topic: packet.topic
                         }]
-                    }
+                    };
                     const ctx = rootSpan.context();
                     wrappedValidate(clientAddress, subPacket, srcClient.credentials, ctx).then(result => {
                         let valid = result;
@@ -195,7 +195,7 @@ const server = net.createServer(serverOptions, (srcClient) => {
                         (packet.cmd === 'publish' && config.disconnect_on_unauthorized_publish) ||
                         (packet.cmd === 'connect')
                     ) {
-                        if (valid.packet && valid.packet.cmd == "connack") {
+                        if (valid.packet && valid.packet.cmd === "connack") {
                             logger.log('debug', "Writing packet to srcClient", {packetCommand: (valid.packet && valid.packet.cmd)});
                             valid.packet && srcClient.write(mqtt.generate(valid.packet));
                         }
@@ -228,8 +228,8 @@ const server = net.createServer(serverOptions, (srcClient) => {
 
 server.on('error', (error) => {
     logger.log("error", "" + config.serviceName + " server event error", {
-        errorName: err.name,
-        errorMessage: err.message
+        errorName: error.name,
+        errorMessage: error.message
     });
 });
 

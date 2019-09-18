@@ -13,7 +13,6 @@
     }
   },
   "dependencies": {
-    "base-x": "latest",
     "cors": "latest",
     "domain-match": "latest",
     "express": "latest",
