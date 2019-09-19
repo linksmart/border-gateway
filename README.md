@@ -26,7 +26,7 @@ These are the main functionalities:
 * Address translation for HTTP requests, i.e. internal IoT-AS addresses in HTTP responses can be
   translated to external addresses that the requester is able to connect to.
 
-[[https://github.com/linksmart/border-gateway/blob/master/paper/figure.png|alt=figure]]
+![Border Gateway architecture](https://github.com/linksmart/border-gateway/blob/master/paper/figure.png)
 
 ## Getting Started
 
