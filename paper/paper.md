@@ -46,10 +46,10 @@ To address security concerns for an IoT AS centrally, LinkSmart Border Gateway o
 The format of the authorization rules maintained in the OIDC provider's backend as user attributes is inspired by the usage of topic levels and wildcards in MQTT and allows the definition of authorization rules based on:
 
   * Protocol
-  * Method (e.g. GET / POST for HTTP and PUB / SUB for MQTT)
+  * Method (e.g. GET / POST for HTTP, PUB / SUB for MQTT, CONNECT for WebSocket)
   * Hostname
   * Port
-  * Topic (in case of MQTT) / Path (in case of HTTP)
+  * Topic (in case of MQTT) / Path (in case of HTTP and WebSocket)
   
 The rule ``HTTPS/GET/demo.linksmart.eu/443/example`` would allow the user GET-only access on endpoint ``https://demo.linksmart.eu/example`` while rule ``MQTT/+/mosquitto/1883/example`` would allow publication and subscription rights to topic ``example`` on an MQTT broker running at ``mosquitto:1883``. Note that authorization for the WebSocket proxy is currently only perfomed on connection establishment and not on the level of individual messages.
 
