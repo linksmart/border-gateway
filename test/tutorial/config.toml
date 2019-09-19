@@ -127,6 +127,7 @@ client_secret = "d6e735a2-7554-499a-b9af-a0838ec23a1f"
     client_id = "bgw_client"
     client_secret = "d6e735a2-7554-499a-b9af-a0838ec23a1f"
     redirect_uri = "https://bgw-ssl:8443/callback"
+    # Authorization rules for anonymous requests
     anonymous_bgw_rules = "HTTPS/GET/#"
 
     # Configuration of alternative OpenID Connect provider
@@ -135,4 +136,5 @@ client_secret = "d6e735a2-7554-499a-b9af-a0838ec23a1f"
     audience = ["bgw_client","gui"]
     client_id = "bgw_client"
     client_secret = "33623f55-711f-4f6e-9ba8-2292c9888c29"
+    # Authorization rules for anonymous requests
     anonymous_bgw_rules = "HTTPS/GET/#"
