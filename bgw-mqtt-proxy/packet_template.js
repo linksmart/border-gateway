@@ -9,7 +9,8 @@ module.exports.connack = () => ({
         topic: null,
         payload: null,
         sessionPresent: false,
-        returnCode: 5
+        returnCode: 5,
+        reasonCode: 5
     });
 
 module.exports.suback = (messageId, granted) => ({

@@ -11,14 +11,6 @@ const mqttAuth = async (port, credentials, method, path = '', ctx) => {
     childSpan.setTag("function", "mqttAuth");
     const payload = `MQTT/${method}/${config.broker.address}/${config.broker.port}/${path}`;
     childSpan.setTag("payload", payload);
-
-    if (config.no_auth) {
-
-        childSpan.setTag("no_auth", "true");
-        childSpan.finish();
-        return true
-    }
-
     let authorization;
     if (credentials.password && credentials.password !== '') {
         authorization = 'Basic ' + Buffer.from(credentials.username + ':' + credentials.password).toString('base64');
@@ -67,7 +59,7 @@ module.exports = {
             let childSpan = tracer.startSpan('validate', {childOf: ctx});
             childSpan.setTag("function", "validate");
             childSpan.setTag("packet.cmd", packet.cmd);
-            childSpan.setTag("packet.clientId", packet.clientId);
+            childSpan.setTag("packet.clientId", packet.clientId || 'no_client_id');
             childSpan.setTag("packet.topic", packet.topic);
 
             let result = true;

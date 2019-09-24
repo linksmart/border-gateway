@@ -14,11 +14,12 @@ authors:
     orcid: 0000-0002-8233-309X
     affiliation: 1
   - name: Mohammad Alhareeqi
+    orcid: 0000-0002-1237-1939
     affiliation: 1
 affiliations:
  - name: Fraunhofer Institute for Applied Information Technology (FIT)
    index: 1
-date: 26 August 2019
+date: 20 September 2019
 bibliography: paper.bib
 csl: chicago-author-date.csl
 ---

@@ -24,7 +24,8 @@ let config = {
     no_auth: false,
     auth_service: "http://localhost:5053",
     openidConnectProviderName: undefined,
-    enableDistributedTracing: false
+    enableDistributedTracing: false,
+    protocolVersion: 4
 };
 
 let configFromFile = {};

@@ -8,6 +8,8 @@ const shortid = require('shortid');
 const mqtt = require('mqtt-packet');
 const validate = require('./validate');
 
+const opts = {protocolVersion: config.protocolVersion};
+
 function waitUntilEmpty(packetSet, callback, counter) {
     setTimeout(
         function () {
@@ -58,6 +60,30 @@ const server = net.createServer(serverOptions, (srcClient) => {
     });
     const dstClient = socketConnect(clientOptions);
 
+    dstClient.on('close', (hadError) => {
+        logger.log('debug', "dstClient closed", {hadError: hadError});
+    });
+
+    srcClient.on('close', (hadError) => {
+        logger.log('debug', "srcClient closed", {hadError: hadError});
+    });
+
+    dstClient.on('end', () => {
+        logger.log('debug', "dstClient ended");
+    });
+
+    srcClient.on('end', () => {
+        logger.log('debug', "srcClient ended");
+    });
+
+    dstClient.on('ready', () => {
+        logger.log('debug', "dstClient ready");
+    });
+
+    srcClient.on('ready', () => {
+        logger.log('debug', "srcClient ready");
+    });
+
     dstClient.on('error', (err) => {
         logger.log('error', "err in dstClient", {errorName: err.name, errorMessage: err.message});
         srcClient && srcClient.destroy(err);
@@ -71,10 +97,20 @@ const server = net.createServer(serverOptions, (srcClient) => {
     });
 
     dstClient.on("connect", () => {
-        const srcParser = mqtt.parser();
-        const dstParser = mqtt.parser();
+        const srcParser = mqtt.parser(opts);
+        const dstParser = mqtt.parser(opts);
+        // const noopParser = mqtt.parser(opts);
+        //
+        // noopParser.on('packet', (packet) => {
+        //     logger.log('debug', "packet event emitted on noopParser", {packet: packet});
+        // });
+        //
+        // noopParser.on('error', (error) => {
+        //     logger.log('debug', "error event emitted on noopParser", {errorMessage: error.message});
+        // });
 
         srcClient.on('data', (data) => {
+            logger.log('debug', "srcClient has data", {data: data});
             try {
                 srcParser.parse(data);
             } catch (err) {
@@ -82,147 +118,188 @@ const server = net.createServer(serverOptions, (srcClient) => {
             }
         });
 
+        dstClient.on('data', (data) => {
+            logger.log('debug', "dstClient has data", {data: data});
+            try {
+                dstParser.parse(data)
+            } catch (err) {
+                logger.log('error', "Parse error in dstParser", {errorName: err.name, errorMessage: err.message});
+            }
+        });
+
         const clientAddress = `${srcClient.remoteAddress}:${srcClient.remotePort}`;
         srcClient.credentials = {};
         srcClient.packetSet = new Set([]);
 
-        if (config.authorize_response) {
-            dstClient.on('data', (data) => {
-                try {
-                    dstParser.parse(data)
-                } catch (err) {
-                    logger.log('error', "Parse error in dstParser", {errorName: err.name, errorMessage: err.message});
-                }
+        if (config.no_auth) {
+            srcParser.on('packet', (packet) => {
+                logger.log('debug', "packet event emitted on srcParser", {packet: packet});
             });
+            logger.log('debug', "Read from srcClient and pipe to dstClient without authorizing", {});
+            srcClient.pipe(dstClient);
 
             dstParser.on('packet', (packet) => {
                 logger.log('debug', "packet event emitted on dstParser", {packet: packet});
-                let rootSpan = tracer.startSpan('dstClient-packet');
+            });
+            logger.log('debug', "Read from dstClient and pipe to srcClient without authorizing responses", {});
+            dstClient.pipe(srcClient);
+        } else {
+            srcParser.on('packet', (packet) => {
+                logger.log('debug', "packet event emitted on srcParser", {packet: packet});
+                let rootSpan = tracer.startSpan('srcClient-packet');
                 rootSpan.setTag("packet.cmd", packet.cmd);
-                rootSpan.setTag("packet.clientId", packet.clientId);
+                rootSpan.setTag("packet.clientId", packet.clientId || 'no_client_id');
                 rootSpan.setTag("packet.topic", packet.topic);
 
-                // response authorization
-                if (packet.cmd === 'publish') {
+                let packetID = shortid.generate();
 
-                    let subPacket = {
-                        cmd: 'subscribe',
-                        subscriptions: [{
-                            topic: packet.topic
-                        }]
+                for (let key in packet) {
+                    if (packet.hasOwnProperty(key)) {
+                        if (key === 'cmd' || key === 'clientId' || key === 'topic') {
+                            packetID = packetID + "_" + (packet[key] || 'no_client_id');
+                        }
+                    }
+                }
+
+                if (packet.cmd !== 'disconnect') {
+                    srcClient.packetSet.add(packetID);
+                    logger.log('debug', "srcClient.packetSet", {packetSet: srcClient.packetSet});
+                }
+                // get the client key and store it
+                if (packet.cmd === 'connect') {
+                    srcClient.credentials = {
+                        username: packet.username,
+                        password: packet.password && "" + packet.password
                     };
-                    const ctx = rootSpan.context();
-                    wrappedValidate(clientAddress, subPacket, srcClient.credentials, ctx).then(result => {
-                        let valid = result;
-                        logger.log('debug', "Dummy response authorization packet validated", {packetCommand: subPacket.cmd, result: valid});
 
-                        if (valid.status) {
-                            logger.log('debug', "Writing packet to srcClient", {packetCommand: packet.cmd});
-                            srcClient.write(mqtt.generate(packet));
+                    delete packet.username;
+                    delete packet.password;
+                    broker.username && (packet.username = broker.username);
+                    broker.password && (packet.password = broker.password);
+                }
+
+                const ctx = rootSpan.context();
+                wrappedValidate(clientAddress, packet, srcClient.credentials, ctx).then(result => {
+                    let valid = result;
+                    logger.log('debug', "packet validated", {packet: packet, result: valid});
+
+                    if (valid.status) {
+
+                        if (packet.cmd === 'disconnect') {
+                            waitUntilEmpty(srcClient.packetSet, function () {
+                                let generatedPacket = mqtt.generate(valid.packet, opts);
+                                logger.log('debug', "Writing packet to dstClient", {
+                                    packet: packet,
+                                    validPacket: valid.packet
+                                });
+                                dstClient.write(generatedPacket);
+                            }, 0);
                         } else {
-                            logger.log('info', "Disconnecting clients because of unauthorized response", {packetCommand: packet.cmd});
+                            let generatedPacket = mqtt.generate(valid.packet, opts);
+                            logger.log('debug', "Writing packet to dstClient", {
+                                packet: packet,
+                                validPacket: valid.packet
+                            });
+                            dstClient.write(generatedPacket);
+                        }
+                    } else {
+                        // configurable disconnect in case of an unauthorized request
+                        // always disconnect clients in case of a unauthorized connect request after forwarding the connack
+                        if (
+                            (packet.cmd === 'subscribe' && config.disconnect_on_unauthorized_subscribe) ||
+                            (packet.cmd === 'publish' && config.disconnect_on_unauthorized_publish) ||
+                            (packet.cmd === 'connect')
+                        ) {
+                            if (valid.packet && valid.packet.cmd === "connack") {
+                                let generatedPacket = mqtt.generate(valid.packet, opts);
+                                logger.log('debug', "Writing packet to srcClient", {
+                                    packet: packet,
+                                    validPacket: valid.packet
+                                });
+                                valid.packet && srcClient.write(generatedPacket);
+                            }
+
+                            logger
+                                .log('info', "Destroying clients because of unauthorized request", {packet: packet});
                             srcClient.destroy();
                             dstClient.destroy();
                         }
-                    }).catch(err => {
-                        logger.log('error', "Error when validating", {errorName: err.name, errorMessage: err.message});
-                    });
-                } else {
-                    logger.log('debug', "Writing packet to srcClient", {packetCommand: packet.cmd});
-                    srcClient.write(mqtt.generate(packet));
-                }
+                        // if a disconnection is not configured, just forward the response to srcClient
+                        else {
+                            let generatedPacket = mqtt.generate(valid.packet, opts);
+                            logger.log('debug', "Writing packet to srcClient", {
+                                packet: packet,
+                                validPacket: valid.packet
+                            });
+                            valid.packet && srcClient.write(generatedPacket);
+                        }
+                    }
+                    if (packet.cmd !== 'disconnect') {
+                        srcClient.packetSet.delete(packetID);
+
+                    }
+                }).catch(err => {
+                    logger.log('error', "Error when validating", {errorName: err.name, errorMessage: err.message});
+                    if (packet.cmd !== 'disconnect') {
+                        srcClient.packetSet.delete(packetID);
+                    }
+                });
                 rootSpan.finish();
             });
 
+            if (config.authorize_response) {
+                dstParser.on('packet', (packet) => {
+                    logger.log('debug', "packet event emitted on dstParser", {packet: packet});
+                    let rootSpan = tracer.startSpan('dstClient-packet');
+                    rootSpan.setTag("packet.cmd", packet.cmd);
+                    rootSpan.setTag("packet.clientId", packet.clientId || 'no_client_id');
+                    rootSpan.setTag("packet.topic", packet.topic);
 
-        } else {
-            logger.log('debug', "Read from dstClient and pipe to srcClient without authorizing responses", {});
-            dstClient.pipe(srcClient);
-        }
+                    // response authorization
+                    if (packet.cmd === 'publish') {
 
-        srcParser.on('packet', (packet) => {
-            logger.log('debug', "packet event emitted on srcParser", {packet: packet});
-            let rootSpan = tracer.startSpan('srcClient-packet');
-            rootSpan.setTag("packet.cmd", packet.cmd);
-            rootSpan.setTag("packet.clientId", packet.clientId);
-            rootSpan.setTag("packet.topic", packet.topic);
+                        let subPacket = {
+                            cmd: 'subscribe',
+                            subscriptions: [{
+                                topic: packet.topic
+                            }]
+                        };
+                        const ctx = rootSpan.context();
+                        wrappedValidate(clientAddress, subPacket, srcClient.credentials, ctx).then(result => {
+                            let valid = result;
+                            logger.log('debug', "Dummy response authorization packet validated", {
+                                packet: subPacket,
+                                result: valid
+                            });
 
-            let packetID = shortid.generate();
-
-            for (let key in packet) {
-                if (packet.hasOwnProperty(key)) {
-                    if (key === 'cmd' || key === 'clientId' || key === 'topic') {
-                        packetID = packetID + "_" + packet[key];
-                    }
-                }
-            }
-
-            if (packet.cmd !== 'disconnect') {
-                srcClient.packetSet.add(packetID);
-                logger.log('debug', "srcClient.packetSet", {packetSet: srcClient.packetSet});
-            }
-            // get the client key and store it
-            if (packet.cmd === 'connect') {
-                srcClient.credentials = {username: packet.username, password: packet.password && "" + packet.password};
-
-                delete packet.username;
-                delete packet.password;
-                broker.username && (packet.username = broker.username);
-                broker.password && (packet.password = broker.password);
-            }
-
-            const ctx = rootSpan.context();
-            wrappedValidate(clientAddress, packet, srcClient.credentials, ctx).then(result => {
-                let valid = result;
-                logger.log('debug', "packet validated", {packetCommand: packet.cmd, result: valid});
-
-                if (valid.status) {
-
-                    if (packet.cmd === 'disconnect') {
-                        waitUntilEmpty(srcClient.packetSet, function () {
-                            logger.log('debug', "Writing packet to dstClient", {packetCommand: packet.cmd});
-                            dstClient.write(mqtt.generate(valid.packet));
-                        }, 0);
+                            if (valid.status) {
+                                logger.log('debug', "Writing packet to srcClient", {packet: packet});
+                                srcClient.write(mqtt.generate(packet, opts));
+                            } else {
+                                logger.log('debug', "Disconnecting clients because of unauthorized response", {packet: packet});
+                                srcClient.destroy();
+                                dstClient.destroy();
+                            }
+                        }).catch(err => {
+                            logger.log('error', "Error when validating", {
+                                errorName: err.name,
+                                errorMessage: err.message
+                            });
+                        });
                     } else {
-                        logger.log('debug', "Writing packet to dstClient", {packetCommand: packet.cmd});
-                        dstClient.write(mqtt.generate(valid.packet));
+                        logger.log('debug', "Writing packet to srcClient", {packet: packet});
+                        srcClient.write(mqtt.generate(packet, opts));
                     }
-                } else {
-                    // configurable disconnect in case of an unauthorized request
-                    // always disconnect clients in case of a unauthorized connect request after forwarding the connack
-                    if (
-                        (packet.cmd === 'subscribe' && config.disconnect_on_unauthorized_subscribe) ||
-                        (packet.cmd === 'publish' && config.disconnect_on_unauthorized_publish) ||
-                        (packet.cmd === 'connect')
-                    ) {
-                        if (valid.packet && valid.packet.cmd === "connack") {
-                            logger.log('debug', "Writing packet to srcClient", {packetCommand: (valid.packet && valid.packet.cmd)});
-                            valid.packet && srcClient.write(mqtt.generate(valid.packet));
-                        }
-
-                        logger
-                            .log('info', "Destroying clients because of unauthorized request", {packetCommand: packet.cmd});
-                        srcClient.destroy();
-                        dstClient.destroy();
-                    }
-                    // if a disconnection is not configured, just forward the response to srcClient
-                    else {
-                        logger.log('debug', "Writing packet to srcClient", {packetCommand: (valid.packet && valid.packet.cmd)});
-                        valid.packet && srcClient.write(mqtt.generate(valid.packet));
-                    }
-                }
-                if (packet.cmd !== 'disconnect') {
-                    srcClient.packetSet.delete(packetID);
-
-                }
-            }).catch(err => {
-                logger.log('error', "Error when validating", {errorName: err.name, errorMessage: err.message});
-                if (packet.cmd !== 'disconnect') {
-                    srcClient.packetSet.delete(packetID);
-                }
-            });
-            rootSpan.finish();
-        });
+                    rootSpan.finish();
+                });
+            } else {
+                dstParser.on('packet', (packet) => {
+                    logger.log('debug', "packet event emitted on dstParser", {packet: packet});
+                });
+                logger.log('debug', "Read from dstClient and pipe to srcClient without authorizing responses", {});
+                dstClient.pipe(srcClient);
+            }
+        }
     });
 });
 
