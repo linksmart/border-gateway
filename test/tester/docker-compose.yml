@@ -7,8 +7,7 @@ services:
       - ../${TESTDIR}/data.json:/bgw/test/data.json
     environment:
       - TESTDIR=${TESTDIR}
-    entrypoint:
-      - /bgw/test/test.sh
+    command:
       - /bgw/certs
     networks:
       - test_public

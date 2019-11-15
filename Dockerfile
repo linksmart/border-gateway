@@ -1,18 +1,26 @@
 FROM node:12-alpine
 
-COPY ./logger /bgw/logger
-COPY ./tracer /bgw/tracer
-COPY ./bgw-auth-service /bgw/bgw-auth-service
-COPY ./bgw-external-interface /bgw/bgw-external-interface
-COPY ./bgw-http-proxy /bgw/bgw-http-proxy
-COPY ./bgw-mqtt-proxy /bgw/bgw-mqtt-proxy
-COPY ./bgw-websocket-proxy /bgw/bgw-websocket-proxy
-COPY ./bgw.sh /bgw
-COPY ./package.json /bgw
+ARG node_env=development
+ENV NODE_ENV=$node_env
+
+RUN mkdir /bgw && chown node:node /bgw
+
+USER node
+
+COPY --chown=node:node ./logger /bgw/logger
+COPY --chown=node:node ./tracer /bgw/tracer
+COPY --chown=node:node ./bgw-auth-service /bgw/bgw-auth-service
+COPY --chown=node:node ./bgw-external-interface /bgw/bgw-external-interface
+COPY --chown=node:node ./bgw-http-proxy /bgw/bgw-http-proxy
+COPY --chown=node:node ./bgw-mqtt-proxy /bgw/bgw-mqtt-proxy
+COPY --chown=node:node ./bgw-websocket-proxy /bgw/bgw-websocket-proxy
+COPY --chown=node:node ./bgw.sh /bgw
+COPY --chown=node:node ./package.json /bgw
 WORKDIR /bgw
+RUN chmod -R +rw /bgw
 RUN npm install
 RUN mkdir /bgw/test
-COPY ./test/*.js /bgw/test
+COPY --chown=node:node ./test/*.js /bgw/test
 RUN npm test
 
 RUN chmod -R +x *.sh

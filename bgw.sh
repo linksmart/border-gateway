@@ -43,6 +43,8 @@ start() {
 main() {
   echo "Starting LinkSmart Border Gateway..."
 
+  echo "NODE_ENV is set to $NODE_ENV"
+
   if [ "$1" = "parts" ]; then
     shift
     parts "$@"

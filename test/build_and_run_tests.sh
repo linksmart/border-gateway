@@ -17,7 +17,7 @@ if [ "$?" -ne 0 ]; then
 fi
 
 cd "$scriptDir/.."
-docker build -t localhost:5000/linksmart/bgw:test .
+docker build --build-arg node_env=production -t localhost:5000/linksmart/bgw:test .
 docker push localhost:5000/linksmart/bgw:test
 
 if [ "$?" -ne 0 ]; then

@@ -1,16 +1,6 @@
-FROM debian:jessie-slim
+FROM node:12-alpine
 
-RUN apt-get update && apt-get install -y curl jq expect
-
-RUN apt-get install -y apt-transport-https ca-certificates gnupg2 software-properties-common
-
-RUN curl -sL https://deb.nodesource.com/setup_10.x | bash -
-RUN apt-get install -y nodejs
-
-RUN curl -fsSL http://repo.mosquitto.org/debian/mosquitto-repo.gpg.key | apt-key add -
-RUN add-apt-repository "deb https://repo.mosquitto.org/debian jessie main"
-RUN apt-get update
-RUN apt-get install -y mosquitto-clients
+RUN apk update && apk upgrade && apk add bash && apk add jq && apk add expect && apk add mosquitto-clients && apk add curl
 
 RUN npm install -g newman
 
@@ -35,5 +25,6 @@ WORKDIR /bgw/test
 
 RUN chmod -R +x *.sh
 
+ENTRYPOINT ["./test.sh"]
 
 
