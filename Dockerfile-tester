@@ -1,6 +1,6 @@
 FROM node:12-alpine
 
-RUN apk update && apk upgrade && apk add bash && apk add jq && apk add expect && apk add mosquitto-clients && apk add curl
+RUN apk update && apk upgrade && apk --no-cache add bash && apk --no-cache add jq && apk --no-cache add expect && apk --no-cache add mosquitto-clients && apk --no-cache add curl && apk --no-cache add procps
 
 RUN npm install -g newman
 
