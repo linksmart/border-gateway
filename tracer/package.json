@@ -1,6 +1,6 @@
 {
   "name": "tracer",
-  "version": "1.1.0",
+  "version": "v1.7.0",
   "main": "trace.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

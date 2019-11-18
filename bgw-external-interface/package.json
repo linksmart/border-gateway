@@ -1,6 +1,6 @@
 {
   "name": "bgw-external-interface",
-  "version": "1.0.0",
+  "version": "v1.7.0",
   "description": "",
   "main": "index.js",
   "scripts": {

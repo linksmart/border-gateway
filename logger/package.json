@@ -1,6 +1,6 @@
 {
   "name": "logger",
-  "version": "1.0.0",
+  "version": "v1.7.0",
   "main": "log.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

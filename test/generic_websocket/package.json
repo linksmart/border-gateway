@@ -1,6 +1,6 @@
 {
   "name": "generic-websocket",
-  "version": "1.0.0",
+  "version": "v1.7.0",
   "dependencies": {
     "ws": "latest",
     "winston": "latest"
