@@ -18,7 +18,10 @@ COPY --chown=node:node ./bgw.sh /bgw
 COPY --chown=node:node ./package.json /bgw
 WORKDIR /bgw
 RUN chmod -R +rw /bgw
-RUN npm install
+
+RUN npm install && \
+    npm prune --production
+
 RUN mkdir /bgw/test
 COPY --chown=node:node ./test/*.js /bgw/test
 RUN npm test
