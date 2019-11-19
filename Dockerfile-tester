@@ -1,6 +1,13 @@
-FROM node:12-alpine
+FROM node:12-slim
 
-RUN apk update && apk upgrade && apk --no-cache add bash && apk --no-cache add jq && apk --no-cache add expect && apk --no-cache add mosquitto-clients && apk --no-cache add curl && apk --no-cache add procps
+#RUN apk update && apk upgrade && apk --no-cache add bash && apk --no-cache add jq && apk --no-cache add expect && apk --no-cache add mosquitto-clients && apk --no-cache add curl && apk --no-cache add procps
+
+RUN apt-get update && apt-get install -y curl jq expect ca-certificates apt-transport-https gnupg2 software-properties-common
+
+RUN curl -fsSL http://repo.mosquitto.org/debian/mosquitto-repo.gpg.key | apt-key add -
+RUN add-apt-repository "deb https://repo.mosquitto.org/debian stretch main"
+RUN apt-get update
+RUN apt-get install -y mosquitto-clients
 
 RUN npm install -g newman
 
