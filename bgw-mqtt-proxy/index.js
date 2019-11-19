@@ -10,6 +10,8 @@ const validate = require('./validate');
 
 const opts = {protocolVersion: config.protocolVersion};
 
+logger.log('debug', 'protocolVersion is '+ opts.protocolVersion);
+
 function waitUntilEmpty(packetSet, callback, counter) {
     setTimeout(
         function () {

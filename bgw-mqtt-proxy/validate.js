@@ -78,9 +78,17 @@ module.exports = {
                 case 'subscribe':
                     result = await packet.subscriptions.reduce(async (t, item) => t && (await mqttAuth(port, key, 'SUB', item.topic, childSpan.context())), true);
                     childSpan.finish();
+                    let proxySuback;
+                    if (!result) {
+                        if (config.protocolVersion >= 5) {
+                            proxySuback = suback(packet.messageId, new Array(packet.subscriptions.length).fill(135));
+                        } else {
+                            proxySuback = suback(packet.messageId, new Array(packet.subscriptions.length).fill(128));
+                        }
+                    }
                     return {
                         status: result,
-                        packet: result ? packet : suback(packet.messageId, new Array(packet.subscriptions.length).fill(128))
+                        packet: result ? packet : proxySuback
                     };
                 case 'publish':
                     result = await mqttAuth(port, key, 'PUB', packet.topic, childSpan.context());

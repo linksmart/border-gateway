@@ -12,6 +12,7 @@
     "secure": false,
     "ws_port": 5052,
     "mqtt_port": 5051,
+    "mqtt_version": 311,
     "domain": "bgw",
     "admin_username": "keycloak",
     "admin_password": "keycloak",

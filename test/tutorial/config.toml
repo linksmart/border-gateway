@@ -54,6 +54,7 @@ client_ca_path = "/bgw/certs/CA.pem"
 [mqtt-proxy]
 # Set this to true if you want the mqtt-proxy to authorize mqtt responses
 authorize_response = true
+protocolVersion = 4
 
   # MQTT broker address
   [mqtt-proxy.broker]

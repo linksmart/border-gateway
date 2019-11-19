@@ -12,6 +12,7 @@
     "secure": true,
     "ws_port": 9002,
     "mqtt_port": 8883,
+    "mqtt_version": 311,
     "domain": "bgw-ssl",
     "admin_username": "keycloak",
     "admin_password": "keycloak",

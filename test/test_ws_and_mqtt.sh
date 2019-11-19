@@ -86,48 +86,54 @@ fi
 #cat "$CA"
 
 mqttPort=$4
-wsPort=$5
-user=$6
-pass=$7
-tokenEndpoint=$8
-audience=$9
-client_id="${10}"
-client_secret="${11}"
+mqttVersion=$5
+wsPort=$6
+user=$7
+pass=$8
+tokenEndpoint=$9
+audience="${10}"
+client_id="${11}"
+client_secret="${12}"
 
 scriptDir="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
 echo "scriptDir = $scriptDir"
 cd $scriptDir
 
 message="mosquitto_sub anonymous qos 0 in background"
-command="unbuffer mosquitto_sub --debug --keepalive 3600 $mqttSecureParams -h $host -p $mqttPort -t tutorial &>./mosquitto_sub.log &"
+echo "$message"
+command="unbuffer mosquitto_sub --debug --keepalive 3600 $mqttSecureParams -h $host -p $mqttPort -V $mqttVersion -t tutorial &>./mosquitto_sub.log &"
 echo "$command"
 >./mosquitto_sub.log
-unbuffer mosquitto_sub --debug --keepalive 3600 $mqttSecureParams -h $host -p $mqttPort -t tutorial &>./mosquitto_sub.log &
+unbuffer mosquitto_sub --debug --keepalive 3600 $mqttSecureParams -h $host -p $mqttPort -V $mqttVersion -t tutorial &>./mosquitto_sub.log &
 
-checkLog "Connection Refused: not authorised."
+checkLog "ot authori"
 killSub
 
 echo "mosquitto_sub user/pass ($user/$pass) qos 2 in background, other topic"
-command="unbuffer mosquitto_sub --debug --keepalive 3600 $mqttSecureParams -h $host -p $mqttPort -t other -u $user -P $pass -q 2 &>./mosquitto_sub.log &"
+command="unbuffer mosquitto_sub --debug --keepalive 3600 $mqttSecureParams -h $host -p $mqttPort -V $mqttVersion -t other -u $user -P $pass -q 2 &>./mosquitto_sub.log &"
 echo "$command"
 >./mosquitto_sub.log
-unbuffer mosquitto_sub --debug --keepalive 3600 $mqttSecureParams -h $host -p $mqttPort -t other -u "$user" -P "$pass" -q 2 &>./mosquitto_sub.log &
+unbuffer mosquitto_sub --debug --keepalive 3600 $mqttSecureParams -h $host -p $mqttPort -V $mqttVersion -t other -u "$user" -P "$pass" -q 2 &>./mosquitto_sub.log &
 
-checkLog "Subscribed (mid: 1): 128"
+if [ $mqttVersion -eq 5 ]; then
+  checkLog "Subscribed (mid: 1): 135"
+else
+  checkLog "Subscribed (mid: 1): 128"
+fi
 killSub
 
 echo "mosquitto_sub user/pass ($user/$pass) qos 2 in background, subonly topic"
-command="unbuffer mosquitto_sub --debug --keepalive 3600 $mqttSecureParams -h $host -p $mqttPort -t subonly -u $user -P $pass -q 2 &>./mosquitto_sub.log &"
+command="unbuffer mosquitto_sub --debug --keepalive 3600 $mqttSecureParams -h $host -p $mqttPort -V $mqttVersion -t subonly -u $user -P $pass -q 2 &>./mosquitto_sub.log &"
 echo "$command"
 >./mosquitto_sub.log
-unbuffer mosquitto_sub --debug --keepalive 3600 $mqttSecureParams -h $host -p $mqttPort -t subonly -u "$user" -P "$pass" -q 2 &>./mosquitto_sub.log &
+unbuffer mosquitto_sub --debug --keepalive 3600 $mqttSecureParams -h $host -p $mqttPort -V $mqttVersion -t subonly -u "$user" -P "$pass" -q 2 &>./mosquitto_sub.log &
 
 checkLog "Subscribed (mid: 1): 2"
 checkSubCount 5
 
 message="mosquitto_pub user/pass ($user/$pass) qos 2, subonly topic, expected exit code: 0"
 echo "$message"
-command="mosquitto_pub $mqttSecureParams --debug -h $host -p $mqttPort -t subonly -m \"$message\" -u \"$user\" -P \"$pass\" -q 2"
+command="mosquitto_pub $mqttSecureParams --debug -h $host -p $mqttPort -V $mqttVersion -t subonly -m \"$message\" -u \"$user\" -P \"$pass\" -q 2"
 echo "$command"
 eval "$command$"
 
@@ -141,16 +147,16 @@ checkSubCount 5
 killSub
 
 echo "mosquitto_sub user/pass ($user/$pass) qos 2 in background"
-command="unbuffer mosquitto_sub --debug --keepalive 3600 $mqttSecureParams -h $host -p $mqttPort -t tutorial -u $user -P $pass -q 2 &>./mosquitto_sub.log &"
+command="unbuffer mosquitto_sub --debug --keepalive 3600 $mqttSecureParams -h $host -p $mqttPort -V $mqttVersion -t tutorial -u $user -P $pass -q 2 &>./mosquitto_sub.log &"
 echo "$command"
 >./mosquitto_sub.log
-unbuffer mosquitto_sub --debug --keepalive 3600 $mqttSecureParams -h $host -p $mqttPort -t tutorial -u "$user" -P "$pass" -q 2 &>./mosquitto_sub.log &
+unbuffer mosquitto_sub --debug --keepalive 3600 $mqttSecureParams -h $host -p $mqttPort -V $mqttVersion -t tutorial -u "$user" -P "$pass" -q 2 &>./mosquitto_sub.log &
 
 checkSubCount 5
 
 message="mosquitto_pub anonymous qos 0, expected exit code: 5"
 echo "$message"
-command="mosquitto_pub $mqttSecureParams --debug -h $host -p $mqttPort -t tutorial -m \"$message\" -q 0"
+command="mosquitto_pub $mqttSecureParams --debug -h $host -p $mqttPort -V $mqttVersion -t tutorial -m \"$message\" -q 0"
 echo "$command"
 eval "$command$"
 exitCode=$?
@@ -166,7 +172,7 @@ checkSubCount 5
 
 message="mosquitto_pub user/pass ($user/$pass) qos 2, other topic, expected exit code: 0"
 echo "$message"
-command="mosquitto_pub $mqttSecureParams --debug -h $host -p $mqttPort -t other -m \"$message\" -u \"$user\" -P \"$pass\" -q 2"
+command="mosquitto_pub $mqttSecureParams --debug -h $host -p $mqttPort -V $mqttVersion -t other -m \"$message\" -u \"$user\" -P \"$pass\" -q 2"
 echo "$command"
 eval "$command$"
 
@@ -180,7 +186,7 @@ checkSubCount 5
 
 message="mosquitto_pub user/pass ($user/$pass) qos 2, expected exit code: 0"
 echo "$message"
-command="mosquitto_pub $mqttSecureParams --debug -h $host -p $mqttPort -t tutorial -m \"$message\" -u \"$user\" -P \"$pass\" -q 2"
+command="mosquitto_pub $mqttSecureParams --debug -h $host -p $mqttPort -V $mqttVersion -t tutorial -m \"$message\" -u \"$user\" -P \"$pass\" -q 2"
 echo "$command"
 eval "$command$"
 
@@ -196,7 +202,7 @@ message="mosquitto_pub user/pass ($user/$pass) qos 0 many times"
 echo "$message"
 
 for var in 1 2 3 4 5 6 7 8 9 10; do
-  command="mosquitto_pub $mqttSecureParams --debug -h $host -p $mqttPort -d -t tutorial -m \"$message $var\" -u \"$user\" -P \"$pass\" -q 0"
+  command="mosquitto_pub $mqttSecureParams --debug -h $host -p $mqttPort -V $mqttVersion -d -t tutorial -m \"$message $var\" -u \"$user\" -P \"$pass\" -q 0"
   echo "$command"
   eval "$command$"
 done
@@ -208,7 +214,7 @@ echo "access token: $access_token"
 
 message="mosquitto pub access token (for $user/$pass) qos 2, expected exit code: 0"
 echo "$message"
-command="mosquitto_pub $mqttSecureParams --debug -h $host -p $mqttPort -t tutorial -m \"$message\" -u $access_token -q 2"
+command="mosquitto_pub $mqttSecureParams --debug -h $host -p $mqttPort -V $mqttVersion -t tutorial -m \"$message\" -u $access_token -q 2"
 echo "$command"
 eval "$command$"
 
@@ -224,7 +230,7 @@ message="mosquitto_pub access token (for $user/$pass) qos 0 many times"
 echo "$message"
 
 for var in 1 2 3 4 5 6 7 8 9 10; do
-  command="mosquitto_pub $mqttSecureParams --debug -h $host -p $mqttPort -t tutorial -m \"$message $var\" -u $access_token -q 0"
+  command="mosquitto_pub $mqttSecureParams --debug -h $host -p $mqttPort -V $mqttVersion -t tutorial -m \"$message $var\" -u $access_token -q 0"
   echo "$command"
   eval "$command$"
 done
@@ -234,10 +240,10 @@ checkSubCount 55
 killSub
 
 echo "mosquitto_sub access token (for $user/$pass) qos 2 in background"
-command="unbuffer mosquitto_sub --debug --keepalive 3600 $mqttSecureParams -h $host -p $mqttPort -t tutorial -u $access_token -q 2 &>./mosquitto_sub.log &"
+command="unbuffer mosquitto_sub --debug --keepalive 3600 $mqttSecureParams -h $host -p $mqttPort -V $mqttVersion -t tutorial -u $access_token -q 2 &>./mosquitto_sub.log &"
 echo "$command"
 >./mosquitto_sub.log
-unbuffer mosquitto_sub --debug --keepalive 3600 $mqttSecureParams -h $host -p $mqttPort -t tutorial -u $access_token -q 2 &>./mosquitto_sub.log &
+unbuffer mosquitto_sub --debug --keepalive 3600 $mqttSecureParams -h $host -p $mqttPort -V $mqttVersion -t tutorial -u $access_token -q 2 &>./mosquitto_sub.log &
 
 checkSubCount 5
 
@@ -290,8 +296,12 @@ if [ $? -ne 0 ]; then
   exit 1
 fi
 
+if [ "$mqttVersion" = "311" ]; then
+  mqttVersion=4
+fi
+
 echo "MQTT over websockets with user/pass qos 2"
-node "$testWebsockets" "$CA" "$clientCert" "$clientKey" "$wsProtocol"://"$host:$wsPort/?access_token=$access_token" $user $pass 2
+node "$testWebsockets" "$CA" "$clientCert" "$clientKey" "$wsProtocol"://"$host:$wsPort/?access_token=$access_token" $user $pass 2 $mqttVersion
 echo "exit code = $?"
 if [ $? -ne 0 ]; then
   echo "exit code = $?"
@@ -299,7 +309,7 @@ if [ $? -ne 0 ]; then
 fi
 
 echo "MQTT over websockets with user/pass qos 0"
-node "$testWebsockets" "$CA" "$clientCert" "$clientKey" "$wsProtocol"://"$host:$wsPort/?access_token=$access_token" $user $pass 0
+node "$testWebsockets" "$CA" "$clientCert" "$clientKey" "$wsProtocol"://"$host:$wsPort/?access_token=$access_token" $user $pass 0 $mqttVersion
 
 if [ $? -ne 0 ]; then
   echo "exit code = $?"
@@ -307,7 +317,7 @@ if [ $? -ne 0 ]; then
 fi
 
 echo "MQTT over websockets with user/pass qos 0 anonymous"
-node "$testWebsockets" "$CA" "$clientCert" "$clientKey" "$wsProtocol"://"$host:$wsPort/?access_token=$access_token" anonymous anonymous 0
+node "$testWebsockets" "$CA" "$clientCert" "$clientKey" "$wsProtocol"://"$host:$wsPort/?access_token=$access_token" anonymous anonymous 0 $mqttVersion
 
 if [ $? -ne 1 ]; then
   echo "exit code = $?"
@@ -318,7 +328,7 @@ access_token=$(curl --cacert $CA --silent -d "client_id=$client_id" -d "client_s
 echo "access_token: $access_token"
 
 echo "MQTT over websockets with user/pass qos 2"
-node "$testWebsockets" "$CA" "$clientCert" "$clientKey" "$wsProtocol"://"$host:$wsPort/?access_token=$access_token" $access_token "" 2
+node "$testWebsockets" "$CA" "$clientCert" "$clientKey" "$wsProtocol"://"$host:$wsPort/?access_token=$access_token" $access_token "" 2 $mqttVersion
 
 if [ $? -ne 0 ]; then
   echo "exit code = $?"
@@ -326,7 +336,7 @@ if [ $? -ne 0 ]; then
 fi
 
 echo "MQTT over websockets with user/pass qos 0"
-node "$testWebsockets" "$CA" "$clientCert" "$clientKey" "$wsProtocol"://"$host:$wsPort/?access_token=$access_token" $access_token "" 0
+node "$testWebsockets" "$CA" "$clientCert" "$clientKey" "$wsProtocol"://"$host:$wsPort/?access_token=$access_token" $access_token "" 0 $mqttVersion
 
 if [ $? -ne 0 ]; then
   echo "exit code = $?"

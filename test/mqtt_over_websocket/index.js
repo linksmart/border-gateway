@@ -9,6 +9,7 @@ const url = process.argv[5];
 const username = process.argv[6];
 const password = process.argv[7];
 const qos = process.argv[8];
+const protocolVersion = process.argv[9];
 
 logger.log('debug', 'Starting mqtt_over_websocket', {
     ca: ca,
@@ -16,7 +17,9 @@ logger.log('debug', 'Starting mqtt_over_websocket', {
     key: key,
     url: url,
     username: username,
-    password: password
+    password: password,
+    qos: qos,
+    protocolVersion: protocolVersion
 });
 
 let client
@@ -28,9 +31,9 @@ if (url.includes('wss:')) {
         key: fs.readFileSync(key)
     };
     agent = new https.Agent(agentOptions);
-    client = mqtt.connect(url, {wsOptions: {agent: agent}, username: username, password: password});
+    client = mqtt.connect(url, {wsOptions: {agent: agent}, username: username, password: password, protocolVersion: parseInt(protocolVersion)});
 } else {
-    client = mqtt.connect(url, {username: username, password: password});
+    client = mqtt.connect(url, {username: username, password: password, protocolVersion: parseInt(protocolVersion)});
 }
 
 client.on('reconnect', function () {
