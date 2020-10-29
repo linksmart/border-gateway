@@ -73,9 +73,9 @@ This creates a full setup with Keycloak as an OpenID Connect provider, web serve
 
 Feel free to create an issue or fork and create a pull request in GitHub in case you want to contribute to the software.
 
-[Documentation]: https://docs.linksmart.eu/display/BGW
-[Tutorial]: https://docs.linksmart.eu/display/BGW/Tutorial
-[Docker]:https://hub.docker.com/r/linksmart/bgw/tags
-[Deploy]:https://docs.linksmart.eu/display/BGW/Deployment
+[Documentation]: https://github.com/linksmart/border-gateway/wiki
+[Tutorial]: https://github.com/linksmart/border-gateway/wiki/Tutorial
+[Docker]: https://hub.docker.com/r/linksmart/bgw/tags
+[Deploy]: https://github.com/linksmart/border-gateway/wiki/Deployment
 [Configuration]: https://raw.githubusercontent.com/linksmart/border-gateway/master/test/tutorial/config.toml
 
